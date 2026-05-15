@@ -320,6 +320,208 @@ export const currentUser = {
   org: "Safi Congo SARL",
 };
 
+// ===== SUPER ADMIN (Rostel High-Tech) DATA =====
+
+export type Organization = {
+  id: string;
+  name: string;
+  country: string;
+  city: string;
+  sector: string;
+  plan: "Starter" | "Business" | "Enterprise";
+  employees: number;
+  maxEmployees: number;
+  riskScore: number;
+  trainingsCompleted: number;
+  campaignsRun: number;
+  joinedDate: string;
+  status: "active" | "trial" | "expired";
+  contactName: string;
+  contactEmail: string;
+  mrr: number;
+};
+
+export const organizations: Organization[] = [
+  {
+    id: "org-1",
+    name: "Safi Congo SARL",
+    country: "Congo",
+    city: "Brazzaville",
+    sector: "Services financiers",
+    plan: "Business",
+    employees: 10,
+    maxEmployees: 100,
+    riskScore: 42,
+    trainingsCompleted: 41,
+    campaignsRun: 3,
+    joinedDate: "2026-01-15",
+    status: "active",
+    contactName: "Fatou Sow",
+    contactEmail: "f.sow@saficongo.com",
+    mrr: 450000,
+  },
+  {
+    id: "org-2",
+    name: "Banque Atlantique Sénégal",
+    country: "Sénégal",
+    city: "Dakar",
+    sector: "Banque",
+    plan: "Enterprise",
+    employees: 85,
+    maxEmployees: 500,
+    riskScore: 35,
+    trainingsCompleted: 312,
+    campaignsRun: 8,
+    joinedDate: "2025-11-01",
+    status: "active",
+    contactName: "Mamadou Diop",
+    contactEmail: "m.diop@ba-senegal.com",
+    mrr: 1200000,
+  },
+  {
+    id: "org-3",
+    name: "Université Cheikh Anta Diop",
+    country: "Sénégal",
+    city: "Dakar",
+    sector: "Éducation",
+    plan: "Starter",
+    employees: 22,
+    maxEmployees: 25,
+    riskScore: 55,
+    trainingsCompleted: 68,
+    campaignsRun: 2,
+    joinedDate: "2026-03-01",
+    status: "active",
+    contactName: "Pr. Awa Niang",
+    contactEmail: "a.niang@ucad.edu.sn",
+    mrr: 150000,
+  },
+  {
+    id: "org-4",
+    name: "Orange Côte d'Ivoire",
+    country: "Côte d'Ivoire",
+    city: "Abidjan",
+    sector: "Télécommunications",
+    plan: "Enterprise",
+    employees: 210,
+    maxEmployees: 500,
+    riskScore: 28,
+    trainingsCompleted: 890,
+    campaignsRun: 12,
+    joinedDate: "2025-09-15",
+    status: "active",
+    contactName: "Kouamé Assi",
+    contactEmail: "k.assi@orange.ci",
+    mrr: 1500000,
+  },
+  {
+    id: "org-5",
+    name: "Groupe Bolloré Cameroun",
+    country: "Cameroun",
+    city: "Douala",
+    sector: "Logistique",
+    plan: "Business",
+    employees: 45,
+    maxEmployees: 100,
+    riskScore: 48,
+    trainingsCompleted: 156,
+    campaignsRun: 5,
+    joinedDate: "2026-02-10",
+    status: "active",
+    contactName: "Jean-Pierre Mbarga",
+    contactEmail: "jp.mbarga@bollore.cm",
+    mrr: 450000,
+  },
+  {
+    id: "org-6",
+    name: "Institut Pasteur de Dakar",
+    country: "Sénégal",
+    city: "Dakar",
+    sector: "Santé / Recherche",
+    plan: "Business",
+    employees: 30,
+    maxEmployees: 100,
+    riskScore: 32,
+    trainingsCompleted: 120,
+    campaignsRun: 4,
+    joinedDate: "2026-01-20",
+    status: "active",
+    contactName: "Dr. Ibrahima Sarr",
+    contactEmail: "i.sarr@pasteur.sn",
+    mrr: 450000,
+  },
+  {
+    id: "org-7",
+    name: "Startup Academy Abidjan",
+    country: "Côte d'Ivoire",
+    city: "Abidjan",
+    sector: "Éducation",
+    plan: "Starter",
+    employees: 8,
+    maxEmployees: 25,
+    riskScore: 62,
+    trainingsCompleted: 18,
+    campaignsRun: 1,
+    joinedDate: "2026-04-20",
+    status: "trial",
+    contactName: "Marie Koffi",
+    contactEmail: "m.koffi@startupacademy.ci",
+    mrr: 0,
+  },
+  {
+    id: "org-8",
+    name: "Ecobank Togo",
+    country: "Togo",
+    city: "Lomé",
+    sector: "Banque",
+    plan: "Enterprise",
+    employees: 120,
+    maxEmployees: 500,
+    riskScore: 38,
+    trainingsCompleted: 480,
+    campaignsRun: 7,
+    joinedDate: "2025-12-01",
+    status: "active",
+    contactName: "Kodjo Amegbo",
+    contactEmail: "k.amegbo@ecobank.tg",
+    mrr: 1200000,
+  },
+];
+
+export const platformStats = {
+  totalOrganizations: 8,
+  activeOrganizations: 7,
+  totalEmployees: 530,
+  totalTrainingsCompleted: 2085,
+  totalCampaigns: 42,
+  avgRiskScore: 42,
+  mrrTotal: 5400000,
+  mrrGrowth: 18,
+  churnRate: 2.1,
+};
+
+export const revenueByMonth = [
+  { month: "Jan", mrr: 3200000, newOrgs: 2 },
+  { month: "Fév", mrr: 3650000, newOrgs: 1 },
+  { month: "Mar", mrr: 4100000, newOrgs: 1 },
+  { month: "Avr", mrr: 4800000, newOrgs: 1 },
+  { month: "Mai", mrr: 5400000, newOrgs: 1 },
+];
+
+export const planDistribution = [
+  { name: "Starter", value: 2, color: "#25d366" },
+  { name: "Business", value: 3, color: "#fa990e" },
+  { name: "Enterprise", value: 3, color: "#9c1e99" },
+];
+
+export const supportTickets = [
+  { id: "T-001", org: "Safi Congo SARL", subject: "Problème d'export PDF", priority: "medium", status: "open", date: "2026-05-12" },
+  { id: "T-002", org: "Banque Atlantique Sénégal", subject: "Configuration SSO Microsoft 365", priority: "high", status: "in-progress", date: "2026-05-11" },
+  { id: "T-003", org: "Orange Côte d'Ivoire", subject: "Ajout de 50 employés supplémentaires", priority: "low", status: "resolved", date: "2026-05-10" },
+  { id: "T-004", org: "Startup Academy Abidjan", subject: "Passage de Trial à Starter", priority: "medium", status: "open", date: "2026-05-09" },
+  { id: "T-005", org: "Ecobank Togo", subject: "API webhook pour SIEM interne", priority: "high", status: "in-progress", date: "2026-05-08" },
+];
+
 export const badges = [
   {
     id: "cyber-defender",

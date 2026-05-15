@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef, useCallback } from "react";
 import { useRouter } from "next/navigation";
-import { Shield, Eye, EyeOff, Lock, Mail } from "lucide-react";
+import { Shield, Eye, EyeOff, Lock, Mail, Crown, Building2, UserCircle } from "lucide-react";
 import { FaApple, FaGoogle, FaXTwitter } from "react-icons/fa6";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -200,15 +200,38 @@ function HexagonIcon() {
   );
 }
 
+const demoRoles = [
+  {
+    id: "super-admin", label: "Super Admin", sub: "Rostel High-Tech", icon: Crown, route: "/admin",
+    active: "border-rht-orange/40 bg-rht-orange/10",
+    iconActive: "bg-rht-orange/20", iconColor: "text-rht-orange",
+    radio: "border-rht-orange bg-rht-orange",
+  },
+  {
+    id: "admin-client", label: "Admin Client", sub: "Safi Congo SARL", icon: Building2, route: "/dashboard",
+    active: "border-rht-violet-light/40 bg-rht-violet-light/10",
+    iconActive: "bg-rht-violet-light/20", iconColor: "text-rht-violet-light",
+    radio: "border-rht-violet-light bg-rht-violet-light",
+  },
+  {
+    id: "employee", label: "Employé", sub: "Mon espace", icon: UserCircle, route: "/dashboard/user-dashboard",
+    active: "border-cyber-green/40 bg-cyber-green/10",
+    iconActive: "bg-cyber-green/20", iconColor: "text-cyber-green",
+    radio: "border-cyber-green bg-cyber-green",
+  },
+];
+
 export default function LoginPage() {
   const router = useRouter();
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [selectedRole, setSelectedRole] = useState("admin-client");
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
-    setTimeout(() => router.push("/dashboard"), 800);
+    const role = demoRoles.find((r) => r.id === selectedRole);
+    setTimeout(() => router.push(role?.route || "/dashboard"), 800);
   };
 
   return (
@@ -332,13 +355,67 @@ export default function LoginPage() {
             </motion.div>
           </form>
 
-          <div className="my-6 flex items-center gap-3">
+          <div className="my-5 flex items-center gap-3">
             <div className="h-px flex-1 bg-white/[0.06]" />
-            <span className="text-[10px] uppercase tracking-widest text-white/20">ou</span>
+            <span className="text-[10px] uppercase tracking-widest text-white/20">accès démo</span>
             <div className="h-px flex-1 bg-white/[0.06]" />
           </div>
 
-          <div className="flex justify-center gap-3">
+          <div className="space-y-2">
+            {demoRoles.map((role) => {
+              const isActive = selectedRole === role.id;
+              const Icon = role.icon;
+              return (
+                <motion.button
+                  key={role.id}
+                  type="button"
+                  whileHover={{ scale: 1.01 }}
+                  whileTap={{ scale: 0.99 }}
+                  onClick={() => setSelectedRole(role.id)}
+                  className={`flex w-full items-center gap-3 rounded-xl border p-3 text-left transition-all duration-200 ${
+                    isActive
+                      ? role.active
+                      : "border-white/[0.06] bg-white/[0.02] hover:border-white/[0.12] hover:bg-white/[0.04]"
+                  }`}
+                >
+                  <div
+                    className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-lg transition-colors ${
+                      isActive ? role.iconActive : "bg-white/[0.04]"
+                    }`}
+                  >
+                    <Icon className={`h-4 w-4 ${isActive ? role.iconColor : "text-white/30"}`} />
+                  </div>
+                  <div className="flex-1">
+                    <p className={`text-sm font-medium ${isActive ? "text-white" : "text-white/50"}`}>
+                      {role.label}
+                    </p>
+                    <p className={`text-[11px] ${isActive ? "text-white/40" : "text-white/20"}`}>
+                      {role.sub}
+                    </p>
+                  </div>
+                  <div
+                    className={`h-4 w-4 rounded-full border-2 transition-all ${
+                      isActive
+                        ? role.radio
+                        : "border-white/20 bg-transparent"
+                    }`}
+                  >
+                    {isActive && (
+                      <motion.div
+                        initial={{ scale: 0 }}
+                        animate={{ scale: 1 }}
+                        className="flex h-full w-full items-center justify-center"
+                      >
+                        <div className="h-1.5 w-1.5 rounded-full bg-white" />
+                      </motion.div>
+                    )}
+                  </div>
+                </motion.button>
+              );
+            })}
+          </div>
+
+          <div className="mt-5 flex justify-center gap-3">
             {[
               { icon: <FaApple className="h-4 w-4" />, label: "Apple" },
               { icon: <FaGoogle className="h-4 w-4" />, label: "Google" },
@@ -356,7 +433,7 @@ export default function LoginPage() {
             ))}
           </div>
 
-          <p className="mt-6 text-center text-[11px] text-white/25">
+          <p className="mt-4 text-center text-[11px] text-white/25">
             Pas encore de compte ?{" "}
             <button className="font-medium text-rht-violet-light/70 hover:text-rht-violet-light">
               Contactez votre administrateur
