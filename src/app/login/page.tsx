@@ -214,7 +214,7 @@ const demoRoles = [
     radio: "border-rht-violet-light bg-rht-violet-light",
   },
   {
-    id: "employee", label: "Employé", sub: "Mon espace", icon: UserCircle, route: "/dashboard/user-dashboard",
+    id: "employee", label: "Employé", sub: "Mon espace", icon: UserCircle, route: "/employee",
     active: "border-cyber-green/40 bg-cyber-green/10",
     iconActive: "bg-cyber-green/20", iconColor: "text-cyber-green",
     radio: "border-cyber-green bg-cyber-green",
