@@ -146,7 +146,7 @@ export default function AdminDashboardPage() {
                           fontSize: "12px",
                           color: "var(--foreground)",
                         }}
-                        formatter={(value: number) => [formatCFA(value), "MRR"]}
+                        formatter={(value) => [formatCFA(value as number), "MRR"]}
                       />
                       <Area type="monotone" dataKey="mrr" stroke="#fa990e" fill="url(#mrrGrad)" strokeWidth={2} />
                     </AreaChart>
