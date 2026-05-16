@@ -149,7 +149,7 @@ export default function SimulationsPage() {
                         color: "var(--foreground)",
                       }}
                     />
-                    <Legend />
+                    <Legend formatter={(value) => <span style={{ color: "var(--foreground)", fontSize: "12px" }}>{value}</span>} />
                     <Bar dataKey="Cliqué" fill="#ef4444" radius={[4, 4, 0, 0]} />
                     <Bar dataKey="Signalé" fill="#25d366" radius={[4, 4, 0, 0]} />
                     <Bar dataKey="Ignoré" fill="#fa990e" radius={[4, 4, 0, 0]} />

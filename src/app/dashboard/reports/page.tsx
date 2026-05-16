@@ -417,7 +417,7 @@ export default function ReportsPage() {
                             color: "var(--foreground)",
                           }}
                         />
-                        <Legend />
+                        <Legend formatter={(value) => <span style={{ color: "var(--foreground)", fontSize: "12px" }}>{value}</span>} />
                         <Bar dataKey="completion" name="Complétion %" fill="#25d366" radius={[0, 4, 4, 0]} />
                         <Bar dataKey="risk" name="Risque %" fill="#ef4444" radius={[0, 4, 4, 0]} />
                       </BarChart>
