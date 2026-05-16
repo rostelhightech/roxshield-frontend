@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { AnimatePresence } from "framer-motion";
 import { Sidebar } from "@/components/layout/sidebar";
 import { Onboarding } from "@/components/onboarding";
+import { PageTransition } from "@/components/page-transition";
 
 export default function DashboardLayout({
   children,
@@ -29,7 +30,7 @@ export default function DashboardLayout({
       </AnimatePresence>
       <Sidebar />
       <main className="flex-1 pt-14 md:ml-[260px] md:pt-0 transition-all duration-300">
-        {children}
+        <PageTransition>{children}</PageTransition>
       </main>
     </div>
   );

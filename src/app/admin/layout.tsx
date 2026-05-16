@@ -5,6 +5,7 @@ import { usePathname } from "next/navigation";
 import { useState, useEffect } from "react";
 import { AnimatePresence } from "framer-motion";
 import { Onboarding } from "@/components/onboarding";
+import { PageTransition } from "@/components/page-transition";
 import {
   LayoutDashboard,
   Building2,
@@ -179,7 +180,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
       </aside>
 
       <main className={`flex-1 pt-14 md:pt-0 transition-all duration-300 ${collapsed ? "md:ml-[70px]" : "md:ml-[260px]"}`}>
-        {children}
+        <PageTransition>{children}</PageTransition>
       </main>
     </div>
   );

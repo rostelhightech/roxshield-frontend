@@ -1,0 +1,364 @@
+"use client";
+
+import { useState } from "react";
+import { useRouter } from "next/navigation";
+import { motion, AnimatePresence } from "framer-motion";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Card, CardContent } from "@/components/ui/card";
+import { Progress } from "@/components/ui/progress";
+import { Badge } from "@/components/ui/badge";
+import {
+  Shield,
+  Building2,
+  Users,
+  Target,
+  ArrowRight,
+  ArrowLeft,
+  CheckCircle,
+  Plus,
+  Trash2,
+  Rocket,
+  Globe,
+  Mail,
+  Upload,
+} from "lucide-react";
+
+const steps = [
+  { id: "org", label: "Organisation", icon: Building2 },
+  { id: "team", label: "Équipe", icon: Users },
+  { id: "campaign", label: "Campagne", icon: Target },
+  { id: "done", label: "Terminé", icon: Rocket },
+];
+
+export default function SetupPage() {
+  const router = useRouter();
+  const [step, setStep] = useState(0);
+  const [orgName, setOrgName] = useState("");
+  const [orgCountry, setOrgCountry] = useState("");
+  const [orgSector, setOrgSector] = useState("");
+  const [members, setMembers] = useState([
+    { name: "", email: "", department: "" },
+  ]);
+  const [selectedTemplate, setSelectedTemplate] = useState<string | null>(null);
+
+  const progress = ((step + 1) / steps.length) * 100;
+
+  const addMember = () => {
+    setMembers([...members, { name: "", email: "", department: "" }]);
+  };
+
+  const removeMember = (i: number) => {
+    setMembers(members.filter((_, idx) => idx !== i));
+  };
+
+  const updateMember = (i: number, field: string, value: string) => {
+    const updated = [...members];
+    updated[i] = { ...updated[i], [field]: value };
+    setMembers(updated);
+  };
+
+  const templates = [
+    { id: "urgent-transfer", label: "Virement urgent", desc: "Email du PDG demandant un virement en urgence", type: "Email" },
+    { id: "password-reset", label: "Réinitialisation mot de passe", desc: "Faux email de réinitialisation de mot de passe", type: "Email" },
+    { id: "mobile-money", label: "Vérification Mobile Money", desc: "SMS de vérification de compte Mobile Money", type: "SMS" },
+    { id: "invoice", label: "Facture fournisseur", desc: "Fausse facture avec lien de paiement", type: "Email" },
+  ];
+
+  return (
+    <div className="min-h-screen bg-background">
+      <div className="mx-auto max-w-2xl px-4 py-8">
+        <motion.div
+          initial={{ opacity: 0, y: -10 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="mb-8 text-center"
+        >
+          <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br from-rht-violet to-rht-violet-light">
+            <Shield className="h-6 w-6 text-white" />
+          </div>
+          <h1 className="text-2xl font-bold">Configurez votre espace</h1>
+          <p className="mt-1 text-sm text-muted-foreground">
+            Quelques étapes pour démarrer avec Rostel CyberSense
+          </p>
+        </motion.div>
+
+        <div className="mb-8">
+          <div className="flex items-center justify-between gap-2">
+            {steps.map((s, i) => {
+              const StepIcon = s.icon;
+              const isDone = i < step;
+              const isCurrent = i === step;
+              return (
+                <div key={s.id} className="flex flex-1 flex-col items-center gap-1.5">
+                  <div
+                    className={`flex h-10 w-10 items-center justify-center rounded-full border-2 transition-all ${
+                      isDone
+                        ? "border-cyber-green bg-cyber-green text-white"
+                        : isCurrent
+                        ? "border-rht-violet bg-rht-violet/10 text-rht-violet-light"
+                        : "border-muted bg-muted/50 text-muted-foreground"
+                    }`}
+                  >
+                    {isDone ? (
+                      <CheckCircle className="h-5 w-5" />
+                    ) : (
+                      <StepIcon className="h-4 w-4" />
+                    )}
+                  </div>
+                  <span className={`text-[10px] font-medium ${isCurrent ? "text-foreground" : "text-muted-foreground"}`}>
+                    {s.label}
+                  </span>
+                </div>
+              );
+            })}
+          </div>
+          <Progress value={progress} className="mt-4 h-1.5" />
+        </div>
+
+        <AnimatePresence mode="wait">
+          <motion.div
+            key={step}
+            initial={{ opacity: 0, x: 30 }}
+            animate={{ opacity: 1, x: 0 }}
+            exit={{ opacity: 0, x: -30 }}
+            transition={{ duration: 0.25 }}
+          >
+            {step === 0 && (
+              <Card>
+                <CardContent className="space-y-5 p-6">
+                  <div className="text-center">
+                    <Building2 className="mx-auto mb-2 h-8 w-8 text-rht-violet-light" />
+                    <h2 className="text-lg font-bold">Votre organisation</h2>
+                    <p className="text-sm text-muted-foreground">Renseignez les informations de base</p>
+                  </div>
+                  <div className="space-y-4">
+                    <div className="space-y-2">
+                      <Label className="text-xs">Nom de l&apos;organisation</Label>
+                      <Input
+                        placeholder="Ex: Safi Congo SARL"
+                        value={orgName}
+                        onChange={(e) => setOrgName(e.target.value)}
+                      />
+                    </div>
+                    <div className="grid gap-4 sm:grid-cols-2">
+                      <div className="space-y-2">
+                        <Label className="text-xs">Pays</Label>
+                        <Input
+                          placeholder="Ex: Congo"
+                          value={orgCountry}
+                          onChange={(e) => setOrgCountry(e.target.value)}
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <Label className="text-xs">Secteur d&apos;activité</Label>
+                        <Input
+                          placeholder="Ex: Services financiers"
+                          value={orgSector}
+                          onChange={(e) => setOrgSector(e.target.value)}
+                        />
+                      </div>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            )}
+
+            {step === 1 && (
+              <Card>
+                <CardContent className="space-y-5 p-6">
+                  <div className="text-center">
+                    <Users className="mx-auto mb-2 h-8 w-8 text-rht-violet-light" />
+                    <h2 className="text-lg font-bold">Ajoutez votre équipe</h2>
+                    <p className="text-sm text-muted-foreground">Invitez vos collaborateurs ou importez un fichier CSV</p>
+                  </div>
+
+                  <div className="space-y-3">
+                    {members.map((m, i) => (
+                      <motion.div
+                        key={i}
+                        initial={{ opacity: 0, y: 10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: i * 0.05 }}
+                        className="flex items-start gap-2"
+                      >
+                        <div className="grid flex-1 gap-2 sm:grid-cols-3">
+                          <Input
+                            placeholder="Nom complet"
+                            value={m.name}
+                            onChange={(e) => updateMember(i, "name", e.target.value)}
+                          />
+                          <Input
+                            placeholder="Email"
+                            type="email"
+                            value={m.email}
+                            onChange={(e) => updateMember(i, "email", e.target.value)}
+                          />
+                          <Input
+                            placeholder="Département"
+                            value={m.department}
+                            onChange={(e) => updateMember(i, "department", e.target.value)}
+                          />
+                        </div>
+                        {members.length > 1 && (
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            className="mt-0.5 h-9 w-9 shrink-0 text-muted-foreground hover:text-cyber-red"
+                            onClick={() => removeMember(i)}
+                          >
+                            <Trash2 className="h-4 w-4" />
+                          </Button>
+                        )}
+                      </motion.div>
+                    ))}
+                  </div>
+
+                  <div className="flex gap-2">
+                    <Button variant="outline" size="sm" onClick={addMember}>
+                      <Plus className="mr-1 h-3 w-3" />
+                      Ajouter
+                    </Button>
+                    <Button variant="outline" size="sm">
+                      <Upload className="mr-1 h-3 w-3" />
+                      Importer CSV
+                    </Button>
+                  </div>
+
+                  <p className="text-center text-xs text-muted-foreground">
+                    {members.filter((m) => m.email).length} membre(s) ajouté(s) — vous pourrez en ajouter d&apos;autres plus tard
+                  </p>
+                </CardContent>
+              </Card>
+            )}
+
+            {step === 2 && (
+              <Card>
+                <CardContent className="space-y-5 p-6">
+                  <div className="text-center">
+                    <Target className="mx-auto mb-2 h-8 w-8 text-rht-violet-light" />
+                    <h2 className="text-lg font-bold">Première simulation</h2>
+                    <p className="text-sm text-muted-foreground">Choisissez un template pour votre première campagne de phishing</p>
+                  </div>
+
+                  <div className="grid gap-3 sm:grid-cols-2">
+                    {templates.map((t) => (
+                      <motion.button
+                        key={t.id}
+                        whileHover={{ scale: 1.02 }}
+                        whileTap={{ scale: 0.98 }}
+                        onClick={() => setSelectedTemplate(t.id)}
+                        className={`rounded-xl border p-4 text-left transition-all ${
+                          selectedTemplate === t.id
+                            ? "border-rht-violet/40 bg-rht-violet/5"
+                            : "hover:border-muted-foreground/20 hover:bg-accent"
+                        }`}
+                      >
+                        <div className="flex items-center justify-between">
+                          <p className="text-sm font-semibold">{t.label}</p>
+                          <Badge variant="outline" className="text-[10px]">{t.type}</Badge>
+                        </div>
+                        <p className="mt-1 text-xs text-muted-foreground">{t.desc}</p>
+                        {selectedTemplate === t.id && (
+                          <motion.div
+                            initial={{ scale: 0 }}
+                            animate={{ scale: 1 }}
+                            className="mt-2"
+                          >
+                            <CheckCircle className="h-4 w-4 text-rht-violet-light" />
+                          </motion.div>
+                        )}
+                      </motion.button>
+                    ))}
+                  </div>
+
+                  <p className="text-center text-xs text-muted-foreground">
+                    Vous pourrez modifier et personnaliser la campagne avant de l&apos;envoyer
+                  </p>
+                </CardContent>
+              </Card>
+            )}
+
+            {step === 3 && (
+              <Card>
+                <CardContent className="space-y-6 p-6">
+                  <div className="text-center">
+                    <motion.div
+                      initial={{ scale: 0 }}
+                      animate={{ scale: 1 }}
+                      transition={{ type: "spring", stiffness: 300, delay: 0.2 }}
+                    >
+                      <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-2xl bg-gradient-to-br from-cyber-green/80 to-cyber-green">
+                        <CheckCircle className="h-8 w-8 text-white" />
+                      </div>
+                    </motion.div>
+                    <h2 className="text-lg font-bold">Configuration terminée !</h2>
+                    <p className="mt-1 text-sm text-muted-foreground">
+                      Votre espace Rostel CyberSense est prêt à utiliser
+                    </p>
+                  </div>
+
+                  <div className="space-y-3">
+                    {[
+                      { icon: Building2, label: "Organisation", value: orgName || "Non renseigné", color: "text-rht-violet-light", bg: "bg-rht-violet/10" },
+                      { icon: Users, label: "Membres", value: `${members.filter((m) => m.email).length} invité(s)`, color: "text-rht-orange", bg: "bg-rht-orange/10" },
+                      { icon: Target, label: "Campagne", value: selectedTemplate ? templates.find((t) => t.id === selectedTemplate)?.label ?? "—" : "Aucune", color: "text-cyber-green", bg: "bg-cyber-green/10" },
+                    ].map((item) => (
+                      <div key={item.label} className="flex items-center gap-3 rounded-xl border p-3">
+                        <div className={`flex h-9 w-9 items-center justify-center rounded-lg ${item.bg}`}>
+                          <item.icon className={`h-4 w-4 ${item.color}`} />
+                        </div>
+                        <div>
+                          <p className="text-[10px] text-muted-foreground">{item.label}</p>
+                          <p className="text-sm font-medium">{item.value}</p>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </CardContent>
+              </Card>
+            )}
+          </motion.div>
+        </AnimatePresence>
+
+        <div className="mt-6 flex items-center justify-between">
+          {step > 0 ? (
+            <Button variant="outline" onClick={() => setStep(step - 1)}>
+              <ArrowLeft className="mr-2 h-4 w-4" />
+              Précédent
+            </Button>
+          ) : (
+            <Button variant="ghost" onClick={() => router.push("/dashboard")} className="text-muted-foreground">
+              Passer
+            </Button>
+          )}
+
+          <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
+            <Button
+              onClick={() => {
+                if (step < steps.length - 1) {
+                  setStep(step + 1);
+                } else {
+                  router.push("/dashboard");
+                }
+              }}
+              className="bg-gradient-to-r from-rht-violet to-rht-violet-light text-white hover:opacity-90"
+            >
+              {step === steps.length - 1 ? (
+                <>
+                  Accéder au dashboard
+                  <Rocket className="ml-2 h-4 w-4" />
+                </>
+              ) : (
+                <>
+                  Continuer
+                  <ArrowRight className="ml-2 h-4 w-4" />
+                </>
+              )}
+            </Button>
+          </motion.div>
+        </div>
+      </div>
+    </div>
+  );
+}
