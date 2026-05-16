@@ -136,7 +136,7 @@ export default function SetupPage() {
                     <div className="space-y-2">
                       <Label className="text-xs">Nom de l&apos;organisation</Label>
                       <Input
-                        placeholder="Ex: Safi Congo SARL"
+                        placeholder="Ex: Safi Sénégal SARL"
                         value={orgName}
                         onChange={(e) => setOrgName(e.target.value)}
                       />
@@ -145,7 +145,7 @@ export default function SetupPage() {
                       <div className="space-y-2">
                         <Label className="text-xs">Pays</Label>
                         <Input
-                          placeholder="Ex: Congo"
+                          placeholder="Ex: Sénégal"
                           value={orgCountry}
                           onChange={(e) => setOrgCountry(e.target.value)}
                         />

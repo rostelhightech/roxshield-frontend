@@ -100,7 +100,7 @@ export default function ProfilePage() {
                 </div>
                 <div className="space-y-2">
                   <Label className="text-xs">Téléphone</Label>
-                  <Input defaultValue="+242 06 XXX XXXX" type="tel" />
+                  <Input defaultValue="+221 7X XXX XX XX" type="tel" />
                 </div>
                 <div className="grid gap-4 sm:grid-cols-2">
                   <div className="space-y-2">

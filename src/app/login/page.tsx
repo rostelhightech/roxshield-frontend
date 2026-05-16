@@ -208,7 +208,7 @@ const demoRoles = [
     radio: "border-rht-orange bg-rht-orange",
   },
   {
-    id: "admin-client", label: "Admin Client", sub: "Safi Congo SARL", icon: Building2, route: "/dashboard",
+    id: "admin-client", label: "Admin Client", sub: "Safi Sénégal SARL", icon: Building2, route: "/dashboard",
     active: "border-rht-violet-light/40 bg-rht-violet-light/10",
     iconActive: "bg-rht-violet-light/20", iconColor: "text-rht-violet-light",
     radio: "border-rht-violet-light bg-rht-violet-light",
@@ -304,7 +304,7 @@ export default function LoginPage() {
                   id="email"
                   type="email"
                   placeholder="votre@email.com"
-                  defaultValue="f.sow@saficongo.com"
+                  defaultValue="f.sow@safisenegal.com"
                   className="h-11 border-white/[0.08] bg-white/[0.04] pl-10 text-white placeholder:text-white/20 focus:border-rht-violet/40 focus:ring-rht-violet/20"
                 />
               </div>

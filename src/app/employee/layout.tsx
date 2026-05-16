@@ -118,7 +118,7 @@ export default function EmployeeLayout({ children }: { children: React.ReactNode
               <p className="text-[10px] font-medium uppercase tracking-widest opacity-30">Employé</p>
             </div>
             <Badge className="mt-1 border-0 bg-cyber-green/10 text-cyber-green text-[10px]">
-              Safi Congo SARL
+              Safi Sénégal SARL
             </Badge>
           </div>
         )}
@@ -157,7 +157,7 @@ export default function EmployeeLayout({ children }: { children: React.ReactNode
             {!collapsed && (
               <div className="flex-1 overflow-hidden">
                 <p className="truncate text-sm font-medium">Fatou Sow</p>
-                <p className="truncate text-[11px] opacity-40">f.sow@saficongo.com</p>
+                <p className="truncate text-[11px] opacity-40">f.sow@safisenegal.com</p>
               </div>
             )}
             {!collapsed && (

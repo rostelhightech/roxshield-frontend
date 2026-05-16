@@ -2,7 +2,7 @@ export const companyInfo = {
   name: "Rostel CyberSense",
   tagline: "Human Security Training Platform",
   company: "Rostel High-Tech",
-  currentOrg: "Safi Congo SARL",
+  currentOrg: "Safi Sénégal SARL",
 };
 
 export type Employee = {
@@ -54,7 +54,7 @@ export const employees: Employee[] = [
   {
     id: "1",
     name: "Aminata Diallo",
-    email: "a.diallo@saficongo.com",
+    email: "a.diallo@safisenegal.com",
     department: "Comptabilité",
     role: "Comptable senior",
     riskScore: 25,
@@ -67,7 +67,7 @@ export const employees: Employee[] = [
   {
     id: "2",
     name: "Moussa Ndiaye",
-    email: "m.ndiaye@saficongo.com",
+    email: "m.ndiaye@safisenegal.com",
     department: "Commercial",
     role: "Directeur commercial",
     riskScore: 72,
@@ -80,7 +80,7 @@ export const employees: Employee[] = [
   {
     id: "3",
     name: "Fatou Sow",
-    email: "f.sow@saficongo.com",
+    email: "f.sow@safisenegal.com",
     department: "RH",
     role: "Responsable RH",
     riskScore: 45,
@@ -93,7 +93,7 @@ export const employees: Employee[] = [
   {
     id: "4",
     name: "Ibrahima Fall",
-    email: "i.fall@saficongo.com",
+    email: "i.fall@safisenegal.com",
     department: "IT",
     role: "Administrateur réseau",
     riskScore: 15,
@@ -106,7 +106,7 @@ export const employees: Employee[] = [
   {
     id: "5",
     name: "Coumba Sy",
-    email: "c.sy@saficongo.com",
+    email: "c.sy@safisenegal.com",
     department: "Direction",
     role: "Assistante de direction",
     riskScore: 58,
@@ -119,7 +119,7 @@ export const employees: Employee[] = [
   {
     id: "6",
     name: "Ousmane Bâ",
-    email: "o.ba@saficongo.com",
+    email: "o.ba@safisenegal.com",
     department: "Commercial",
     role: "Chargé de clientèle",
     riskScore: 82,
@@ -132,7 +132,7 @@ export const employees: Employee[] = [
   {
     id: "7",
     name: "Mariama Traoré",
-    email: "m.traore@saficongo.com",
+    email: "m.traore@safisenegal.com",
     department: "Marketing",
     role: "Community Manager",
     riskScore: 38,
@@ -145,7 +145,7 @@ export const employees: Employee[] = [
   {
     id: "8",
     name: "Abdoulaye Diop",
-    email: "a.diop@saficongo.com",
+    email: "a.diop@safisenegal.com",
     department: "Logistique",
     role: "Responsable logistique",
     riskScore: 65,
@@ -158,7 +158,7 @@ export const employees: Employee[] = [
   {
     id: "9",
     name: "Aïssatou Camara",
-    email: "a.camara@saficongo.com",
+    email: "a.camara@safisenegal.com",
     department: "Comptabilité",
     role: "Aide-comptable",
     riskScore: 30,
@@ -171,7 +171,7 @@ export const employees: Employee[] = [
   {
     id: "10",
     name: "Pape Gueye",
-    email: "p.gueye@saficongo.com",
+    email: "p.gueye@safisenegal.com",
     department: "IT",
     role: "Développeur",
     riskScore: 20,
@@ -315,9 +315,9 @@ export const departmentStats = [
 export const currentUser = {
   id: "3",
   name: "Fatou Sow",
-  email: "f.sow@saficongo.com",
+  email: "f.sow@safisenegal.com",
   role: "admin",
-  org: "Safi Congo SARL",
+  org: "Safi Sénégal SARL",
 };
 
 // ===== SUPER ADMIN (Rostel High-Tech) DATA =====
@@ -344,9 +344,9 @@ export type Organization = {
 export const organizations: Organization[] = [
   {
     id: "org-1",
-    name: "Safi Congo SARL",
-    country: "Congo",
-    city: "Brazzaville",
+    name: "Safi Sénégal SARL",
+    country: "Sénégal",
+    city: "Dakar",
     sector: "Services financiers",
     plan: "Business",
     employees: 10,
@@ -357,7 +357,7 @@ export const organizations: Organization[] = [
     joinedDate: "2026-01-15",
     status: "active",
     contactName: "Fatou Sow",
-    contactEmail: "f.sow@saficongo.com",
+    contactEmail: "f.sow@safisenegal.com",
     mrr: 450000,
   },
   {
@@ -515,7 +515,7 @@ export const planDistribution = [
 ];
 
 export const supportTickets = [
-  { id: "T-001", org: "Safi Congo SARL", subject: "Problème d'export PDF", priority: "medium", status: "open", date: "2026-05-12" },
+  { id: "T-001", org: "Safi Sénégal SARL", subject: "Problème d'export PDF", priority: "medium", status: "open", date: "2026-05-12" },
   { id: "T-002", org: "Banque Atlantique Sénégal", subject: "Configuration SSO Microsoft 365", priority: "high", status: "in-progress", date: "2026-05-11" },
   { id: "T-003", org: "Orange Côte d'Ivoire", subject: "Ajout de 50 employés supplémentaires", priority: "low", status: "resolved", date: "2026-05-10" },
   { id: "T-004", org: "Startup Academy Abidjan", subject: "Passage de Trial à Starter", priority: "medium", status: "open", date: "2026-05-09" },

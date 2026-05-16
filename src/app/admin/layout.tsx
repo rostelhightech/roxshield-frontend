@@ -152,7 +152,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
               className="flex items-center gap-2 rounded-lg px-2 py-1.5 text-xs text-sidebar-foreground/40 transition-colors hover:bg-sidebar-accent hover:text-sidebar-foreground/70"
             >
               <Building2 className="h-3.5 w-3.5" />
-              Vue client (Safi Congo)
+              Vue client (Safi Sénégal)
             </Link>
           </div>
         )}

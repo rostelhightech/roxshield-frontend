@@ -57,7 +57,7 @@ const team = [
     name: "Herdy Rostel Youlou",
     role: "CEO & Fondateur",
     initials: "HY",
-    bio: "Ingénieur en cybersécurité, passionné par la protection des entreprises africaines.",
+    bio: "Fondateur de Rostel High-Tech, passionné par la tech et la protection des entreprises africaines.",
     gradient: "from-rht-orange to-rht-orange-light",
   },
   {
@@ -84,10 +84,10 @@ const team = [
 ];
 
 const milestones = [
-  { year: "2024", text: "Fondation de Rostel High-Tech à Brazzaville" },
+  { year: "2021", text: "Fondation de Rostel High-Tech à Dakar, Sénégal" },
+  { year: "2024", text: "Enregistrement officiel et structuration de l'entreprise" },
   { year: "2025", text: "Lancement de la R&D sur CyberSense" },
-  { year: "2026", text: "Lancement commercial — premiers clients en Afrique de l'Ouest et Centrale" },
-  { year: "2027", text: "Objectif : 100 organisations protégées sur le continent" },
+  { year: "2026", text: "Lancement commercial — premiers clients en Afrique francophone" },
 ];
 
 export default function AboutPage() {
@@ -247,7 +247,7 @@ export default function AboutPage() {
               </div>
               <div className="flex items-center gap-2 text-sm text-muted-foreground">
                 <MapPin className="h-4 w-4" />
-                Brazzaville, République du Congo
+                Dakar, Sénégal
               </div>
             </div>
             <div className="mt-6">

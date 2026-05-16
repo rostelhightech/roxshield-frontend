@@ -34,8 +34,8 @@ const notifSettings = [
 ];
 
 const admins = [
-  { name: "Fatou Sow", email: "f.sow@saficongo.com", role: "Admin principal" },
-  { name: "Ibrahima Fall", email: "i.fall@saficongo.com", role: "Admin IT" },
+  { name: "Fatou Sow", email: "f.sow@safisenegal.com", role: "Admin principal" },
+  { name: "Ibrahima Fall", email: "i.fall@safisenegal.com", role: "Admin IT" },
 ];
 
 export default function SettingsPage() {
@@ -83,11 +83,11 @@ export default function SettingsPage() {
                     </div>
                     <div className="space-y-2">
                       <Label>Pays</Label>
-                      <Input defaultValue="République du Congo" />
+                      <Input defaultValue="Sénégal" />
                     </div>
                     <div className="space-y-2">
                       <Label>Ville</Label>
-                      <Input defaultValue="Brazzaville" />
+                      <Input defaultValue="Dakar" />
                     </div>
                     <div className="space-y-2">
                       <Label>Nombre d&apos;employés</Label>
@@ -95,7 +95,7 @@ export default function SettingsPage() {
                     </div>
                     <div className="space-y-2">
                       <Label>Email de contact</Label>
-                      <Input defaultValue="contact@saficongo.com" type="email" />
+                      <Input defaultValue="contact@safisenegal.com" type="email" />
                     </div>
                   </div>
                   <div className="flex justify-end">
@@ -227,7 +227,7 @@ export default function SettingsPage() {
                 </CardHeader>
                 <CardContent>
                   <div className="space-y-2">
-                    {["f.sow@saficongo.com", "direction@saficongo.com"].map((email) => (
+                    {["f.sow@safisenegal.com", "direction@safisenegal.com"].map((email) => (
                       <div key={email} className="flex items-center justify-between rounded-lg border px-3 py-2">
                         <span className="text-sm">{email}</span>
                         <button className="text-muted-foreground hover:text-cyber-red">
@@ -279,7 +279,7 @@ export default function SettingsPage() {
                   <div className="flex items-center justify-between rounded-xl border p-4">
                     <div>
                       <p className="text-sm font-medium">Sessions actives</p>
-                      <p className="text-xs text-muted-foreground">2 sessions actives — Dernière connexion : Brazzaville, Congo</p>
+                      <p className="text-xs text-muted-foreground">2 sessions actives — Dernière connexion : Dakar, Sénégal</p>
                     </div>
                     <Button variant="outline" size="sm">Voir</Button>
                   </div>

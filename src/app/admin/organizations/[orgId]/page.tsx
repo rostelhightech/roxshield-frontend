@@ -232,7 +232,7 @@ export default function OrganizationDetailPage({
                   {[
                     { icon: Mail, label: "Contact", value: org.contactName },
                     { icon: Mail, label: "Email", value: org.contactEmail },
-                    { icon: Phone, label: "Téléphone", value: "+242 06 XXX XXXX" },
+                    { icon: Phone, label: "Téléphone", value: "+221 7X XXX XX XX" },
                     { icon: Calendar, label: "Inscription", value: org.joinedDate },
                     { icon: Globe, label: "Localisation", value: `${org.city}, ${org.country}` },
                     { icon: Shield, label: "Secteur", value: org.sector },
