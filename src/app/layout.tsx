@@ -10,9 +10,42 @@ const montserrat = Montserrat({
 });
 
 export const metadata: Metadata = {
-  title: "Rostel CyberSense — Human Security Training Platform",
+  title: {
+    default: "Rostel CyberSense — Human Security Training Platform",
+    template: "%s | Rostel CyberSense",
+  },
   description:
-    "Plateforme SaaS de sensibilisation, d'entraînement et de simulation en cybersécurité humaine. Par Rostel High-Tech.",
+    "Plateforme SaaS de sensibilisation, d'entraînement et de simulation en cybersécurité humaine pour les entreprises africaines. Par Rostel High-Tech.",
+  keywords: [
+    "cybersécurité",
+    "phishing",
+    "formation",
+    "simulation",
+    "sécurité humaine",
+    "Afrique",
+    "SaaS",
+    "Rostel High-Tech",
+  ],
+  authors: [{ name: "Rostel High-Tech", url: "https://www.rostelhightech.com" }],
+  creator: "Rostel High-Tech",
+  openGraph: {
+    type: "website",
+    locale: "fr_FR",
+    siteName: "Rostel CyberSense",
+    title: "Rostel CyberSense — Human Security Training Platform",
+    description:
+      "Formez vos équipes, simulez des attaques de phishing et suivez le score de risque humain de votre organisation.",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Rostel CyberSense",
+    description:
+      "Plateforme de cybersécurité humaine pour les entreprises africaines.",
+  },
+  robots: {
+    index: true,
+    follow: true,
+  },
 };
 
 export default function RootLayout({
