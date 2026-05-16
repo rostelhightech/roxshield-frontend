@@ -23,6 +23,7 @@ import {
 import { currentUser } from "@/lib/mock-data";
 import { FadeIn, StaggerContainer, StaggerItem } from "@/components/motion";
 import { motion } from "framer-motion";
+import { toast } from "sonner";
 
 export default function ProfilePage() {
   const [saved, setSaved] = useState(false);
@@ -32,6 +33,7 @@ export default function ProfilePage() {
 
   const handleSave = () => {
     setSaved(true);
+    toast.success("Profil mis à jour avec succès");
     setTimeout(() => setSaved(false), 2000);
   };
 

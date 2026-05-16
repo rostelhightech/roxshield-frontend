@@ -24,6 +24,7 @@ import {
 import { currentUser, employees } from "@/lib/mock-data";
 import { FadeIn } from "@/components/motion";
 import { motion } from "framer-motion";
+import { toast } from "sonner";
 
 const notifSettings = [
   { id: "email-report", label: "Rapport mensuel par email", description: "Recevez un résumé chaque fin de mois", enabled: true },
@@ -45,6 +46,7 @@ export default function SettingsPage() {
 
   const handleSave = () => {
     setSaved(true);
+    toast.success("Paramètres enregistrés");
     setTimeout(() => setSaved(false), 2000);
   };
 

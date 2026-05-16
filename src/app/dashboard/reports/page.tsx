@@ -37,6 +37,7 @@ import {
 import { employees, monthlyStats, departmentStats, simulationResults, trainingModules } from "@/lib/mock-data";
 import { FadeIn, StaggerContainer, StaggerItem, GlowCard } from "@/components/motion";
 import { motion } from "framer-motion";
+import { toast } from "sonner";
 
 const riskEvolution = monthlyStats.map((m) => ({
   month: m.month,
@@ -113,6 +114,7 @@ export default function ReportsPage() {
     a.download = `cybersense-rapport-employes-${new Date().toISOString().slice(0, 10)}.csv`;
     a.click();
     URL.revokeObjectURL(url);
+    toast.success("Export CSV employés téléchargé");
   };
 
   const handleDeptCSV = () => {
@@ -126,6 +128,7 @@ export default function ReportsPage() {
     a.download = `cybersense-rapport-departements-${new Date().toISOString().slice(0, 10)}.csv`;
     a.click();
     URL.revokeObjectURL(url);
+    toast.success("Export CSV départements téléchargé");
   };
 
   return (

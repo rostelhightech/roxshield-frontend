@@ -10,6 +10,7 @@ import {
   LayoutDashboard,
   GraduationCap,
   BarChart3,
+  Award,
   LogOut,
   Shield,
   ChevronLeft,
@@ -27,6 +28,7 @@ const navItems = [
   { label: "Mon espace", href: "/employee", icon: LayoutDashboard },
   { label: "Formations", href: "/employee/training", icon: GraduationCap },
   { label: "Mes résultats", href: "/employee/results", icon: BarChart3 },
+  { label: "Badges", href: "/employee/badges", icon: Award },
 ];
 
 export default function EmployeeLayout({ children }: { children: React.ReactNode }) {
