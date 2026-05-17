@@ -16,7 +16,9 @@ import {
   Trophy,
 } from "lucide-react";
 import { FadeIn, StaggerContainer, StaggerItem } from "@/components/motion";
+import { Confetti } from "@/components/confetti";
 import { motion } from "framer-motion";
+import { useState } from "react";
 
 const badges = [
   {
@@ -96,8 +98,11 @@ const badges = [
 const earnedCount = badges.filter((b) => b.earned).length;
 
 export default function BadgesPage() {
+  const [showConfetti, setShowConfetti] = useState(false);
+
   return (
     <div>
+      <Confetti active={showConfetti} onComplete={() => setShowConfetti(false)} />
       <Header title="Badges & Récompenses" />
       <div className="space-y-6 p-6">
         <FadeIn>
@@ -135,7 +140,12 @@ export default function BadgesPage() {
             .filter((b) => b.earned)
             .map((badge) => (
               <StaggerItem key={badge.id}>
-                <motion.div whileHover={{ y: -4, scale: 1.02 }} transition={{ duration: 0.2 }}>
+                <motion.div
+                  whileHover={{ y: -4, scale: 1.02 }}
+                  transition={{ duration: 0.2 }}
+                  onClick={() => setShowConfetti(true)}
+                  className="cursor-pointer"
+                >
                   <Card className="h-full border-rht-violet/20 transition-all hover:shadow-md">
                     <CardContent className="flex flex-col items-center p-6 text-center">
                       <div className={`flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-br ${badge.color} shadow-lg`}>

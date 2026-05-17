@@ -7,6 +7,7 @@ import { KeyboardShortcuts } from "@/components/keyboard-shortcuts";
 import { BackToTop } from "@/components/back-to-top";
 import { ScrollProgress } from "@/components/scroll-progress";
 import { SkipToContent } from "@/components/skip-to-content";
+import { NetworkStatus } from "@/components/network-status";
 
 export function ThemeProvider({ children }: { children: React.ReactNode }) {
   return (
@@ -18,6 +19,7 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
         <KeyboardShortcuts />
         <BackToTop />
         <ScrollProgress />
+        <NetworkStatus />
       </I18nProvider>
     </NextThemesProvider>
   );
