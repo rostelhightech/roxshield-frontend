@@ -92,7 +92,7 @@ export async function POST(request: Request) {
             <p style="color: #888;">L'equipe RoxShield<br/>Par Rostel High-Tech</p>
             <hr style="border: none; border-top: 1px solid #333; margin: 16px 0;" />
             <p style="color: #666; font-size: 11px; text-align: center;">
-              <a href="https://roxshield.vercel.app" style="color: #c084fc;">roxshield.vercel.app</a>
+              <a href="https://roxshield.rostelhightech.com" style="color: #c084fc;">roxshield.rostelhightech.com</a>
               &nbsp;&bull;&nbsp;
               <a href="https://www.rostelhightech.com" style="color: #c084fc;">rostelhightech.com</a>
             </p>

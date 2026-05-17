@@ -39,7 +39,7 @@ export const metadata: Metadata = {
   ],
   authors: [{ name: "Rostel High-Tech", url: "https://www.rostelhightech.com" }],
   creator: "Rostel High-Tech",
-  metadataBase: new URL("https://roxshield.vercel.app"),
+  metadataBase: new URL("https://roxshield.rostelhightech.com"),
   openGraph: {
     type: "website",
     locale: "fr_FR",

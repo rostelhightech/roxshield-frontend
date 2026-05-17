@@ -5,4 +5,4 @@ Disallow: /employee
 Disallow: /admin
 Disallow: /login
 
-Sitemap: https://roxshield.vercel.app/sitemap.xml
+Sitemap: https://roxshield.rostelhightech.com/sitemap.xml
