@@ -39,6 +39,7 @@ export const metadata: Metadata = {
   ],
   authors: [{ name: "Rostel High-Tech", url: "https://www.rostelhightech.com" }],
   creator: "Rostel High-Tech",
+  metadataBase: new URL("https://rostel-cybersense.vercel.app"),
   openGraph: {
     type: "website",
     locale: "fr_FR",
@@ -46,12 +47,21 @@ export const metadata: Metadata = {
     title: "Rostel CyberSense — Human Security Training Platform",
     description:
       "Formez vos équipes, simulez des attaques de phishing et suivez le score de risque humain de votre organisation.",
+    images: [
+      {
+        url: "/og-image.svg",
+        width: 1200,
+        height: 630,
+        alt: "Rostel CyberSense — Human Security Training Platform",
+      },
+    ],
   },
   twitter: {
     card: "summary_large_image",
     title: "Rostel CyberSense",
     description:
       "Plateforme de cybersécurité humaine pour les entreprises africaines.",
+    images: ["/og-image.svg"],
   },
   robots: {
     index: true,

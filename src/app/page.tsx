@@ -112,7 +112,7 @@ export default function LandingPage() {
             <Link href="/login">
               <Button variant="ghost" size="sm">{t("landing.nav.login")}</Button>
             </Link>
-            <Link href="/login">
+            <Link href="/demo">
               <Button size="sm" className="rounded-full bg-gradient-to-r from-rht-orange to-rht-orange-light text-white glow-orange-sm hover:opacity-90">
                 {t("landing.nav.freeDemo")}
                 <ArrowRight className="ml-1.5 h-3.5 w-3.5" />
@@ -428,14 +428,19 @@ export default function LandingPage() {
             <p className="mt-4 text-muted-foreground">
               {t("landing.cta.subtitle")}
             </p>
-            <div className="mt-8">
-              <Link href="/login">
+            <div className="mt-8 flex flex-col items-center gap-3 sm:flex-row sm:justify-center">
+              <Link href="/demo">
                 <motion.div whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.98 }} className="inline-block">
                   <Button size="lg" className="h-12 rounded-full bg-gradient-to-r from-rht-orange to-rht-orange-light px-8 text-base font-semibold text-white glow-orange hover:opacity-90">
-                    {t("landing.cta.button")}
+                    {locale === "en" ? "Book a demo" : "Réserver une démo"}
                     <ArrowRight className="ml-2 h-4 w-4" />
                   </Button>
                 </motion.div>
+              </Link>
+              <Link href="/login">
+                <Button size="lg" variant="outline" className="h-12 rounded-full px-8 text-base">
+                  {t("landing.cta.button")}
+                </Button>
               </Link>
             </div>
           </FadeIn>
@@ -452,6 +457,12 @@ export default function LandingPage() {
           <div className="flex items-center gap-4">
             <Link href="/about" className="text-xs text-muted-foreground hover:text-foreground transition-colors">
               {t("nav.about")}
+            </Link>
+            <Link href="/demo" className="text-xs text-muted-foreground hover:text-foreground transition-colors">
+              {locale === "en" ? "Demo" : "Démo"}
+            </Link>
+            <Link href="/contact" className="text-xs text-muted-foreground hover:text-foreground transition-colors">
+              Contact
             </Link>
             <p className="text-xs text-muted-foreground">
               &copy; 2026 Rostel High-Tech. {t("landing.footer.rights")}
@@ -470,7 +481,7 @@ export default function LandingPage() {
 
       {/* Devis Dialog */}
       <Dialog open={devisOpen} onOpenChange={setDevisOpen}>
-        <DialogContent className="sm:max-w-md">
+        <DialogContent className="sm:max-w-lg">
           <DialogHeader>
             <DialogTitle>{t("landing.devis.title")} — {selectedPlan}</DialogTitle>
             <DialogDescription>
@@ -490,26 +501,52 @@ export default function LandingPage() {
               onSubmit={(e) => { e.preventDefault(); setDevisSent(true); }}
               className="space-y-4"
             >
-              <div className="space-y-2">
-                <Label htmlFor="devis-name">{t("landing.devis.name")}</Label>
-                <Input id="devis-name" placeholder="Fatou Sow" required />
+              <div className="grid gap-4 sm:grid-cols-2">
+                <div className="space-y-2">
+                  <Label htmlFor="devis-name">{t("landing.devis.name")}</Label>
+                  <Input id="devis-name" placeholder="Fatou Sow" required />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="devis-email">{t("landing.devis.email")}</Label>
+                  <Input id="devis-email" type="email" placeholder="fatou@entreprise.com" required />
+                </div>
+              </div>
+              <div className="grid gap-4 sm:grid-cols-2">
+                <div className="space-y-2">
+                  <Label htmlFor="devis-org">{t("landing.devis.org")}</Label>
+                  <Input id="devis-org" placeholder="Nom de votre entreprise" required />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="devis-phone">{locale === "en" ? "Phone (WhatsApp)" : "Téléphone (WhatsApp)"}</Label>
+                  <Input id="devis-phone" type="tel" placeholder="+221 77 000 00 00" />
+                </div>
+              </div>
+              <div className="grid gap-4 sm:grid-cols-2">
+                <div className="space-y-2">
+                  <Label htmlFor="devis-employees">{t("landing.devis.employees")}</Label>
+                  <Input id="devis-employees" type="number" placeholder="50" required />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="devis-country">{locale === "en" ? "Country" : "Pays"}</Label>
+                  <Input id="devis-country" placeholder={locale === "en" ? "Senegal" : "Sénégal"} />
+                </div>
               </div>
               <div className="space-y-2">
-                <Label htmlFor="devis-email">{t("landing.devis.email")}</Label>
-                <Input id="devis-email" type="email" placeholder="fatou@entreprise.com" required />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="devis-org">{t("landing.devis.org")}</Label>
-                <Input id="devis-org" placeholder="Nom de votre entreprise" required />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="devis-employees">{t("landing.devis.employees")}</Label>
-                <Input id="devis-employees" type="number" placeholder="50" required />
+                <Label htmlFor="devis-message">{locale === "en" ? "Message (optional)" : "Message (optionnel)"}</Label>
+                <textarea
+                  id="devis-message"
+                  rows={3}
+                  className="w-full rounded-lg border border-border bg-background px-3 py-2 text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring"
+                  placeholder={locale === "en" ? "Tell us about your needs..." : "Décrivez-nous vos besoins..."}
+                />
               </div>
               <Button type="submit" className="w-full bg-gradient-to-r from-rht-orange to-rht-orange-light text-white hover:opacity-90">
                 <Send className="mr-2 h-4 w-4" />
                 {t("landing.devis.submit")}
               </Button>
+              <p className="text-center text-[11px] text-muted-foreground">
+                {locale === "en" ? "We'll get back to you within 24 hours" : "Nous vous recontactons sous 24 heures"}
+              </p>
             </form>
           )}
         </DialogContent>
