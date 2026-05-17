@@ -3,6 +3,7 @@
 import { ThemeProvider as NextThemesProvider } from "next-themes";
 import { I18nProvider } from "@/lib/i18n";
 import { CommandPalette } from "@/components/command-palette";
+import { KeyboardShortcuts } from "@/components/keyboard-shortcuts";
 
 export function ThemeProvider({ children }: { children: React.ReactNode }) {
   return (
@@ -10,6 +11,7 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
       <I18nProvider>
         {children}
         <CommandPalette />
+        <KeyboardShortcuts />
       </I18nProvider>
     </NextThemesProvider>
   );
