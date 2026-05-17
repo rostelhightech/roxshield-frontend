@@ -125,19 +125,18 @@ export default function LandingPage() {
       </header>
 
       {/* Hero */}
-      <section className="relative overflow-hidden border-b bg-[#0a0a0f]">
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_30%_20%,rgba(156,30,153,0.1),transparent_55%),radial-gradient(ellipse_at_70%_80%,rgba(250,153,14,0.06),transparent_50%)]" />
-        <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.04)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.04)_1px,transparent_1px)] bg-[size:80px_80px]" />
-        <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.02)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.02)_1px,transparent_1px)] bg-[size:20px_20px]" />
+      <section className="relative overflow-hidden border-b bg-white dark:bg-[#0a0a0f]">
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_30%_20%,rgba(156,30,153,0.06),transparent_55%),radial-gradient(ellipse_at_70%_80%,rgba(250,153,14,0.04),transparent_50%)] dark:bg-[radial-gradient(ellipse_at_30%_20%,rgba(156,30,153,0.1),transparent_55%),radial-gradient(ellipse_at_70%_80%,rgba(250,153,14,0.06),transparent_50%)]" />
+        <div className="absolute inset-0 bg-[linear-gradient(rgba(0,0,0,0.06)_1px,transparent_1px),linear-gradient(90deg,rgba(0,0,0,0.06)_1px,transparent_1px)] dark:bg-[linear-gradient(rgba(255,255,255,0.04)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.04)_1px,transparent_1px)] bg-[size:80px_80px]" />
+        <div className="absolute inset-0 bg-[linear-gradient(rgba(0,0,0,0.03)_1px,transparent_1px),linear-gradient(90deg,rgba(0,0,0,0.03)_1px,transparent_1px)] dark:bg-[linear-gradient(rgba(255,255,255,0.02)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.02)_1px,transparent_1px)] bg-[size:20px_20px]" />
         <div className="relative mx-auto max-w-6xl px-4 py-24 text-center lg:py-32">
           <FadeIn delay={0}>
-            <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-rht-violet/20 bg-rht-violet/5 px-4 py-1.5">
-              <div className="h-1.5 w-1.5 rounded-full bg-cyber-green animate-pulse" />
-              <span className="text-xs font-medium text-white/60">by Rostel High-Tech</span>
-            </div>
+            <Badge className="border-border bg-rht-violet/10 text-rht-violet-light dark:border-rht-violet/20">
+              by Rostel High-Tech
+            </Badge>
           </FadeIn>
           <FadeIn delay={0.1}>
-            <h1 className="mx-auto max-w-3xl text-4xl font-bold tracking-tight text-white lg:text-6xl">
+            <h1 className="mx-auto max-w-3xl text-4xl font-bold tracking-tight lg:text-6xl">
               {t("landing.hero.title1")}{" "}
               <span className="bg-gradient-to-r from-rht-violet-light to-rht-orange bg-clip-text text-transparent">
                 {t("landing.hero.title2")}
@@ -145,7 +144,7 @@ export default function LandingPage() {
             </h1>
           </FadeIn>
           <FadeIn delay={0.2}>
-            <p className="mx-auto mt-6 max-w-2xl text-lg text-white/50">
+            <p className="mx-auto mt-6 max-w-2xl text-lg text-muted-foreground">
               {t("landing.hero.subtitle")}
             </p>
           </FadeIn>
@@ -161,7 +160,7 @@ export default function LandingPage() {
               </Link>
               <Link href="/dashboard">
                 <motion.div whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.98 }}>
-                  <Button variant="outline" size="lg" className="h-12 rounded-full border-white/10 px-8 text-base text-white/70 transition-all hover:border-white/20 hover:bg-white/5 hover:text-white">
+                  <Button variant="outline" size="lg" className="h-12 rounded-full px-8 text-base transition-all hover:border-rht-violet/30 hover:shadow-[0_0_15px_rgba(156,30,153,0.1)]">
                     {t("landing.hero.ctaSecondary")}
                   </Button>
                 </motion.div>
@@ -169,30 +168,30 @@ export default function LandingPage() {
             </div>
           </FadeIn>
           <FadeIn delay={0.4}>
-            <div className="mt-12 flex flex-wrap items-center justify-center gap-8 text-sm text-white/30">
-              <span className="flex items-center gap-2"><Building2 className="h-4 w-4 text-rht-violet-light/50" />Entreprises & Écoles</span>
-              <span className="flex items-center gap-2"><Shield className="h-4 w-4 text-cyber-green/50" />Cybersécurité humaine</span>
-              <span className="flex items-center gap-2"><Globe className="h-4 w-4 text-rht-orange/50" />Contexte africain</span>
+            <div className="mt-12 flex flex-wrap items-center justify-center gap-8 text-sm text-muted-foreground">
+              <span className="flex items-center gap-2"><Building2 className="h-4 w-4" />Entreprises & Écoles</span>
+              <span className="flex items-center gap-2"><Shield className="h-4 w-4" />Cybersécurité humaine</span>
+              <span className="flex items-center gap-2"><Globe className="h-4 w-4" />Contexte africain</span>
             </div>
           </FadeIn>
           <FadeIn delay={0.5}>
-            <div className="mt-16 rounded-2xl border border-white/5 bg-white/[0.02] backdrop-blur-sm p-6">
+            <div className="mt-16 rounded-2xl border border-border bg-card/50 backdrop-blur-sm p-6">
               <div className="grid grid-cols-2 gap-6 sm:grid-cols-4">
                 <div className="text-center">
                   <p className="text-2xl font-bold text-rht-violet-light">99.9%</p>
-                  <p className="mt-1 text-[11px] text-white/30">{locale === "en" ? "Uptime SLA" : "Disponibilité SLA"}</p>
+                  <p className="mt-1 text-[11px] text-muted-foreground">{locale === "en" ? "Uptime SLA" : "Disponibilité SLA"}</p>
                 </div>
                 <div className="text-center">
                   <p className="text-2xl font-bold text-cyber-green">AES-256</p>
-                  <p className="mt-1 text-[11px] text-white/30">{locale === "en" ? "Data encryption" : "Chiffrement des données"}</p>
+                  <p className="mt-1 text-[11px] text-muted-foreground">{locale === "en" ? "Data encryption" : "Chiffrement des données"}</p>
                 </div>
                 <div className="text-center">
                   <p className="text-2xl font-bold text-rht-orange">SOC 2</p>
-                  <p className="mt-1 text-[11px] text-white/30">{locale === "en" ? "Compliant infra" : "Infrastructure conforme"}</p>
+                  <p className="mt-1 text-[11px] text-muted-foreground">{locale === "en" ? "Compliant infra" : "Infrastructure conforme"}</p>
                 </div>
                 <div className="text-center">
-                  <p className="text-2xl font-bold text-white/80">RGPD</p>
-                  <p className="mt-1 text-[11px] text-white/30">{locale === "en" ? "Privacy compliant" : "Conforme RGPD"}</p>
+                  <p className="text-2xl font-bold text-foreground">RGPD</p>
+                  <p className="mt-1 text-[11px] text-muted-foreground">{locale === "en" ? "Privacy compliant" : "Conforme RGPD"}</p>
                 </div>
               </div>
             </div>
