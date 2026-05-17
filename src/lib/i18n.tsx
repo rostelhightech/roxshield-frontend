@@ -135,6 +135,16 @@ const dictionaries = {
     "badges.inProgress": "En cours de progression",
     "badges.progress": "Progression",
 
+    // Employee space extra
+    "employee.phishingDetected": "Phishing détectés",
+    "employee.quizAvgScore": "Score quiz moyen",
+    "employee.progression": "Progression globale",
+    "employee.certificate": "Certificat de sensibilisation",
+    "employee.certificateDesc": "Complétez tous les modules pour obtenir votre certificat Rostel CyberSense",
+    "employee.modulesRemaining": "modules restants",
+    "employee.streakMessage": "jours d'affilée",
+    "employee.riskDecreasing": "Votre score de risque baisse — continuez comme ça !",
+
     // Leaderboard
     "leaderboard.title": "Classement",
     "leaderboard.yourPosition": "Votre position",
@@ -288,6 +298,16 @@ const dictionaries = {
     "badges.unlocked": "Unlocked badges",
     "badges.inProgress": "In progress",
     "badges.progress": "Progress",
+
+    // Employee space extra
+    "employee.phishingDetected": "Phishing detected",
+    "employee.quizAvgScore": "Quiz avg. score",
+    "employee.progression": "Overall progress",
+    "employee.certificate": "Awareness certificate",
+    "employee.certificateDesc": "Complete all modules to earn your Rostel CyberSense certificate",
+    "employee.modulesRemaining": "modules remaining",
+    "employee.streakMessage": "days in a row",
+    "employee.riskDecreasing": "Your risk score is going down — keep it up!",
 
     // Leaderboard
     "leaderboard.title": "Leaderboard",

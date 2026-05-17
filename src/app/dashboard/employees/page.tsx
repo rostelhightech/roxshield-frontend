@@ -37,15 +37,16 @@ import { employees } from "@/lib/mock-data";
 import type { Employee } from "@/lib/mock-data";
 import { FadeIn, StaggerContainer, StaggerItem } from "@/components/motion";
 import { motion, AnimatePresence } from "framer-motion";
+import { useTranslation } from "@/lib/i18n";
 
-function statusBadge(status: string) {
+function StatusBadge({ status, t }: { status: string; t: (key: any) => string }) {
   switch (status) {
     case "safe":
-      return <Badge className="border-0 bg-cyber-green/10 text-cyber-green hover:bg-cyber-green/20">Sûr</Badge>;
+      return <Badge className="border-0 bg-cyber-green/10 text-cyber-green hover:bg-cyber-green/20">{t("employees.safe")}</Badge>;
     case "moderate":
-      return <Badge className="border-0 bg-rht-orange/10 text-rht-orange hover:bg-rht-orange/20">Modéré</Badge>;
+      return <Badge className="border-0 bg-rht-orange/10 text-rht-orange hover:bg-rht-orange/20">{t("employees.moderate")}</Badge>;
     case "at-risk":
-      return <Badge className="border-0 bg-cyber-red/10 text-cyber-red hover:bg-cyber-red/20">À risque</Badge>;
+      return <Badge className="border-0 bg-cyber-red/10 text-cyber-red hover:bg-cyber-red/20">{t("employees.atRisk")}</Badge>;
   }
 }
 
@@ -61,6 +62,7 @@ const statuses = [
 ];
 
 export default function EmployeesPage() {
+  const { t } = useTranslation();
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
   const [deptFilter, setDeptFilter] = useState("all");
@@ -110,14 +112,14 @@ export default function EmployeesPage() {
 
   return (
     <div>
-      <Header title="Employés" />
+      <Header title={t("employees.title")} />
       <div className="space-y-6 p-6">
         <FadeIn>
           <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
             <div className="relative">
               <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
               <Input
-                placeholder="Rechercher un employé..."
+                placeholder={t("employees.search")}
                 className="h-10 w-full pl-9 sm:w-[300px]"
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
@@ -145,11 +147,11 @@ export default function EmployeesPage() {
               </select>
               <Button variant="outline" size="sm" className="h-10">
                 <Download className="mr-2 h-4 w-4" />
-                Exporter
+                {t("common.export")}
               </Button>
               <Button size="sm" className="h-10 bg-gradient-to-r from-rht-violet to-rht-violet-light text-white hover:opacity-90">
                 <UserPlus className="mr-2 h-4 w-4" />
-                Inviter
+                {t("common.add")}
               </Button>
             </div>
           </div>
@@ -193,18 +195,18 @@ export default function EmployeesPage() {
                   <thead>
                     <tr className="border-b text-left text-xs font-medium text-muted-foreground">
                       <th className="cursor-pointer pb-3 pr-4 select-none" onClick={() => handleSort("name")}>
-                        Employé <SortIcon column="name" />
+                        {t("employees.name")} <SortIcon column="name" />
                       </th>
                       <th className="cursor-pointer pb-3 pr-4 select-none" onClick={() => handleSort("department")}>
-                        Département <SortIcon column="department" />
+                        {t("employees.department")} <SortIcon column="department" />
                       </th>
                       <th className="cursor-pointer pb-3 pr-4 select-none" onClick={() => handleSort("riskScore")}>
-                        Score de risque <SortIcon column="riskScore" />
+                        {t("employees.riskScore")} <SortIcon column="riskScore" />
                       </th>
                       <th className="cursor-pointer pb-3 pr-4 select-none" onClick={() => handleSort("trainingsCompleted")}>
-                        Formations <SortIcon column="trainingsCompleted" />
+                        {t("employees.trainings")} <SortIcon column="trainingsCompleted" />
                       </th>
-                      <th className="pb-3 pr-4">Statut</th>
+                      <th className="pb-3 pr-4">{t("employees.status")}</th>
                       <th className="cursor-pointer pb-3 select-none" onClick={() => handleSort("lastActive")}>
                         Dernière activité <SortIcon column="lastActive" />
                       </th>
@@ -255,7 +257,7 @@ export default function EmployeesPage() {
                           <td className="py-3 pr-4 text-sm">
                             {emp.trainingsCompleted}/{emp.totalTrainings}
                           </td>
-                          <td className="py-3 pr-4">{statusBadge(emp.status)}</td>
+                          <td className="py-3 pr-4"><StatusBadge status={emp.status} t={t} /></td>
                           <td className="py-3 text-sm text-muted-foreground">{emp.lastActive}</td>
                         </motion.tr>
                       ))}

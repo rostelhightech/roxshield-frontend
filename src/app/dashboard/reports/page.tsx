@@ -38,6 +38,7 @@ import { employees, monthlyStats, departmentStats, simulationResults, trainingMo
 import { FadeIn, StaggerContainer, StaggerItem, GlowCard } from "@/components/motion";
 import { motion } from "framer-motion";
 import { toast } from "sonner";
+import { useTranslation } from "@/lib/i18n";
 
 const riskEvolution = monthlyStats.map((m) => ({
   month: m.month,
@@ -73,6 +74,7 @@ const reports = [
 ];
 
 export default function ReportsPage() {
+  const { t } = useTranslation();
   const [exporting, setExporting] = useState(false);
   const [exported, setExported] = useState(false);
 
@@ -133,7 +135,7 @@ export default function ReportsPage() {
 
   return (
     <div>
-      <Header title="Rapports & Analytics" />
+      <Header title={t("reports.title")} />
       <div className="space-y-6 p-6">
         <FadeIn>
           <div className="flex items-center justify-between">
@@ -143,7 +145,7 @@ export default function ReportsPage() {
             <div className="flex items-center gap-2">
               <Button variant="outline" onClick={handleCSV}>
                 <Download className="mr-2 h-4 w-4" />
-                Export CSV
+                {t("reports.exportCSV")}
               </Button>
               <motion.div whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.98 }}>
                 <Button
@@ -156,7 +158,7 @@ export default function ReportsPage() {
                   ) : exported ? (
                     <><CheckCircle className="mr-2 h-4 w-4" />Exporté !</>
                   ) : (
-                    <><Download className="mr-2 h-4 w-4" />Exporter PDF</>
+                    <><Download className="mr-2 h-4 w-4" />{t("reports.exportPDF")}</>
                   )}
                 </Button>
               </motion.div>

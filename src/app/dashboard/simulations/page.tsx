@@ -41,6 +41,7 @@ import {
 } from "recharts";
 import { FadeIn, StaggerContainer, StaggerItem, GlowCard } from "@/components/motion";
 import { motion, AnimatePresence } from "framer-motion";
+import { useTranslation } from "@/lib/i18n";
 
 const chartData = simulationResults.map((sim) => ({
   name: sim.campaign.length > 25 ? sim.campaign.slice(0, 25) + "…" : sim.campaign,
@@ -57,6 +58,7 @@ const templateOptions = [
 ];
 
 export default function SimulationsPage() {
+  const { t } = useTranslation();
   const [createOpen, setCreateOpen] = useState(false);
   const [detailSim, setDetailSim] = useState<SimulationResult | null>(null);
   const [selectedTemplate, setSelectedTemplate] = useState<string | null>(null);
@@ -82,7 +84,7 @@ export default function SimulationsPage() {
 
   return (
     <div>
-      <Header title="Simulations de phishing" />
+      <Header title={t("simulations.title")} />
       <div className="space-y-6 p-6">
         <FadeIn>
           <div className="flex items-center justify-between">
@@ -95,7 +97,7 @@ export default function SimulationsPage() {
                 onClick={() => setCreateOpen(true)}
               >
                 <Send className="mr-2 h-4 w-4" />
-                Nouvelle campagne
+                {t("simulations.newCampaign")}
               </Button>
             </motion.div>
           </div>
@@ -103,10 +105,10 @@ export default function SimulationsPage() {
 
         <StaggerContainer className="grid gap-4 sm:grid-cols-4">
           {[
-            { icon: Crosshair, value: simulationResults.length, label: "Campagnes", bg: "bg-rht-violet/10", text: "text-rht-violet" },
-            { icon: Send, value: totalSent, label: "Emails envoyés", bg: "bg-rht-violet-light/10", text: "text-rht-violet-light" },
-            { icon: MousePointerClick, value: Math.round((totalClicked / totalSent) * 100) + "%", label: "Taux de clic", bg: "bg-cyber-red/10", text: "text-cyber-red" },
-            { icon: Flag, value: Math.round((totalReported / totalSent) * 100) + "%", label: "Taux de signalement", bg: "bg-cyber-green/10", text: "text-cyber-green" },
+            { icon: Crosshair, value: simulationResults.length, label: t("simulations.activeCampaigns"), bg: "bg-rht-violet/10", text: "text-rht-violet" },
+            { icon: Send, value: totalSent, label: t("simulations.totalSent"), bg: "bg-rht-violet-light/10", text: "text-rht-violet-light" },
+            { icon: MousePointerClick, value: Math.round((totalClicked / totalSent) * 100) + "%", label: t("simulations.clickRate"), bg: "bg-cyber-red/10", text: "text-cyber-red" },
+            { icon: Flag, value: Math.round((totalReported / totalSent) * 100) + "%", label: t("simulations.reportRate"), bg: "bg-cyber-green/10", text: "text-cyber-green" },
           ].map((s) => (
             <StaggerItem key={s.label}>
               <GlowCard>

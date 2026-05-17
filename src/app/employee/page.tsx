@@ -33,6 +33,7 @@ import {
 import { FadeIn, StaggerContainer, StaggerItem, GlowCard } from "@/components/motion";
 import { motion } from "framer-motion";
 import Link from "next/link";
+import { useTranslation } from "@/lib/i18n";
 
 const progressHistory = [
   { month: "Jan", score: 72 },
@@ -63,11 +64,12 @@ const userProgress = {
 };
 
 export default function EmployeeDashboardPage() {
+  const { t } = useTranslation();
   const completionPct = (userProgress.trainingsCompleted / userProgress.totalTrainings) * 100;
 
   return (
     <div>
-      <Header title="Mon espace" />
+      <Header title={t("nav.mySpace")} />
       <div className="space-y-6 p-6">
         <FadeIn>
           <Card>
@@ -104,10 +106,10 @@ export default function EmployeeDashboardPage() {
 
         <StaggerContainer className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
           {[
-            { icon: Shield, label: "Mon score de risque", value: userProgress.riskScore + "%", bg: "bg-rht-orange/10", text: "text-rht-orange" },
-            { icon: TrendingUp, label: "Classement", value: `#${userProgress.rank}`, suffix: `/${userProgress.totalEmployees}`, bg: "bg-cyber-green/10", text: "text-cyber-green" },
-            { icon: Target, label: "Phishing détectés", value: `${userProgress.simulationsDetected}/${userProgress.simulationsTotal}`, bg: "bg-rht-violet/10", text: "text-rht-violet-light" },
-            { icon: BookOpen, label: "Score quiz moyen", value: userProgress.quizAvgScore + "%", bg: "bg-rht-violet-light/10", text: "text-rht-violet-light" },
+            { icon: Shield, label: t("employee.yourRiskScore"), value: userProgress.riskScore + "%", bg: "bg-rht-orange/10", text: "text-rht-orange" },
+            { icon: TrendingUp, label: t("nav.leaderboard"), value: `#${userProgress.rank}`, suffix: `/${userProgress.totalEmployees}`, bg: "bg-cyber-green/10", text: "text-cyber-green" },
+            { icon: Target, label: t("employee.phishingDetected"), value: `${userProgress.simulationsDetected}/${userProgress.simulationsTotal}`, bg: "bg-rht-violet/10", text: "text-rht-violet-light" },
+            { icon: BookOpen, label: t("employee.quizAvgScore"), value: userProgress.quizAvgScore + "%", bg: "bg-rht-violet-light/10", text: "text-rht-violet-light" },
           ].map((s) => (
             <StaggerItem key={s.label}>
               <GlowCard>
@@ -137,7 +139,7 @@ export default function EmployeeDashboardPage() {
             <Card>
               <CardHeader className="pb-3">
                 <div className="flex items-center justify-between">
-                  <CardTitle className="text-sm font-semibold">Mes formations</CardTitle>
+                  <CardTitle className="text-sm font-semibold">{t("nav.training")}</CardTitle>
                   <Link href="/employee/training">
                     <Button variant="ghost" size="sm" className="text-xs text-cyber-green hover:text-cyber-green">
                       Voir tout <ArrowRight className="ml-1 h-3 w-3" />
@@ -190,7 +192,7 @@ export default function EmployeeDashboardPage() {
             <FadeIn delay={0.1}>
               <Card>
                 <CardHeader className="pb-3">
-                  <CardTitle className="text-sm font-semibold">Mes badges</CardTitle>
+                  <CardTitle className="text-sm font-semibold">{t("nav.badges")}</CardTitle>
                 </CardHeader>
                 <CardContent>
                   <div className="grid grid-cols-2 gap-3">
@@ -248,7 +250,7 @@ export default function EmployeeDashboardPage() {
             <Card>
               <CardHeader className="pb-2">
                 <div className="flex items-center justify-between">
-                  <CardTitle className="text-sm font-semibold">Ma progression</CardTitle>
+                  <CardTitle className="text-sm font-semibold">{t("employee.riskEvolution")}</CardTitle>
                   <div className="flex items-center gap-1 text-xs text-cyber-green">
                     <Flame className="h-3 w-3" />
                     {userProgress.streak} jours d&apos;affilée
@@ -283,7 +285,7 @@ export default function EmployeeDashboardPage() {
                   </ResponsiveContainer>
                 </div>
                 <p className="mt-2 text-center text-xs text-muted-foreground">
-                  Votre score de risque baisse — continuez comme ça !
+                  {t("employee.riskDecreasing")}
                 </p>
               </CardContent>
             </Card>
@@ -292,7 +294,7 @@ export default function EmployeeDashboardPage() {
           <FadeIn delay={0.3}>
             <Card>
               <CardHeader className="pb-3">
-                <CardTitle className="text-sm font-semibold">Activité récente</CardTitle>
+                <CardTitle className="text-sm font-semibold">{t("employee.recentActivity")}</CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="space-y-3">

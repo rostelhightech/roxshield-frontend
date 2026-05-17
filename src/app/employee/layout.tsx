@@ -24,20 +24,22 @@ import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { Badge } from "@/components/ui/badge";
-
-const navItems = [
-  { label: "Mon espace", href: "/employee", icon: LayoutDashboard },
-  { label: "Formations", href: "/employee/training", icon: GraduationCap },
-  { label: "Mes résultats", href: "/employee/results", icon: BarChart3 },
-  { label: "Badges", href: "/employee/badges", icon: Award },
-  { label: "Classement", href: "/employee/leaderboard", icon: Trophy },
-];
+import { useTranslation } from "@/lib/i18n";
 
 export default function EmployeeLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
+  const { t } = useTranslation();
   const [collapsed, setCollapsed] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
   const [showOnboarding, setShowOnboarding] = useState(false);
+
+  const navItems = [
+    { label: t("nav.mySpace"), href: "/employee", icon: LayoutDashboard },
+    { label: t("nav.training"), href: "/employee/training", icon: GraduationCap },
+    { label: t("nav.results"), href: "/employee/results", icon: BarChart3 },
+    { label: t("nav.badges"), href: "/employee/badges", icon: Award },
+    { label: t("nav.leaderboard"), href: "/employee/leaderboard", icon: Trophy },
+  ];
 
   useEffect(() => {
     const key = "cybersense_onboarding_employee";

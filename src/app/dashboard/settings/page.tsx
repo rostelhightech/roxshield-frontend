@@ -25,6 +25,7 @@ import { currentUser, employees } from "@/lib/mock-data";
 import { FadeIn } from "@/components/motion";
 import { motion } from "framer-motion";
 import { toast } from "sonner";
+import { useTranslation } from "@/lib/i18n";
 
 const notifSettings = [
   { id: "email-report", label: "Rapport mensuel par email", description: "Recevez un résumé chaque fin de mois", enabled: true },
@@ -39,6 +40,7 @@ const admins = [
 ];
 
 export default function SettingsPage() {
+  const { t } = useTranslation();
   const [notifications, setNotifications] = useState(
     notifSettings.reduce((acc, n) => ({ ...acc, [n.id]: n.enabled }), {} as Record<string, boolean>)
   );
@@ -52,14 +54,14 @@ export default function SettingsPage() {
 
   return (
     <div>
-      <Header title="Paramètres" />
+      <Header title={t("settings.title")} />
       <div className="space-y-6 p-6">
         <Tabs defaultValue="organization" className="space-y-6">
           <TabsList>
-            <TabsTrigger value="organization">Organisation</TabsTrigger>
-            <TabsTrigger value="notifications">Notifications</TabsTrigger>
-            <TabsTrigger value="security">Sécurité</TabsTrigger>
-            <TabsTrigger value="team">Équipe admin</TabsTrigger>
+            <TabsTrigger value="organization">{t("settings.organization")}</TabsTrigger>
+            <TabsTrigger value="notifications">{t("settings.notifications")}</TabsTrigger>
+            <TabsTrigger value="security">{t("settings.security")}</TabsTrigger>
+            <TabsTrigger value="team">{t("settings.team")}</TabsTrigger>
           </TabsList>
 
           <TabsContent value="organization" className="space-y-6">
@@ -68,7 +70,7 @@ export default function SettingsPage() {
                 <CardHeader>
                   <div className="flex items-center gap-2">
                     <Building2 className="h-4 w-4 text-rht-violet-light" />
-                    <CardTitle className="text-sm font-semibold">Informations de l&apos;organisation</CardTitle>
+                    <CardTitle className="text-sm font-semibold">{t("settings.orgInfo")}</CardTitle>
                   </div>
                 </CardHeader>
                 <CardContent className="space-y-4">

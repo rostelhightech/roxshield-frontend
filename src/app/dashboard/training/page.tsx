@@ -10,6 +10,7 @@ import { trainingModules } from "@/lib/mock-data";
 import Link from "next/link";
 import { FadeIn, StaggerContainer, StaggerItem, GlowCard } from "@/components/motion";
 import { motion } from "framer-motion";
+import { useTranslation } from "@/lib/i18n";
 
 function difficultyColor(d: string) {
   switch (d) {
@@ -21,9 +22,10 @@ function difficultyColor(d: string) {
 }
 
 export default function TrainingPage() {
+  const { t } = useTranslation();
   return (
     <div>
-      <Header title="Modules de formation" />
+      <Header title={t("training.title")} />
       <div className="space-y-6 p-6">
         <StaggerContainer className="grid gap-3 sm:grid-cols-3">
           {[
@@ -76,7 +78,7 @@ export default function TrainingPage() {
                         size="sm"
                         className="w-full transition-all duration-300 group-hover:bg-gradient-to-r group-hover:from-rht-violet group-hover:to-rht-violet-light group-hover:border-transparent group-hover:text-white"
                       >
-                        Commencer
+                        {t("training.start")}
                         <ArrowRight className="ml-2 h-3.5 w-3.5" />
                       </Button>
                     </Link>

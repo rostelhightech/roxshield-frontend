@@ -21,20 +21,22 @@ import { currentUser } from "@/lib/mock-data";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
-
-const navItems = [
-  { label: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
-  { label: "Employés", href: "/dashboard/employees", icon: Users },
-  { label: "Formations", href: "/dashboard/training", icon: GraduationCap },
-  { label: "Simulations", href: "/dashboard/simulations", icon: Crosshair },
-  { label: "Rapports", href: "/dashboard/reports", icon: FileBarChart },
-  { label: "Paramètres", href: "/dashboard/settings", icon: Settings },
-];
+import { useTranslation } from "@/lib/i18n";
 
 export function Sidebar() {
   const pathname = usePathname();
+  const { t } = useTranslation();
   const [collapsed, setCollapsed] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
+
+  const navItems = [
+    { label: t("nav.dashboard"), href: "/dashboard", icon: LayoutDashboard },
+    { label: t("nav.employees"), href: "/dashboard/employees", icon: Users },
+    { label: t("nav.training"), href: "/dashboard/training", icon: GraduationCap },
+    { label: t("nav.simulations"), href: "/dashboard/simulations", icon: Crosshair },
+    { label: t("nav.reports"), href: "/dashboard/reports", icon: FileBarChart },
+    { label: t("nav.settings"), href: "/dashboard/settings", icon: Settings },
+  ];
 
   useEffect(() => {
     setMobileOpen(false);
