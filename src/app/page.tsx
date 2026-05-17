@@ -173,6 +173,28 @@ export default function LandingPage() {
               <span className="flex items-center gap-2"><Globe className="h-4 w-4" />Contexte africain</span>
             </div>
           </FadeIn>
+          <FadeIn delay={0.5}>
+            <div className="mt-16 rounded-2xl border bg-card/50 backdrop-blur-sm p-6">
+              <div className="grid grid-cols-2 gap-6 sm:grid-cols-4">
+                <div className="text-center">
+                  <p className="text-2xl font-bold text-rht-violet">99.9%</p>
+                  <p className="mt-1 text-[11px] text-muted-foreground">{locale === "en" ? "Uptime SLA" : "Disponibilité SLA"}</p>
+                </div>
+                <div className="text-center">
+                  <p className="text-2xl font-bold text-cyber-green">AES-256</p>
+                  <p className="mt-1 text-[11px] text-muted-foreground">{locale === "en" ? "Data encryption" : "Chiffrement des données"}</p>
+                </div>
+                <div className="text-center">
+                  <p className="text-2xl font-bold text-rht-orange">SOC 2</p>
+                  <p className="mt-1 text-[11px] text-muted-foreground">{locale === "en" ? "Compliant infra" : "Infrastructure conforme"}</p>
+                </div>
+                <div className="text-center">
+                  <p className="text-2xl font-bold text-foreground">RGPD</p>
+                  <p className="mt-1 text-[11px] text-muted-foreground">{locale === "en" ? "Privacy compliant" : "Conforme RGPD"}</p>
+                </div>
+              </div>
+            </div>
+          </FadeIn>
         </div>
       </section>
 
