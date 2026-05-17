@@ -1,0 +1,8 @@
+User-agent: *
+Allow: /
+Disallow: /dashboard
+Disallow: /employee
+Disallow: /admin
+Disallow: /login
+
+Sitemap: https://rostel-cybersense.vercel.app/sitemap.xml
