@@ -10,6 +10,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { FadeIn, StaggerContainer, StaggerItem, GlowCard } from "@/components/motion";
+import { AnimatedCounter } from "@/components/animated-counter";
 import { motion } from "framer-motion";
 import {
   Shield,
@@ -260,9 +261,10 @@ export default function LandingPage() {
             {stats.map((stat) => (
               <StaggerItem key={stat.label}>
                 <div className="text-center">
-                  <p className="text-3xl font-bold bg-gradient-to-r from-rht-violet to-rht-orange bg-clip-text text-transparent">
-                    {stat.value}
-                  </p>
+                  <AnimatedCounter
+                    value={stat.value}
+                    className="text-3xl font-bold bg-gradient-to-r from-rht-violet to-rht-orange bg-clip-text text-transparent"
+                  />
                   <p className="mt-2 text-sm text-muted-foreground">{stat.label}</p>
                 </div>
               </StaggerItem>
