@@ -3,42 +3,20 @@
 import { Header } from "@/components/layout/header";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Progress } from "@/components/ui/progress";
 import { Button } from "@/components/ui/button";
 import {
-  KeyRound,
   ShieldAlert,
   AlertTriangle,
-  CheckCircle,
   XCircle,
-  Users,
-  RefreshCw,
   ExternalLink,
 } from "lucide-react";
-import { FadeIn, StaggerContainer, StaggerItem } from "@/components/motion";
+import { FadeIn } from "@/components/motion";
+import { useTranslation } from "@/lib/i18n";
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip } from "recharts";
 
-const hygieneScore = 42;
-
-const stats = [
-  { label: "Score hygiene MDP", value: "42/100", status: "Critique", color: "text-cyber-red" },
-  { label: "MDP faibles detectes", value: "34%", status: "des employes", color: "text-cyber-red" },
-  { label: "MDP reutilises", value: "28%", status: "des employes", color: "text-rht-orange" },
-  { label: "MFA active", value: "23%", status: "des comptes", color: "text-rht-orange" },
-];
-
-const passwordIssues = [
-  { issue: "Mots de passe de moins de 8 caracteres", count: 8, severity: "critical" as const },
-  { issue: "Mots de passe sans caracteres speciaux", count: 15, severity: "high" as const },
-  { issue: "Meme mot de passe sur plusieurs services", count: 12, severity: "high" as const },
-  { issue: "MDP non change depuis +6 mois", count: 22, severity: "medium" as const },
-  { issue: "MDP partage entre collegues", count: 6, severity: "critical" as const },
-  { issue: "MDP note sur post-it / fichier", count: 4, severity: "critical" as const },
-];
-
 const mfaData = [
-  { name: "MFA active", value: 10, color: "#16a34a" },
-  { name: "MFA inactive", value: 35, color: "#ef4444" },
+  { name: "enabled", value: 10, color: "#16a34a" },
+  { name: "disabled", value: 35, color: "#ef4444" },
 ];
 
 const sevStyle = {
@@ -47,37 +25,59 @@ const sevStyle = {
   medium: "bg-yellow-500/10 text-yellow-500",
 };
 
-const recommendations = [
-  {
-    title: "Deployer un gestionnaire de mots de passe",
-    desc: "Bitwarden (gratuit) ou 1Password Business pour centraliser et securiser tous les MDP.",
-    priority: "Urgent",
-    link: "https://bitwarden.com",
-  },
-  {
-    title: "Activer le MFA sur tous les comptes",
-    desc: "Authentification multi-facteurs obligatoire, en priorite sur les emails et outils critiques.",
-    priority: "Urgent",
-    link: null,
-  },
-  {
-    title: "Formation hygiene des mots de passe",
-    desc: "Module RoxShield de 15 minutes avec quiz interactif sur les bonnes pratiques.",
-    priority: "Important",
-    link: null,
-  },
-  {
-    title: "Politique de rotation des MDP",
-    desc: "Changement obligatoire tous les 90 jours avec historique de 5 MDP.",
-    priority: "Recommande",
-    link: null,
-  },
-];
-
 export default function PasswordsPage() {
+  const { t } = useTranslation();
+
+  const stats = [
+    { label: t("passwords.hygieneScore" as any), value: "42/100", status: t("status.critical" as any), color: "text-cyber-red" },
+    { label: t("passwords.weakDetected" as any), value: "34%", status: t("passwords.ofEmployees" as any), color: "text-cyber-red" },
+    { label: t("passwords.reused" as any), value: "28%", status: t("passwords.ofEmployees" as any), color: "text-rht-orange" },
+    { label: t("passwords.mfaActive" as any), value: "23%", status: t("passwords.ofAccounts" as any), color: "text-rht-orange" },
+  ];
+
+  const passwordIssues = [
+    { issue: t("passwords.issue.short" as any), count: 8, severity: "critical" as const },
+    { issue: t("passwords.issue.noSpecial" as any), count: 15, severity: "high" as const },
+    { issue: t("passwords.issue.reused" as any), count: 12, severity: "high" as const },
+    { issue: t("passwords.issue.old" as any), count: 22, severity: "medium" as const },
+    { issue: t("passwords.issue.shared" as any), count: 6, severity: "critical" as const },
+    { issue: t("passwords.issue.written" as any), count: 4, severity: "critical" as const },
+  ];
+
+  const recommendations = [
+    {
+      title: t("passwords.rec.manager" as any),
+      desc: t("passwords.rec.manager.desc" as any),
+      priority: t("status.urgent" as any),
+      priorityKey: "urgent",
+      link: "https://bitwarden.com",
+    },
+    {
+      title: t("passwords.rec.mfa" as any),
+      desc: t("passwords.rec.mfa.desc" as any),
+      priority: t("status.urgent" as any),
+      priorityKey: "urgent",
+      link: null,
+    },
+    {
+      title: t("passwords.rec.training" as any),
+      desc: t("passwords.rec.training.desc" as any),
+      priority: t("status.important" as any),
+      priorityKey: "important",
+      link: null,
+    },
+    {
+      title: t("passwords.rec.rotation" as any),
+      desc: t("passwords.rec.rotation.desc" as any),
+      priority: t("status.recommended" as any),
+      priorityKey: "recommended",
+      link: null,
+    },
+  ];
+
   return (
     <div>
-      <Header title="Hygiene des Mots de Passe" />
+      <Header title={t("passwords.title" as any)} />
       <div className="space-y-6 p-6">
         {/* Stats */}
         <FadeIn>
@@ -101,7 +101,7 @@ export default function PasswordsPage() {
               <CardHeader>
                 <CardTitle className="flex items-center gap-2 text-base">
                   <ShieldAlert className="h-4 w-4 text-cyber-red" />
-                  Problemes detectes
+                  {t("passwords.issuesDetected" as any)}
                 </CardTitle>
               </CardHeader>
               <CardContent>
@@ -119,7 +119,7 @@ export default function PasswordsPage() {
                         <span className="text-sm">{issue.issue}</span>
                       </div>
                       <Badge className={`text-[10px] ${sevStyle[issue.severity]}`}>
-                        {issue.count} employes
+                        {issue.count} {t("common.employees" as any)}
                       </Badge>
                     </div>
                   ))}
@@ -128,12 +128,12 @@ export default function PasswordsPage() {
             </Card>
           </FadeIn>
 
-          {/* MFA + Score */}
+          {/* MFA + Recommendations */}
           <div className="space-y-6">
             <FadeIn delay={0.15}>
               <Card>
                 <CardHeader>
-                  <CardTitle className="text-base">Adoption MFA</CardTitle>
+                  <CardTitle className="text-base">{t("passwords.mfaAdoption" as any)}</CardTitle>
                 </CardHeader>
                 <CardContent>
                   <div className="flex items-center gap-6">
@@ -152,14 +152,14 @@ export default function PasswordsPage() {
                     <div className="space-y-2">
                       <div className="flex items-center gap-2">
                         <div className="h-3 w-3 rounded-full bg-cyber-green" />
-                        <span className="text-sm">MFA active — 10 comptes (23%)</span>
+                        <span className="text-sm">{t("passwords.mfaEnabled" as any)} — 10 {t("passwords.accounts" as any)} (23%)</span>
                       </div>
                       <div className="flex items-center gap-2">
                         <div className="h-3 w-3 rounded-full bg-cyber-red" />
-                        <span className="text-sm">MFA inactive — 35 comptes (77%)</span>
+                        <span className="text-sm">{t("passwords.mfaDisabled" as any)} — 35 {t("passwords.accounts" as any)} (77%)</span>
                       </div>
                       <p className="mt-2 text-xs text-muted-foreground">
-                        Objectif : 100% des comptes avec MFA d&apos;ici 30 jours
+                        {t("passwords.mfaGoal" as any)}
                       </p>
                     </div>
                   </div>
@@ -170,7 +170,7 @@ export default function PasswordsPage() {
             <FadeIn delay={0.2}>
               <Card>
                 <CardHeader>
-                  <CardTitle className="text-base">Recommandations</CardTitle>
+                  <CardTitle className="text-base">{t("passwords.recommendations" as any)}</CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-3">
                   {recommendations.map((rec) => (
@@ -178,8 +178,8 @@ export default function PasswordsPage() {
                       <div className="flex items-start justify-between">
                         <h4 className="text-sm font-semibold">{rec.title}</h4>
                         <Badge className={`text-[10px] ${
-                          rec.priority === "Urgent" ? "bg-cyber-red/10 text-cyber-red"
-                          : rec.priority === "Important" ? "bg-rht-orange/10 text-rht-orange"
+                          rec.priorityKey === "urgent" ? "bg-cyber-red/10 text-cyber-red"
+                          : rec.priorityKey === "important" ? "bg-rht-orange/10 text-rht-orange"
                           : "bg-rht-violet/10 text-rht-violet-light"
                         }`}>
                           {rec.priority}
@@ -188,7 +188,7 @@ export default function PasswordsPage() {
                       <p className="mt-1 text-xs text-muted-foreground">{rec.desc}</p>
                       {rec.link && (
                         <a href={rec.link} target="_blank" rel="noopener noreferrer" className="mt-2 inline-flex items-center gap-1 text-xs text-rht-violet-light hover:underline">
-                          En savoir plus <ExternalLink className="h-3 w-3" />
+                          {t("passwords.learnMore" as any)} <ExternalLink className="h-3 w-3" />
                         </a>
                       )}
                     </div>

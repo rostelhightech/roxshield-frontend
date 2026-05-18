@@ -8,7 +8,6 @@ import { Button } from "@/components/ui/button";
 import {
   Lock,
   CheckCircle,
-  AlertTriangle,
   XCircle,
   HardDrive,
   Mail,
@@ -18,90 +17,93 @@ import {
   Shield,
 } from "lucide-react";
 import { FadeIn, StaggerContainer, StaggerItem } from "@/components/motion";
+import { useTranslation } from "@/lib/i18n";
 
 const encryptionScore = 48;
 
-const auditAreas = [
-  {
-    area: "Chiffrement des emails",
-    icon: Mail,
-    score: 35,
-    status: "critical" as const,
-    findings: [
-      { text: "TLS active sur le serveur mail", ok: true },
-      { text: "Chiffrement de bout en bout (S/MIME ou PGP)", ok: false },
-      { text: "Politique de chiffrement des PJ sensibles", ok: false },
-      { text: "Signatures numeriques configurees", ok: false },
-    ],
-  },
-  {
-    area: "Chiffrement des fichiers",
-    icon: FileText,
-    score: 45,
-    status: "warning" as const,
-    findings: [
-      { text: "Documents RH chiffres", ok: true },
-      { text: "Fichiers financiers proteges par MDP", ok: true },
-      { text: "Politique de chiffrement des cles USB", ok: false },
-      { text: "Chiffrement des exports CSV/Excel", ok: false },
-    ],
-  },
-  {
-    area: "Chiffrement des disques",
-    icon: HardDrive,
-    score: 62,
-    status: "warning" as const,
-    findings: [
-      { text: "BitLocker/FileVault sur les laptops", ok: true },
-      { text: "Chiffrement des serveurs de fichiers", ok: true },
-      { text: "Politique BYOD avec chiffrement obligatoire", ok: false },
-      { text: "Inventaire des disques non chiffres", ok: true },
-    ],
-  },
-  {
-    area: "Chiffrement cloud & transit",
-    icon: Cloud,
-    score: 70,
-    status: "good" as const,
-    findings: [
-      { text: "HTTPS force sur tous les services", ok: true },
-      { text: "TLS 1.3 sur les applications web", ok: true },
-      { text: "VPN pour les connexions distantes", ok: true },
-      { text: "Chiffrement des backups cloud", ok: false },
-    ],
-  },
-  {
-    area: "Reseau & Wi-Fi",
-    icon: Wifi,
-    score: 55,
-    status: "warning" as const,
-    findings: [
-      { text: "Wi-Fi entreprise en WPA3", ok: true },
-      { text: "Segmentation reseau (VLAN)", ok: true },
-      { text: "Wi-Fi invite isole", ok: false },
-      { text: "Detection des points d'acces rogue", ok: false },
-    ],
-  },
-];
-
-const statusStyle = {
-  critical: { bg: "bg-cyber-red/10", text: "text-cyber-red", label: "Critique" },
-  warning: { bg: "bg-rht-orange/10", text: "text-rht-orange", label: "A ameliorer" },
-  good: { bg: "bg-cyber-green/10", text: "text-cyber-green", label: "Bon" },
-};
-
-const trainingModules = [
-  { title: "Comprendre le chiffrement", duration: "12 min", level: "Debutant", completion: 34 },
-  { title: "Chiffrer ses emails avec S/MIME", duration: "18 min", level: "Intermediaire", completion: 12 },
-  { title: "Proteger ses fichiers sensibles", duration: "10 min", level: "Debutant", completion: 45 },
-  { title: "VPN et connexions securisees", duration: "15 min", level: "Debutant", completion: 28 },
-  { title: "Chiffrement de bout en bout", duration: "20 min", level: "Avance", completion: 8 },
-];
-
 export default function EncryptionPage() {
+  const { t } = useTranslation();
+
+  const statusStyle = {
+    critical: { bg: "bg-cyber-red/10", text: "text-cyber-red", label: t("status.critical" as any) },
+    warning: { bg: "bg-rht-orange/10", text: "text-rht-orange", label: t("status.warning" as any) },
+    good: { bg: "bg-cyber-green/10", text: "text-cyber-green", label: t("status.good" as any) },
+  };
+
+  const auditAreas = [
+    {
+      area: t("encryption.zone.emails" as any),
+      icon: Mail,
+      score: 35,
+      status: "critical" as const,
+      findings: [
+        { text: t("encryption.finding.tlsActive" as any), ok: true },
+        { text: t("encryption.finding.e2e" as any), ok: false },
+        { text: t("encryption.finding.pjPolicy" as any), ok: false },
+        { text: t("encryption.finding.signatures" as any), ok: false },
+      ],
+    },
+    {
+      area: t("encryption.zone.files" as any),
+      icon: FileText,
+      score: 45,
+      status: "warning" as const,
+      findings: [
+        { text: t("encryption.finding.hrDocs" as any), ok: true },
+        { text: t("encryption.finding.financeDocs" as any), ok: true },
+        { text: t("encryption.finding.usbPolicy" as any), ok: false },
+        { text: t("encryption.finding.csvExport" as any), ok: false },
+      ],
+    },
+    {
+      area: t("encryption.zone.disks" as any),
+      icon: HardDrive,
+      score: 62,
+      status: "warning" as const,
+      findings: [
+        { text: t("encryption.finding.bitlocker" as any), ok: true },
+        { text: t("encryption.finding.serverEncryption" as any), ok: true },
+        { text: t("encryption.finding.byodPolicy" as any), ok: false },
+        { text: t("encryption.finding.diskInventory" as any), ok: true },
+      ],
+    },
+    {
+      area: t("encryption.zone.cloud" as any),
+      icon: Cloud,
+      score: 70,
+      status: "good" as const,
+      findings: [
+        { text: t("encryption.finding.https" as any), ok: true },
+        { text: t("encryption.finding.tls13" as any), ok: true },
+        { text: t("encryption.finding.vpn" as any), ok: true },
+        { text: t("encryption.finding.cloudBackup" as any), ok: false },
+      ],
+    },
+    {
+      area: t("encryption.zone.wifi" as any),
+      icon: Wifi,
+      score: 55,
+      status: "warning" as const,
+      findings: [
+        { text: t("encryption.finding.wpa3" as any), ok: true },
+        { text: t("encryption.finding.vlan" as any), ok: true },
+        { text: t("encryption.finding.guestWifi" as any), ok: false },
+        { text: t("encryption.finding.rogueAp" as any), ok: false },
+      ],
+    },
+  ];
+
+  const trainingModules = [
+    { title: t("encryption.training.understand" as any), duration: "12 min", level: t("status.beginner" as any), completion: 34 },
+    { title: t("encryption.training.smime" as any), duration: "18 min", level: t("status.intermediate" as any), completion: 12 },
+    { title: t("encryption.training.protectFiles" as any), duration: "10 min", level: t("status.beginner" as any), completion: 45 },
+    { title: t("encryption.training.vpn" as any), duration: "15 min", level: t("status.beginner" as any), completion: 28 },
+    { title: t("encryption.training.e2e" as any), duration: "20 min", level: t("status.advanced" as any), completion: 8 },
+  ];
+
   return (
     <div>
-      <Header title="Chiffrement & Protection des Donnees" />
+      <Header title={t("encryption.title" as any)} />
       <div className="space-y-6 p-6">
         {/* Score global */}
         <FadeIn>
@@ -110,14 +112,14 @@ export default function EncryptionPage() {
               <CardContent className="flex flex-col items-center p-6">
                 <Lock className="mb-2 h-8 w-8 text-rht-orange" />
                 <p className="text-3xl font-bold text-rht-orange">{encryptionScore}/100</p>
-                <p className="mt-1 text-xs text-muted-foreground">Score maturite chiffrement</p>
-                <Badge className="mt-2 bg-rht-orange/10 text-rht-orange">A ameliorer</Badge>
+                <p className="mt-1 text-xs text-muted-foreground">{t("encryption.maturityScore" as any)}</p>
+                <Badge className="mt-2 bg-rht-orange/10 text-rht-orange">{t("status.warning" as any)}</Badge>
               </CardContent>
             </Card>
             {[
-              { label: "Zones auditees", value: "5/5", color: "text-cyber-green" },
-              { label: "Points conformes", value: "12/20", color: "text-rht-orange" },
-              { label: "Actions urgentes", value: "8", color: "text-cyber-red" },
+              { label: t("encryption.auditedZones" as any), value: "5/5", color: "text-cyber-green" },
+              { label: t("encryption.compliantPoints" as any), value: "12/20", color: "text-rht-orange" },
+              { label: t("encryption.urgentActions" as any), value: "8", color: "text-cyber-red" },
             ].map((s) => (
               <Card key={s.label}>
                 <CardContent className="p-4">
@@ -133,7 +135,7 @@ export default function EncryptionPage() {
         <FadeIn delay={0.1}>
           <Card>
             <CardHeader>
-              <CardTitle className="text-base">Audit chiffrement par zone</CardTitle>
+              <CardTitle className="text-base">{t("encryption.auditByZone" as any)}</CardTitle>
             </CardHeader>
             <CardContent>
               <StaggerContainer className="space-y-4">
@@ -185,7 +187,7 @@ export default function EncryptionPage() {
             <CardHeader>
               <CardTitle className="flex items-center gap-2 text-base">
                 <Shield className="h-4 w-4 text-rht-violet-light" />
-                Formations chiffrement
+                {t("encryption.trainings" as any)}
               </CardTitle>
             </CardHeader>
             <CardContent>
@@ -202,10 +204,10 @@ export default function EncryptionPage() {
                     <div className="flex items-center gap-3">
                       <div className="text-right">
                         <p className="text-sm font-bold">{mod.completion}%</p>
-                        <p className="text-[10px] text-muted-foreground">completion</p>
+                        <p className="text-[10px] text-muted-foreground">{t("common.completion" as any)}</p>
                       </div>
                       <Button size="sm" variant="outline" className="text-xs">
-                        Lancer
+                        {t("common.launch" as any)}
                       </Button>
                     </div>
                   </div>

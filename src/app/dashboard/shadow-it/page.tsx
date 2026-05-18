@@ -5,16 +5,14 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import {
-  MessageSquareLock,
-  AlertTriangle,
   Smartphone,
   FileWarning,
-  Users,
   ShieldAlert,
   ArrowRight,
 } from "lucide-react";
-import { FadeIn, StaggerContainer, StaggerItem } from "@/components/motion";
+import { FadeIn } from "@/components/motion";
 import { Button } from "@/components/ui/button";
+import { useTranslation } from "@/lib/i18n";
 import {
   BarChart,
   Bar,
@@ -27,32 +25,6 @@ import {
 
 const shadowScore = 35;
 
-const riskApps = [
-  { name: "WhatsApp", usage: 89, risk: "Eleve", riskLevel: "high" as const, dataShared: "Fichiers clients, mots de passe, contrats" },
-  { name: "Telegram", usage: 34, risk: "Eleve", riskLevel: "high" as const, dataShared: "Documents internes, captures d'ecran" },
-  { name: "Google Drive perso", usage: 45, risk: "Moyen", riskLevel: "medium" as const, dataShared: "Tableurs RH, rapports financiers" },
-  { name: "Gmail perso", usage: 52, risk: "Eleve", riskLevel: "high" as const, dataShared: "Emails professionnels transferes" },
-  { name: "WeTransfer", usage: 28, risk: "Moyen", riskLevel: "medium" as const, dataShared: "Fichiers volumineux non chiffres" },
-  { name: "Dropbox perso", usage: 18, risk: "Faible", riskLevel: "low" as const, dataShared: "Documents divers" },
-];
-
-const deptExposure = [
-  { dept: "Commercial", score: 78 },
-  { dept: "Finance", score: 65 },
-  { dept: "Direction", score: 58 },
-  { dept: "RH", score: 52 },
-  { dept: "Operations", score: 45 },
-  { dept: "IT", score: 15 },
-];
-
-const incidents = [
-  { date: "16 Mai", desc: "Contrat client envoye via WhatsApp groupe", dept: "Commercial", severity: "Critique" },
-  { date: "15 Mai", desc: "MDP partage sur Telegram entre collegues", dept: "Finance", severity: "Critique" },
-  { date: "14 Mai", desc: "Rapport financier uploade sur Google Drive perso", dept: "Finance", severity: "Eleve" },
-  { date: "12 Mai", desc: "Email pro transfere sur Gmail personnel", dept: "Direction", severity: "Eleve" },
-  { date: "10 Mai", desc: "Photos de badges envoyes par WhatsApp", dept: "RH", severity: "Moyen" },
-];
-
 const riskLevelStyle = {
   high: "bg-cyber-red/10 text-cyber-red",
   medium: "bg-rht-orange/10 text-rht-orange",
@@ -60,9 +32,43 @@ const riskLevelStyle = {
 };
 
 export default function ShadowITPage() {
+  const { t } = useTranslation();
+
+  const riskApps = [
+    { name: "WhatsApp", usage: 89, risk: t("status.high" as any), riskLevel: "high" as const, dataShared: t("shadowIt.app.whatsapp.data" as any) },
+    { name: "Telegram", usage: 34, risk: t("status.high" as any), riskLevel: "high" as const, dataShared: t("shadowIt.app.telegram.data" as any) },
+    { name: "Google Drive perso", usage: 45, risk: t("status.medium" as any), riskLevel: "medium" as const, dataShared: t("shadowIt.app.gdrive.data" as any) },
+    { name: "Gmail perso", usage: 52, risk: t("status.high" as any), riskLevel: "high" as const, dataShared: t("shadowIt.app.gmail.data" as any) },
+    { name: "WeTransfer", usage: 28, risk: t("status.medium" as any), riskLevel: "medium" as const, dataShared: t("shadowIt.app.wetransfer.data" as any) },
+    { name: "Dropbox perso", usage: 18, risk: t("status.low" as any), riskLevel: "low" as const, dataShared: t("shadowIt.app.dropbox.data" as any) },
+  ];
+
+  const deptExposure = [
+    { dept: t("shadowIt.dept.commercial" as any), score: 78 },
+    { dept: t("shadowIt.dept.finance" as any), score: 65 },
+    { dept: t("shadowIt.dept.direction" as any), score: 58 },
+    { dept: t("shadowIt.dept.rh" as any), score: 52 },
+    { dept: t("shadowIt.dept.operations" as any), score: 45 },
+    { dept: t("shadowIt.dept.it" as any), score: 15 },
+  ];
+
+  const incidents = [
+    { date: "16 Mai", desc: t("shadowIt.incident1" as any), dept: t("shadowIt.dept.commercial" as any), severityKey: "critical" },
+    { date: "15 Mai", desc: t("shadowIt.incident2" as any), dept: t("shadowIt.dept.finance" as any), severityKey: "critical" },
+    { date: "14 Mai", desc: t("shadowIt.incident3" as any), dept: t("shadowIt.dept.finance" as any), severityKey: "high" },
+    { date: "12 Mai", desc: t("shadowIt.incident4" as any), dept: t("shadowIt.dept.direction" as any), severityKey: "high" },
+    { date: "10 Mai", desc: t("shadowIt.incident5" as any), dept: t("shadowIt.dept.rh" as any), severityKey: "medium" },
+  ];
+
+  const severityLabel: Record<string, string> = {
+    critical: t("status.critical" as any),
+    high: t("status.high" as any),
+    medium: t("status.medium" as any),
+  };
+
   return (
     <div>
-      <Header title="Shadow IT & Communication Securisee" />
+      <Header title={t("shadowIt.title" as any)} />
       <div className="space-y-6 p-6">
         {/* Alerte principale */}
         <FadeIn>
@@ -70,13 +76,10 @@ export default function ShadowITPage() {
             <CardContent className="flex items-start gap-4 p-5">
               <ShieldAlert className="mt-0.5 h-6 w-6 shrink-0 text-cyber-red" />
               <div>
-                <h3 className="font-semibold text-cyber-red">Alerte Shadow IT</h3>
-                <p className="mt-1 text-sm text-muted-foreground">
-                  <strong>89% de vos employes</strong> utilisent WhatsApp pour echanger des informations professionnelles sensibles.
-                  Cela represente un risque majeur de fuite de donnees sans aucune traçabilite ni chiffrement entreprise.
-                </p>
+                <h3 className="font-semibold text-cyber-red">{t("shadowIt.alertTitle" as any)}</h3>
+                <p className="mt-1 text-sm text-muted-foreground" dangerouslySetInnerHTML={{ __html: t("shadowIt.alertDesc" as any) }} />
                 <Button variant="outline" size="sm" className="mt-3 gap-2 border-cyber-red/30 text-cyber-red hover:bg-cyber-red/10">
-                  Lancer la formation Shadow IT
+                  {t("shadowIt.launchTraining" as any)}
                   <ArrowRight className="h-3.5 w-3.5" />
                 </Button>
               </div>
@@ -89,30 +92,30 @@ export default function ShadowITPage() {
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
             <Card>
               <CardContent className="p-4">
-                <p className="text-xs text-muted-foreground">Score Shadow IT</p>
+                <p className="text-xs text-muted-foreground">{t("shadowIt.score" as any)}</p>
                 <p className="mt-1 text-2xl font-bold text-cyber-red">{shadowScore}/100</p>
-                <p className="text-[11px] text-muted-foreground">Risque eleve</p>
+                <p className="text-[11px] text-muted-foreground">{t("shadowIt.highRisk" as any)}</p>
               </CardContent>
             </Card>
             <Card>
               <CardContent className="p-4">
-                <p className="text-xs text-muted-foreground">Apps non autorisees</p>
+                <p className="text-xs text-muted-foreground">{t("shadowIt.unauthorizedApps" as any)}</p>
                 <p className="mt-1 text-2xl font-bold text-rht-orange">6</p>
-                <p className="text-[11px] text-muted-foreground">detectees en usage</p>
+                <p className="text-[11px] text-muted-foreground">{t("common.detected" as any)}</p>
               </CardContent>
             </Card>
             <Card>
               <CardContent className="p-4">
-                <p className="text-xs text-muted-foreground">Employes exposes</p>
+                <p className="text-xs text-muted-foreground">{t("shadowIt.exposedEmployees" as any)}</p>
                 <p className="mt-1 text-2xl font-bold text-cyber-red">40/45</p>
-                <p className="text-[11px] text-muted-foreground">89% de l&apos;effectif</p>
+                <p className="text-[11px] text-muted-foreground">89% {t("common.ofStaff" as any)}</p>
               </CardContent>
             </Card>
             <Card>
               <CardContent className="p-4">
-                <p className="text-xs text-muted-foreground">Fuites potentielles</p>
+                <p className="text-xs text-muted-foreground">{t("shadowIt.potentialLeaks" as any)}</p>
                 <p className="mt-1 text-2xl font-bold text-rht-orange">23</p>
-                <p className="text-[11px] text-muted-foreground">ce mois-ci</p>
+                <p className="text-[11px] text-muted-foreground">{t("common.thisMonth" as any)}</p>
               </CardContent>
             </Card>
           </div>
@@ -125,7 +128,7 @@ export default function ShadowITPage() {
               <CardHeader>
                 <CardTitle className="flex items-center gap-2 text-base">
                   <Smartphone className="h-4 w-4 text-rht-orange" />
-                  Applications a risque detectees
+                  {t("shadowIt.riskApps" as any)}
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-3">
@@ -138,12 +141,12 @@ export default function ShadowITPage() {
                           {app.risk}
                         </Badge>
                       </div>
-                      <span className="text-xs text-muted-foreground">{app.usage}% des employes</span>
+                      <span className="text-xs text-muted-foreground">{app.usage}% {t("passwords.ofEmployees" as any)}</span>
                     </div>
                     <Progress value={app.usage} className="mt-2 h-1.5" />
                     <p className="mt-2 text-[11px] text-muted-foreground">
                       <FileWarning className="mr-1 inline h-3 w-3" />
-                      Donnees partagees : {app.dataShared}
+                      {t("shadowIt.dataShared" as any)} : {app.dataShared}
                     </p>
                   </div>
                 ))}
@@ -156,7 +159,7 @@ export default function ShadowITPage() {
             <FadeIn delay={0.15}>
               <Card>
                 <CardHeader>
-                  <CardTitle className="text-base">Exposition par departement</CardTitle>
+                  <CardTitle className="text-base">{t("shadowIt.deptExposure" as any)}</CardTitle>
                 </CardHeader>
                 <CardContent>
                   <div className="h-52">
@@ -178,7 +181,7 @@ export default function ShadowITPage() {
             <FadeIn delay={0.2}>
               <Card>
                 <CardHeader>
-                  <CardTitle className="text-base">Incidents recents</CardTitle>
+                  <CardTitle className="text-base">{t("shadowIt.recentIncidents" as any)}</CardTitle>
                 </CardHeader>
                 <CardContent>
                   <div className="space-y-3">
@@ -190,11 +193,11 @@ export default function ShadowITPage() {
                           <p className="text-[11px] text-muted-foreground">{inc.dept}</p>
                         </div>
                         <Badge className={`shrink-0 text-[10px] ${
-                          inc.severity === "Critique" ? "bg-cyber-red/10 text-cyber-red"
-                          : inc.severity === "Eleve" ? "bg-rht-orange/10 text-rht-orange"
+                          inc.severityKey === "critical" ? "bg-cyber-red/10 text-cyber-red"
+                          : inc.severityKey === "high" ? "bg-rht-orange/10 text-rht-orange"
                           : "bg-yellow-500/10 text-yellow-500"
                         }`}>
-                          {inc.severity}
+                          {severityLabel[inc.severityKey]}
                         </Badge>
                       </div>
                     ))}
