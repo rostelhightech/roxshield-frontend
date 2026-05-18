@@ -39,6 +39,7 @@ const planStyle = {
   Starter: "bg-cyber-green/10 text-cyber-green",
   Business: "bg-rht-orange/10 text-rht-orange",
   Enterprise: "bg-rht-violet/10 text-rht-violet-light",
+  Campus: "bg-sky-500/10 text-sky-500",
 } as const;
 
 export default function OrganizationsPage() {
@@ -71,7 +72,7 @@ export default function OrganizationsPage() {
                 />
               </div>
               <div className="flex gap-1.5">
-                {["all", "Starter", "Business", "Enterprise"].map((plan) => (
+                {["all", "Starter", "Business", "Enterprise", "Campus"].map((plan) => (
                   <Button
                     key={plan}
                     variant={filterPlan === plan ? "default" : "outline"}

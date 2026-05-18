@@ -434,10 +434,10 @@ export default function LoginPage() {
           </div>
 
           <p className="mt-4 text-center text-[11px] text-white/25">
-            Pas encore de compte ?{" "}
-            <button className="font-medium text-rht-violet-light/70 hover:text-rht-violet-light">
-              Contactez votre administrateur
-            </button>
+            Pas encore client ?{" "}
+            <a href="/pricing" className="font-medium text-rht-violet-light/70 hover:text-rht-violet-light">
+              Voir les tarifs &rarr;
+            </a>
           </p>
         </div>
       </motion.div>

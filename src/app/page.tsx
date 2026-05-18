@@ -56,28 +56,31 @@ export default function LandingPage() {
   const plans = [
     {
       name: "Starter",
-      description: locale === "en" ? "For small teams" : "Pour les petites équipes",
-      employees: locale === "en" ? "Up to 25 employees" : "Jusqu'à 25 employés",
+      price: "1 500 FCFA",
+      priceNote: locale === "en" ? "/user/month" : "/utilisateur/mois",
+      description: locale === "en" ? "SMB 10-50 employees" : "PME 10-50 employes",
       features: locale === "en"
-        ? ["6 training modules", "Interactive quizzes", "Basic dashboard", "Monthly reports"]
-        : ["6 modules de formation", "Quiz interactifs", "Dashboard basique", "Rapports mensuels"],
+        ? ["Unlimited phishing simulations", "Admin dashboard + risk score", "Monthly reports", "Email support"]
+        : ["Simulations phishing illimitees", "Dashboard admin + score de risque", "Rapports mensuels", "Support email"],
     },
     {
       name: "Business",
-      description: locale === "en" ? "For growing businesses" : "Pour les entreprises en croissance",
-      employees: locale === "en" ? "Up to 100 employees" : "Jusqu'à 100 employés",
+      price: "2 000 FCFA",
+      priceNote: locale === "en" ? "/user/month" : "/utilisateur/mois",
+      description: locale === "en" ? "Companies 51-200 employees" : "Entreprises 51-200 employes",
       popular: true,
       features: locale === "en"
-        ? ["Everything in Starter +", "Phishing simulations", "Full gamification", "Advanced reports", "Priority support"]
-        : ["Tout Starter +", "Simulations de phishing", "Gamification complète", "Rapports avancés", "Support prioritaire"],
+        ? ["Everything in Starter +", "AI risk profile detection", "Advanced simulations", "Weekly reports", "Priority support (24h)"]
+        : ["Tout Starter +", "IA detection profils a risque", "Simulations avancees", "Rapports hebdomadaires", "Support prioritaire (24h)"],
     },
     {
       name: "Enterprise",
-      description: locale === "en" ? "For large organizations" : "Pour les grandes organisations",
-      employees: locale === "en" ? "Unlimited employees" : "Employés illimités",
+      price: locale === "en" ? "Custom" : "Sur devis",
+      priceNote: "",
+      description: locale === "en" ? "Large organizations 200+" : "Grandes structures 200+",
       features: locale === "en"
-        ? ["Everything in Business +", "AI personalization", "Custom scenarios", "API & integrations", "Dedicated account manager"]
-        : ["Tout Business +", "IA de personnalisation", "Scénarios sur mesure", "API & intégrations", "Account manager dédié"],
+        ? ["Everything in Business +", "Multi-org (holding, subsidiaries)", "Custom API & integrations", "Dedicated account manager", "Guaranteed SLA"]
+        : ["Tout Business +", "Multi-organisations (holding, filiales)", "API & integrations personnalisees", "Account manager dedie", "SLA garanti"],
     },
   ];
 
@@ -105,9 +108,9 @@ export default function LandingPage() {
             <a href="#stats" className="text-muted-foreground transition-colors hover:text-foreground">
               {t("landing.nav.stats")}
             </a>
-            <a href="#pricing" className="text-muted-foreground transition-colors hover:text-foreground">
+            <Link href="/pricing" className="text-muted-foreground transition-colors hover:text-foreground">
               {t("landing.nav.pricing")}
-            </a>
+            </Link>
             <Link href="/about" className="text-muted-foreground transition-colors hover:text-foreground">
               {t("nav.about")}
             </Link>
@@ -145,9 +148,9 @@ export default function LandingPage() {
             <a href="#stats" onClick={() => setMobileMenuOpen(false)} className="rounded-lg px-3 py-2 text-sm text-muted-foreground transition-colors hover:bg-accent hover:text-foreground">
               {t("landing.nav.stats")}
             </a>
-            <a href="#pricing" onClick={() => setMobileMenuOpen(false)} className="rounded-lg px-3 py-2 text-sm text-muted-foreground transition-colors hover:bg-accent hover:text-foreground">
+            <Link href="/pricing" onClick={() => setMobileMenuOpen(false)} className="rounded-lg px-3 py-2 text-sm text-muted-foreground transition-colors hover:bg-accent hover:text-foreground">
               {t("landing.nav.pricing")}
-            </a>
+            </Link>
             <Link href="/about" onClick={() => setMobileMenuOpen(false)} className="rounded-lg px-3 py-2 text-sm text-muted-foreground transition-colors hover:bg-accent hover:text-foreground">
               {t("nav.about")}
             </Link>
@@ -388,7 +391,12 @@ export default function LandingPage() {
                     <CardContent className={`p-6 ${plan.popular ? "pt-8" : ""}`}>
                       <h3 className="text-lg font-bold">{plan.name}</h3>
                       <p className="text-sm text-muted-foreground">{plan.description}</p>
-                      <p className="mt-2 text-xs font-medium text-rht-violet-light">{plan.employees}</p>
+                      <div className="mt-3 mb-1">
+                        <span className="text-2xl font-bold">{plan.price}</span>
+                        {plan.priceNote && (
+                          <span className="text-xs text-muted-foreground ml-1">{plan.priceNote}</span>
+                        )}
+                      </div>
                       <ul className="mt-5 space-y-2.5">
                         {plan.features.map((f) => (
                           <li key={f} className="flex items-center gap-2 text-sm">
@@ -416,6 +424,16 @@ export default function LandingPage() {
               </StaggerItem>
             ))}
           </StaggerContainer>
+          <FadeIn delay={0.3}>
+            <div className="mt-8 text-center">
+              <Link href="/pricing">
+                <Button variant="ghost" className="text-rht-violet-light hover:text-rht-violet">
+                  {locale === "en" ? "See all plans including Campus" : "Voir tous les plans dont Campus"}
+                  <ArrowRight className="ml-2 h-4 w-4" />
+                </Button>
+              </Link>
+            </div>
+          </FadeIn>
         </div>
       </section>
 

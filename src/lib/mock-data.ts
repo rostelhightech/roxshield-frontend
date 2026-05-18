@@ -328,7 +328,7 @@ export type Organization = {
   country: string;
   city: string;
   sector: string;
-  plan: "Starter" | "Business" | "Enterprise";
+  plan: "Starter" | "Business" | "Enterprise" | "Campus";
   employees: number;
   maxEmployees: number;
   riskScore: number;
@@ -486,12 +486,30 @@ export const organizations: Organization[] = [
     contactEmail: "k.amegbo@ecobank.tg",
     mrr: 1200000,
   },
+  {
+    id: "org-9",
+    name: "Universite Cheikh Anta Diop",
+    country: "Senegal",
+    city: "Dakar",
+    sector: "Education",
+    plan: "Campus",
+    employees: 280,
+    maxEmployees: 500,
+    riskScore: 52,
+    trainingsCompleted: 820,
+    campaignsRun: 4,
+    joinedDate: "2026-03-15",
+    status: "active",
+    contactName: "Dr. Moussa Ndiaye",
+    contactEmail: "m.ndiaye@ucad.edu.sn",
+    mrr: 140000,
+  },
 ];
 
 export const platformStats = {
-  totalOrganizations: 8,
-  activeOrganizations: 7,
-  totalEmployees: 530,
+  totalOrganizations: 9,
+  activeOrganizations: 8,
+  totalEmployees: 810,
   totalTrainingsCompleted: 2085,
   totalCampaigns: 42,
   avgRiskScore: 42,

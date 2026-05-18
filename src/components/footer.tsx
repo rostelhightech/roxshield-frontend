@@ -24,6 +24,12 @@ export function Footer() {
             {locale === "en" ? "About" : "A propos"}
           </Link>
           <Link
+            href="/pricing"
+            className="text-xs text-muted-foreground transition-colors hover:text-foreground"
+          >
+            {locale === "en" ? "Pricing" : "Tarifs"}
+          </Link>
+          <Link
             href="/demo"
             className="text-xs text-muted-foreground transition-colors hover:text-foreground"
           >
