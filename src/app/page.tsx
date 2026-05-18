@@ -56,7 +56,7 @@ export default function LandingPage() {
   const plans = [
     {
       name: "Starter",
-      price: "1 500 FCFA",
+      price: "7 500 FCFA",
       priceNote: locale === "en" ? "/user/month" : "/utilisateur/mois",
       description: locale === "en" ? "SMB 10-50 employees" : "PME 10-50 employes",
       features: locale === "en"
@@ -65,7 +65,7 @@ export default function LandingPage() {
     },
     {
       name: "Business",
-      price: "2 000 FCFA",
+      price: "12 000 FCFA",
       priceNote: locale === "en" ? "/user/month" : "/utilisateur/mois",
       description: locale === "en" ? "Companies 51-200 employees" : "Entreprises 51-200 employes",
       popular: true,
