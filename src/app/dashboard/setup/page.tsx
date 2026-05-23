@@ -20,10 +20,9 @@ import {
   Plus,
   Trash2,
   Rocket,
-  Globe,
-  Mail,
   Upload,
 } from "lucide-react";
+import { toast } from "sonner";
 
 const steps = [
   { id: "org", label: "Organisation", icon: Building2 },
@@ -32,9 +31,17 @@ const steps = [
   { id: "done", label: "Terminé", icon: Rocket },
 ];
 
+const templates = [
+  { id: "urgent-transfer", label: "Virement urgent", desc: "Email du PDG demandant un virement en urgence", type: "Email", templateType: "bank" },
+  { id: "password-reset", label: "Réinitialisation mot de passe", desc: "Faux email de réinitialisation de mot de passe", type: "Email", templateType: "internal" },
+  { id: "mobile-money", label: "Vérification Mobile Money", desc: "SMS de vérification de compte Mobile Money", type: "SMS", templateType: "mobile_money" },
+  { id: "invoice", label: "Facture fournisseur", desc: "Fausse facture avec lien de paiement", type: "Email", templateType: "delivery" },
+];
+
 export default function SetupPage() {
   const router = useRouter();
   const [step, setStep] = useState(0);
+  const [saving, setSaving] = useState(false);
   const [orgName, setOrgName] = useState("");
   const [orgCountry, setOrgCountry] = useState("");
   const [orgSector, setOrgSector] = useState("");
@@ -42,6 +49,8 @@ export default function SetupPage() {
     { name: "", email: "", department: "" },
   ]);
   const [selectedTemplate, setSelectedTemplate] = useState<string | null>(null);
+  const [addedMembers, setAddedMembers] = useState(0);
+  const [campaignCreated, setCampaignCreated] = useState(false);
 
   const progress = ((step + 1) / steps.length) * 100;
 
@@ -59,12 +68,106 @@ export default function SetupPage() {
     setMembers(updated);
   };
 
-  const templates = [
-    { id: "urgent-transfer", label: "Virement urgent", desc: "Email du PDG demandant un virement en urgence", type: "Email" },
-    { id: "password-reset", label: "Réinitialisation mot de passe", desc: "Faux email de réinitialisation de mot de passe", type: "Email" },
-    { id: "mobile-money", label: "Vérification Mobile Money", desc: "SMS de vérification de compte Mobile Money", type: "SMS" },
-    { id: "invoice", label: "Facture fournisseur", desc: "Fausse facture avec lien de paiement", type: "Email" },
-  ];
+  const saveOrganization = async () => {
+    if (!orgName.trim()) {
+      toast.error("Le nom de l'organisation est requis");
+      return false;
+    }
+    setSaving(true);
+    try {
+      const res = await fetch("/api/organization", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ name: orgName, country: orgCountry, sector: orgSector }),
+      });
+      if (!res.ok) {
+        toast.error("Erreur lors de la sauvegarde");
+        return false;
+      }
+      toast.success("Organisation mise à jour");
+      return true;
+    } catch {
+      toast.error("Erreur réseau");
+      return false;
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const saveMembers = async () => {
+    const validMembers = members.filter((m) => m.email.trim());
+    if (validMembers.length === 0) return true; // skip if no members
+
+    setSaving(true);
+    let count = 0;
+    try {
+      for (const member of validMembers) {
+        const res = await fetch("/api/employees", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(member),
+        });
+        if (res.ok) count++;
+      }
+      setAddedMembers(count);
+      if (count > 0) toast.success(`${count} membre(s) ajouté(s)`);
+      return true;
+    } catch {
+      toast.error("Erreur réseau");
+      return false;
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const saveCampaign = async () => {
+    if (!selectedTemplate) return true; // skip if none selected
+
+    const tpl = templates.find((t) => t.id === selectedTemplate);
+    if (!tpl) return true;
+
+    setSaving(true);
+    try {
+      const res = await fetch("/api/campaigns", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          name: tpl.label,
+          templateType: tpl.templateType,
+          targetDepts: [],
+        }),
+      });
+      if (res.ok) {
+        setCampaignCreated(true);
+        toast.success("Campagne créée en brouillon");
+      }
+      return res.ok;
+    } catch {
+      toast.error("Erreur réseau");
+      return false;
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const handleNext = async () => {
+    if (step === 0) {
+      const ok = await saveOrganization();
+      if (!ok) return;
+    } else if (step === 1) {
+      const ok = await saveMembers();
+      if (!ok) return;
+    } else if (step === 2) {
+      const ok = await saveCampaign();
+      if (!ok) return;
+    }
+
+    if (step < steps.length - 1) {
+      setStep(step + 1);
+    } else {
+      router.push("/dashboard");
+    }
+  };
 
   return (
     <div className="min-h-screen bg-background">
@@ -134,7 +237,7 @@ export default function SetupPage() {
                   </div>
                   <div className="space-y-4">
                     <div className="space-y-2">
-                      <Label className="text-xs">Nom de l&apos;organisation</Label>
+                      <Label className="text-xs">Nom de l&apos;organisation *</Label>
                       <Input
                         placeholder="Ex: Safi Sénégal SARL"
                         value={orgName}
@@ -170,7 +273,7 @@ export default function SetupPage() {
                   <div className="text-center">
                     <Users className="mx-auto mb-2 h-8 w-8 text-rht-violet-light" />
                     <h2 className="text-lg font-bold">Ajoutez votre équipe</h2>
-                    <p className="text-sm text-muted-foreground">Invitez vos collaborateurs ou importez un fichier CSV</p>
+                    <p className="text-sm text-muted-foreground">Invitez vos collaborateurs — ils recevront un email d&apos;invitation</p>
                   </div>
 
                   <div className="space-y-3">
@@ -219,14 +322,14 @@ export default function SetupPage() {
                       <Plus className="mr-1 h-3 w-3" />
                       Ajouter
                     </Button>
-                    <Button variant="outline" size="sm">
+                    <Button variant="outline" size="sm" disabled>
                       <Upload className="mr-1 h-3 w-3" />
-                      Importer CSV
+                      Importer CSV (bientôt)
                     </Button>
                   </div>
 
                   <p className="text-center text-xs text-muted-foreground">
-                    {members.filter((m) => m.email).length} membre(s) ajouté(s) — vous pourrez en ajouter d&apos;autres plus tard
+                    {members.filter((m) => m.email).length} membre(s) à inviter — vous pourrez en ajouter d&apos;autres plus tard
                   </p>
                 </CardContent>
               </Card>
@@ -273,7 +376,7 @@ export default function SetupPage() {
                   </div>
 
                   <p className="text-center text-xs text-muted-foreground">
-                    Vous pourrez modifier et personnaliser la campagne avant de l&apos;envoyer
+                    La campagne sera créée en brouillon — vous pourrez la personnaliser avant de l&apos;envoyer
                   </p>
                 </CardContent>
               </Card>
@@ -301,8 +404,8 @@ export default function SetupPage() {
                   <div className="space-y-3">
                     {[
                       { icon: Building2, label: "Organisation", value: orgName || "Non renseigné", color: "text-rht-violet-light", bg: "bg-rht-violet/10" },
-                      { icon: Users, label: "Membres", value: `${members.filter((m) => m.email).length} invité(s)`, color: "text-rht-orange", bg: "bg-rht-orange/10" },
-                      { icon: Target, label: "Campagne", value: selectedTemplate ? templates.find((t) => t.id === selectedTemplate)?.label ?? "—" : "Aucune", color: "text-cyber-green", bg: "bg-cyber-green/10" },
+                      { icon: Users, label: "Membres", value: `${addedMembers} invité(s)`, color: "text-rht-orange", bg: "bg-rht-orange/10" },
+                      { icon: Target, label: "Campagne", value: campaignCreated ? templates.find((t) => t.id === selectedTemplate)?.label ?? "—" : "Aucune", color: "text-cyber-green", bg: "bg-cyber-green/10" },
                     ].map((item) => (
                       <div key={item.label} className="flex items-center gap-3 rounded-xl border p-3">
                         <div className={`flex h-9 w-9 items-center justify-center rounded-lg ${item.bg}`}>
@@ -323,7 +426,7 @@ export default function SetupPage() {
 
         <div className="mt-6 flex items-center justify-between">
           {step > 0 ? (
-            <Button variant="outline" onClick={() => setStep(step - 1)}>
+            <Button variant="outline" onClick={() => setStep(step - 1)} disabled={saving}>
               <ArrowLeft className="mr-2 h-4 w-4" />
               Précédent
             </Button>
@@ -335,16 +438,19 @@ export default function SetupPage() {
 
           <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
             <Button
-              onClick={() => {
-                if (step < steps.length - 1) {
-                  setStep(step + 1);
-                } else {
-                  router.push("/dashboard");
-                }
-              }}
+              onClick={handleNext}
+              disabled={saving}
               className="bg-gradient-to-r from-rht-violet to-rht-violet-light text-white hover:opacity-90"
             >
-              {step === steps.length - 1 ? (
+              {saving ? (
+                <span className="flex items-center gap-2">
+                  <svg className="h-4 w-4 animate-spin" viewBox="0 0 24 24" fill="none">
+                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
+                  </svg>
+                  Enregistrement...
+                </span>
+              ) : step === steps.length - 1 ? (
                 <>
                   Accéder au dashboard
                   <Rocket className="ml-2 h-4 w-4" />

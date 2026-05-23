@@ -3,12 +3,11 @@
 import { useState, useEffect, useRef, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { signIn } from "next-auth/react";
-import { Shield, Eye, EyeOff, Lock, Mail, Crown, Building2, UserCircle, AlertCircle } from "lucide-react";
-// OAuth providers removed — credentials-only for now
+import { Shield, Eye, EyeOff, Lock, Mail, Crown, Building2, UserCircle, AlertCircle, CheckCircle, ArrowLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 
 interface Particle {
   x: number;
@@ -233,6 +232,24 @@ export default function LoginPage() {
   const [selectedRole, setSelectedRole] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [showForgot, setShowForgot] = useState(false);
+  const [forgotEmail, setForgotEmail] = useState("");
+  const [forgotSent, setForgotSent] = useState(false);
+  const [forgotLoading, setForgotLoading] = useState(false);
+
+  const handleForgotPassword = async () => {
+    if (!forgotEmail.trim()) return;
+    setForgotLoading(true);
+    try {
+      await fetch("/api/auth/forgot-password", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email: forgotEmail }),
+      });
+      setForgotSent(true);
+    } catch { /* ignore */ }
+    finally { setForgotLoading(false); }
+  };
 
   const selectRole = (roleId: string) => {
     setSelectedRole(roleId);
@@ -347,7 +364,7 @@ export default function LoginPage() {
             <div className="space-y-2">
               <div className="flex items-center justify-between">
                 <Label htmlFor="password" className="text-xs font-medium text-white/50">Mot de passe</Label>
-                <button type="button" className="text-[11px] text-rht-violet-light/70 hover:text-rht-violet-light">Mot de passe oublié ?</button>
+                <button type="button" onClick={() => { setShowForgot(true); setForgotEmail(email); setForgotSent(false); }} className="text-[11px] text-rht-violet-light/70 hover:text-rht-violet-light">Mot de passe oublié ?</button>
               </div>
               <div className="relative">
                 <Lock className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-white/20" />
@@ -400,6 +417,77 @@ export default function LoginPage() {
               </Button>
             </motion.div>
           </form>
+
+          {/* Forgot password overlay */}
+          <AnimatePresence>
+            {showForgot && (
+              <motion.div
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: 10 }}
+                className="absolute inset-0 z-50 flex items-center justify-center rounded-2xl bg-[#0a0810]/95 backdrop-blur-sm p-8"
+              >
+                <div className="w-full space-y-4">
+                  <button
+                    onClick={() => setShowForgot(false)}
+                    className="flex items-center gap-1 text-xs text-white/40 hover:text-white/70"
+                  >
+                    <ArrowLeft className="h-3 w-3" />
+                    Retour
+                  </button>
+
+                  {forgotSent ? (
+                    <div className="text-center space-y-3">
+                      <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-cyber-green/20">
+                        <CheckCircle className="h-6 w-6 text-cyber-green" />
+                      </div>
+                      <h3 className="text-sm font-semibold text-white">Email envoyé</h3>
+                      <p className="text-xs text-white/50">
+                        Si un compte existe avec <span className="text-white/70">{forgotEmail}</span>, un nouveau mot de passe temporaire a été envoyé.
+                      </p>
+                      <Button
+                        onClick={() => setShowForgot(false)}
+                        variant="outline"
+                        size="sm"
+                        className="mt-2 border-white/10 text-white/60 hover:text-white"
+                      >
+                        Retour à la connexion
+                      </Button>
+                    </div>
+                  ) : (
+                    <>
+                      <div className="text-center">
+                        <h3 className="text-sm font-semibold text-white">Mot de passe oublié</h3>
+                        <p className="mt-1 text-xs text-white/40">
+                          Entrez votre email pour recevoir un nouveau mot de passe
+                        </p>
+                      </div>
+                      <div className="space-y-2">
+                        <div className="relative">
+                          <Mail className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-white/20" />
+                          <Input
+                            type="email"
+                            placeholder="votre@email.com"
+                            value={forgotEmail}
+                            onChange={(e) => setForgotEmail(e.target.value)}
+                            className="h-11 border-white/[0.08] bg-white/[0.04] pl-10 text-white placeholder:text-white/20"
+                            onKeyDown={(e) => e.key === "Enter" && handleForgotPassword()}
+                          />
+                        </div>
+                        <Button
+                          onClick={handleForgotPassword}
+                          disabled={forgotLoading || !forgotEmail.trim()}
+                          className="h-10 w-full bg-gradient-to-r from-rht-violet to-rht-violet-light text-white hover:opacity-90"
+                        >
+                          {forgotLoading ? "Envoi..." : "Réinitialiser"}
+                        </Button>
+                      </div>
+                    </>
+                  )}
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
 
           <div className="my-5 flex items-center gap-3">
             <div className="h-px flex-1 bg-white/[0.06]" />
