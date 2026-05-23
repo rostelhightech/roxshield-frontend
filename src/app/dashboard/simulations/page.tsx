@@ -42,6 +42,7 @@ import { FadeIn, StaggerContainer, StaggerItem, GlowCard } from "@/components/mo
 import { motion, AnimatePresence } from "framer-motion";
 import { useTranslation } from "@/lib/i18n";
 import { useApi } from "@/hooks/use-api";
+import { toast } from "sonner";
 
 interface Campaign {
   id: string;
@@ -98,26 +99,41 @@ export default function SimulationsPage() {
     setLaunching(true);
     try {
       const tpl = templateOptions.find((t) => t.id === selectedTemplate);
+      // Step 1: Create campaign in DRAFT
       const res = await fetch("/api/campaigns", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           name: tpl?.label || "Nouvelle campagne",
-          templateType: tpl?.type || "email_phishing",
+          templateType: tpl?.id || "email_phishing",
           description: tpl?.description,
         }),
       });
       if (res.ok) {
-        setLaunched(true);
+        const campaign = await res.json();
+        // Step 2: Launch campaign (send emails)
+        const launchRes = await fetch(`/api/campaigns/${campaign.id}`, {
+          method: "PATCH",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ action: "launch" }),
+        });
+        if (launchRes.ok) {
+          const result = await launchRes.json();
+          setLaunched(true);
+          toast.success(`Campagne lancee — ${result.sentCount} emails envoyes`);
+        } else {
+          const err = await launchRes.json();
+          toast.error(err.error || "Erreur lors du lancement");
+        }
         await refetch();
         setTimeout(() => {
           setCreateOpen(false);
           setLaunched(false);
           setSelectedTemplate(null);
-        }, 2000);
+        }, 2500);
       }
     } catch {
-      // silently fail
+      toast.error("Erreur reseau");
     } finally {
       setLaunching(false);
     }
