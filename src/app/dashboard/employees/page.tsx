@@ -95,6 +95,12 @@ export default function EmployeesPage() {
   const [addForm, setAddForm] = useState({ name: "", email: "", department: "", position: "" });
   const [adding, setAdding] = useState(false);
   const [deleting, setDeleting] = useState(false);
+  const [showAssignDialog, setShowAssignDialog] = useState(false);
+  const [showCampaignDialog, setShowCampaignDialog] = useState(false);
+  const [assignTarget, setAssignTarget] = useState<Employee | null>(null);
+  const [trainingModules, setTrainingModules] = useState<{ id: string; title: string }[]>([]);
+  const [campaigns, setCampaigns] = useState<{ id: string; name: string }[]>([]);
+  const [assigning, setAssigning] = useState(false);
 
   const handleAddEmployee = async () => {
     if (!addForm.email) { toast.error("L'email est requis"); return; }
@@ -106,7 +112,12 @@ export default function EmployeesPage() {
         body: JSON.stringify(addForm),
       });
       if (res.ok) {
-        toast.success("Employé ajouté avec succès");
+        const data = await res.json();
+        toast.success(
+          data.emailSent
+            ? "Employé ajouté — invitation envoyée par email ✉️"
+            : "Employé ajouté avec succès"
+        );
         setShowAddDialog(false);
         setAddForm({ name: "", email: "", department: "", position: "" });
         await refetch();
@@ -148,6 +159,72 @@ export default function EmployeesPage() {
     a.click();
     URL.revokeObjectURL(url);
     toast.success("Export CSV téléchargé");
+  };
+
+  const openAssignTraining = async (emp: Employee) => {
+    setAssignTarget(emp);
+    setShowAssignDialog(true);
+    try {
+      const res = await fetch("/api/training");
+      if (res.ok) {
+        const d = await res.json();
+        setTrainingModules(d.modules?.map((m: any) => ({ id: m.id, title: m.title })) || []);
+      }
+    } catch { /* ignore */ }
+  };
+
+  const handleAssignTraining = async (moduleId: string) => {
+    if (!assignTarget) return;
+    setAssigning(true);
+    try {
+      const res = await fetch("/api/training/assign", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ userId: assignTarget.id, moduleId }),
+      });
+      if (res.ok) {
+        toast.success(`Formation assignée à ${assignTarget.name || assignTarget.email}`);
+        setShowAssignDialog(false);
+        setAssignTarget(null);
+      } else {
+        const err = await res.json();
+        toast.error(err.error || "Erreur");
+      }
+    } catch { toast.error("Erreur réseau"); }
+    finally { setAssigning(false); }
+  };
+
+  const openIncludeCampaign = async (emp: Employee) => {
+    setAssignTarget(emp);
+    setShowCampaignDialog(true);
+    try {
+      const res = await fetch("/api/campaigns");
+      if (res.ok) {
+        const d = await res.json();
+        setCampaigns(d.campaigns?.map((c: any) => ({ id: c.id, name: c.name })) || []);
+      }
+    } catch { /* ignore */ }
+  };
+
+  const handleIncludeCampaign = async (campaignId: string) => {
+    if (!assignTarget) return;
+    setAssigning(true);
+    try {
+      const res = await fetch("/api/campaigns/include", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ userId: assignTarget.id, campaignId }),
+      });
+      if (res.ok) {
+        toast.success(`${assignTarget.name || assignTarget.email} inclus dans la campagne`);
+        setShowCampaignDialog(false);
+        setAssignTarget(null);
+      } else {
+        const err = await res.json();
+        toast.error(err.error || "Erreur");
+      }
+    } catch { toast.error("Erreur réseau"); }
+    finally { setAssigning(false); }
   };
 
   const employees = data?.employees || [];
@@ -436,12 +513,21 @@ export default function EmployeesPage() {
 
               <div className="flex gap-2">
                 {getStatus(selectedEmployee.riskScore) !== "safe" && (
-                  <Button size="sm" className="flex-1 bg-gradient-to-r from-rht-violet to-rht-violet-light text-white hover:opacity-90">
+                  <Button
+                    size="sm"
+                    className="flex-1 bg-gradient-to-r from-rht-violet to-rht-violet-light text-white hover:opacity-90"
+                    onClick={() => openAssignTraining(selectedEmployee)}
+                  >
                     <GraduationCap className="mr-2 h-4 w-4" />
                     {t("employees.assignTraining" as any)}
                   </Button>
                 )}
-                <Button size="sm" variant="outline" className="flex-1">
+                <Button
+                  size="sm"
+                  variant="outline"
+                  className="flex-1"
+                  onClick={() => openIncludeCampaign(selectedEmployee)}
+                >
                   <Target className="mr-2 h-4 w-4" />
                   {t("employees.includeCampaign" as any)}
                 </Button>
@@ -520,6 +606,73 @@ export default function EmployeesPage() {
                 {adding ? "Ajout..." : "Ajouter"}
               </Button>
             </div>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* Dialog — Assigner une formation */}
+      <Dialog open={showAssignDialog} onOpenChange={setShowAssignDialog}>
+        <DialogContent className="bg-card border-border">
+          <DialogHeader>
+            <DialogTitle>Assigner une formation</DialogTitle>
+            <DialogDescription>
+              Choisissez un module pour {assignTarget?.name || assignTarget?.email}
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-2 max-h-[300px] overflow-y-auto">
+            {trainingModules.length === 0 ? (
+              <p className="text-sm text-muted-foreground py-4 text-center">Aucun module disponible</p>
+            ) : (
+              trainingModules.map((m) => (
+                <button
+                  key={m.id}
+                  className="w-full text-left rounded-lg border p-3 hover:bg-accent/50 transition-colors disabled:opacity-50"
+                  disabled={assigning}
+                  onClick={() => handleAssignTraining(m.id)}
+                >
+                  <div className="flex items-center gap-3">
+                    <GraduationCap className="h-5 w-5 text-rht-violet-light shrink-0" />
+                    <span className="text-sm font-medium">{m.title}</span>
+                  </div>
+                </button>
+              ))
+            )}
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* Dialog — Inclure dans une campagne */}
+      <Dialog open={showCampaignDialog} onOpenChange={setShowCampaignDialog}>
+        <DialogContent className="bg-card border-border">
+          <DialogHeader>
+            <DialogTitle>Inclure dans une campagne</DialogTitle>
+            <DialogDescription>
+              Choisissez une campagne pour {assignTarget?.name || assignTarget?.email}
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-2 max-h-[300px] overflow-y-auto">
+            {campaigns.length === 0 ? (
+              <p className="text-sm text-muted-foreground py-4 text-center">
+                Aucune campagne disponible.{" "}
+                <a href="/dashboard/simulations" className="text-rht-violet-light underline">
+                  Créer une campagne
+                </a>
+              </p>
+            ) : (
+              campaigns.map((c) => (
+                <button
+                  key={c.id}
+                  className="w-full text-left rounded-lg border p-3 hover:bg-accent/50 transition-colors disabled:opacity-50"
+                  disabled={assigning}
+                  onClick={() => handleIncludeCampaign(c.id)}
+                >
+                  <div className="flex items-center gap-3">
+                    <Target className="h-5 w-5 text-rht-orange shrink-0" />
+                    <span className="text-sm font-medium">{c.name}</span>
+                  </div>
+                </button>
+              ))
+            )}
           </div>
         </DialogContent>
       </Dialog>

@@ -1,6 +1,19 @@
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/db";
 import { getSessionOrFail } from "@/lib/api-auth";
+import { sendInvitationEmail } from "@/lib/email";
+import { hash } from "bcryptjs";
+
+export const runtime = "nodejs";
+
+/** Génère un mot de passe temporaire lisible : 3 lettres + 4 chiffres + 3 lettres (ex: Kxm4927Bpq) */
+function generateTempPassword(): string {
+  const alpha = "ABCDEFGHJKLMNPQRSTUVWXYZabcdefghjkmnpqrstuvwxyz";
+  const digits = "23456789";
+  const pick = (chars: string, n: number) =>
+    Array.from({ length: n }, () => chars[Math.floor(Math.random() * chars.length)]).join("");
+  return pick(alpha, 3) + pick(digits, 4) + pick(alpha, 3);
+}
 
 export async function GET(request: NextRequest) {
   const session = await getSessionOrFail();
@@ -81,10 +94,15 @@ export async function POST(request: NextRequest) {
   const existing = await db.user.findUnique({ where: { email } });
   if (existing) return NextResponse.json({ error: "Cet email existe déjà" }, { status: 409 });
 
+  // Générer un mot de passe temporaire
+  const tempPassword = generateTempPassword();
+  const hashedPassword = await hash(tempPassword, 12);
+
   const user = await db.user.create({
     data: {
       email,
       name: name || null,
+      password: hashedPassword,
       department: department || null,
       position: position || null,
       role: "EMPLOYEE",
@@ -103,17 +121,32 @@ export async function POST(request: NextRequest) {
     },
   });
 
+  // Récupérer le nom de l'organisation et de l'inviteur
+  const [org, inviter] = await Promise.all([
+    db.organization.findUnique({ where: { id: orgId }, select: { name: true } }),
+    db.user.findUnique({ where: { id: session.user.id }, select: { name: true } }),
+  ]);
+
+  // Envoyer l'email d'invitation (non bloquant)
+  const emailResult = await sendInvitationEmail({
+    to: email,
+    employeeName: name || "",
+    organizationName: org?.name || "votre organisation",
+    invitedBy: inviter?.name || "L'administrateur",
+    tempPassword,
+  });
+
   // Log
   await db.activityLog.create({
     data: {
       action: "employee_added",
-      description: `Employé "${name || email}" ajouté`,
+      description: `Employé "${name || email}" ajouté${emailResult.success ? " — invitation envoyée" : ""}`,
       userId: session.user.id,
       organizationId: orgId,
     },
   });
 
-  return NextResponse.json(user, { status: 201 });
+  return NextResponse.json({ ...user, emailSent: emailResult.success }, { status: 201 });
 }
 
 export async function DELETE(request: NextRequest) {
