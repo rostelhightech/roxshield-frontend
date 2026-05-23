@@ -5,10 +5,11 @@ export default defineConfig({
   fullyParallel: true,
   forbidOnly: !!process.env.CI,
   retries: process.env.CI ? 2 : 1,
-  workers: process.env.CI ? 1 : undefined,
+  workers: process.env.CI ? 1 : 3,
+  timeout: 60000,
   reporter: "html",
   use: {
-    baseURL: process.env.BASE_URL || "http://localhost:3002",
+    baseURL: process.env.BASE_URL || "http://localhost:3000",
     trace: "on-first-retry",
   },
   projects: [
@@ -17,10 +18,12 @@ export default defineConfig({
       use: { ...devices["Desktop Chrome"] },
     },
   ],
-  webServer: {
-    command: "npm run dev -- -p 3002",
-    url: "http://localhost:3002",
-    reuseExistingServer: !process.env.CI,
-    timeout: 120000,
-  },
+  webServer: process.env.CI
+    ? {
+        command: "npm run dev -- -p 3000",
+        url: "http://localhost:3000",
+        reuseExistingServer: false,
+        timeout: 120000,
+      }
+    : undefined,
 });

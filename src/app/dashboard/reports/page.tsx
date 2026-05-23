@@ -37,6 +37,7 @@ import { motion } from "framer-motion";
 import { toast } from "sonner";
 import { useTranslation } from "@/lib/i18n";
 import { useApi } from "@/hooks/use-api";
+import { generatePdfReport } from "@/lib/export-pdf";
 
 interface DashboardData {
   totalEmployees: number;
@@ -83,6 +84,7 @@ export default function ReportsPage() {
   const { data: empData, loading: l2 } = useApi<EmployeesData>("/api/employees");
   const { data: campData } = useApi<CampaignsData>("/api/campaigns");
   const { data: trainData } = useApi<TrainingData>("/api/training");
+  const { data: orgData } = useApi<{ name: string }>("/api/organization");
   const [exporting, setExporting] = useState(false);
   const [exported, setExported] = useState(false);
 
@@ -117,12 +119,40 @@ export default function ReportsPage() {
 
   const handleExport = () => {
     setExporting(true);
-    setTimeout(() => {
-      setExporting(false);
+    try {
+      const topRisk = [...employees]
+        .sort((a, b) => b.riskScore - a.riskScore)
+        .slice(0, 10)
+        .map((e) => ({
+          name: e.name || "",
+          email: e.email,
+          department: e.department || "",
+          riskScore: e.riskScore,
+        }));
+
+      generatePdfReport({
+        organizationName: orgData?.name || "Mon Organisation",
+        date: new Date().toLocaleDateString("fr-FR", { day: "numeric", month: "long", year: "numeric" }),
+        avgRiskScore: dashData.avgRiskScore,
+        totalEmployees: dashData.totalEmployees,
+        trainingRate: dashData.trainingRate,
+        clickRate,
+        employeesAtRisk: atRiskCount,
+        activeCampaigns: dashData.activeCampaigns,
+        statusDistribution: { safe: safeCount, moderate: moderateCount, atRisk: atRiskCount },
+        departments: dashData.deptRisk.map((d) => ({ name: d.department || "—", avgRisk: d.avgRisk, count: d.count })),
+        topRiskEmployees: topRisk,
+        trainingModules: modules.map((m) => ({ title: m.title, progressPercent: m.progress.progressPercent })),
+      });
+
+      toast.success("Rapport PDF généré — utilisez 'Enregistrer en PDF' dans la boîte d'impression");
       setExported(true);
-      window.print();
-      setTimeout(() => setExported(false), 2000);
-    }, 1000);
+      setTimeout(() => setExported(false), 3000);
+    } catch {
+      toast.error("Erreur lors de la génération du rapport");
+    } finally {
+      setExporting(false);
+    }
   };
 
   const handleCSV = () => {
