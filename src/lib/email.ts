@@ -9,7 +9,7 @@ function getResend(): Resend | null {
   return resendInstance;
 }
 
-const FROM = "RoxShield <onboarding@resend.dev>";
+export const EMAIL_FROM = process.env.RESEND_FROM_EMAIL || "RoxShield <onboarding@resend.dev>";
 
 // ── Wrapper ────────────────────────────────────────────────────────
 function layout(title: string, body: string) {
@@ -89,7 +89,7 @@ export async function sendInvitationEmail(opts: {
 
   try {
     const { error } = await resend.emails.send({
-      from: FROM,
+      from: EMAIL_FROM,
       to: [opts.to],
       subject: `Bienvenue sur RoxShield — ${opts.organizationName}`,
       html,

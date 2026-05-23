@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { Resend } from "resend";
 import { rateLimit } from "@/lib/rate-limit";
+import { EMAIL_FROM } from "@/lib/email";
 
 const TO_EMAIL = process.env.CONTACT_EMAIL || "contact@rostelhightech.com";
 
@@ -55,7 +56,7 @@ export async function POST(request: Request) {
     }
 
     await resend.emails.send({
-      from: "RoxShield <onboarding@resend.dev>",
+      from: EMAIL_FROM,
       to: [TO_EMAIL],
       replyTo: email,
       subject: `[RoxShield Contact] ${subject || "Nouveau message"} — ${name}`,

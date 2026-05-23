@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/db";
 import bcrypt from "bcryptjs";
 import { Resend } from "resend";
+import { EMAIL_FROM } from "@/lib/email";
 
 export const runtime = "nodejs";
 
@@ -40,7 +41,7 @@ export async function POST(request: NextRequest) {
       // Send email with new password
       try {
         await resend.emails.send({
-          from: process.env.RESEND_FROM_EMAIL || "RoxShield <onboarding@resend.dev>",
+          from: EMAIL_FROM,
           to: email,
           subject: "RoxShield — Réinitialisation de votre mot de passe",
           html: `
