@@ -62,6 +62,11 @@ export default function ProfilePage() {
   const [position, setPosition] = useState("");
   const [department, setDepartment] = useState("");
 
+  const [currentPassword, setCurrentPassword] = useState("");
+  const [newPassword, setNewPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [savingPassword, setSavingPassword] = useState(false);
+
   // Sync form when data loads
   const [initialized, setInitialized] = useState(false);
   if (user && !initialized) {
@@ -90,6 +95,42 @@ export default function ProfilePage() {
       toast.error(t("common.error"));
     } finally {
       setSaving(false);
+    }
+  };
+
+  const handleChangePassword = async () => {
+    if (!currentPassword || !newPassword) {
+      toast.error("Veuillez remplir tous les champs");
+      return;
+    }
+    if (newPassword.length < 8) {
+      toast.error("Le nouveau mot de passe doit contenir au moins 8 caractères");
+      return;
+    }
+    if (newPassword !== confirmPassword) {
+      toast.error("Les mots de passe ne correspondent pas");
+      return;
+    }
+    setSavingPassword(true);
+    try {
+      const res = await fetch("/api/me/password", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ currentPassword, newPassword }),
+      });
+      const data = await res.json();
+      if (res.ok) {
+        toast.success("Mot de passe mis à jour !");
+        setCurrentPassword("");
+        setNewPassword("");
+        setConfirmPassword("");
+      } else {
+        toast.error(data.error || t("common.error"));
+      }
+    } catch {
+      toast.error(t("common.error"));
+    } finally {
+      setSavingPassword(false);
     }
   };
 
@@ -241,16 +282,25 @@ export default function ProfilePage() {
                 <CardContent className="space-y-4">
                   <div className="space-y-2">
                     <Label className="text-xs">{t("profile.currentPassword")}</Label>
-                    <Input type="password" placeholder="••••••••" />
+                    <Input type="password" placeholder="••••••••" value={currentPassword} onChange={(e) => setCurrentPassword(e.target.value)} />
                   </div>
                   <div className="space-y-2">
                     <Label className="text-xs">{t("profile.newPassword")}</Label>
-                    <Input type="password" placeholder="••••••••" />
+                    <Input type="password" placeholder="••••••••" value={newPassword} onChange={(e) => setNewPassword(e.target.value)} />
                   </div>
                   <div className="space-y-2">
                     <Label className="text-xs">{t("profile.confirmPassword")}</Label>
-                    <Input type="password" placeholder="••••••••" />
+                    <Input type="password" placeholder="••••••••" value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} />
                   </div>
+                  <Button
+                    onClick={handleChangePassword}
+                    disabled={savingPassword || !currentPassword || !newPassword || !confirmPassword}
+                    variant="outline"
+                    size="sm"
+                    className="w-full"
+                  >
+                    {savingPassword ? t("common.saving") : t("profile.changePassword")}
+                  </Button>
                   <Separator />
                   <div className="flex items-center justify-between rounded-xl border p-3">
                     <div>

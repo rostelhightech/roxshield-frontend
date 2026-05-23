@@ -27,13 +27,20 @@ import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { Badge } from "@/components/ui/badge";
 import { useTranslation } from "@/lib/i18n";
+import { useApi } from "@/hooks/use-api";
 
 export default function EmployeeLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const { t } = useTranslation();
+  const { data: me } = useApi<{ name: string | null; email: string; organization: { name: string } | null }>("/api/me");
   const [collapsed, setCollapsed] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
   const [showOnboarding, setShowOnboarding] = useState(false);
+
+  const userName = me?.name || "Utilisateur";
+  const userEmail = me?.email || "";
+  const orgName = me?.organization?.name || "";
+  const initials = userName.split(" ").map((n) => n[0]).join("").toUpperCase().slice(0, 2);
 
   const navItems = [
     { label: t("nav.mySpace"), href: "/employee", icon: LayoutDashboard },
@@ -125,7 +132,7 @@ export default function EmployeeLayout({ children }: { children: React.ReactNode
               <p className="text-[10px] font-medium uppercase tracking-widest opacity-30">Employé</p>
             </div>
             <Badge className="mt-1 border-0 bg-cyber-green/10 text-cyber-green text-[10px]">
-              Safi Sénégal SARL
+              {orgName || "..."}
             </Badge>
           </div>
         )}
@@ -158,13 +165,13 @@ export default function EmployeeLayout({ children }: { children: React.ReactNode
           <div className={`flex items-center gap-3 rounded-xl px-3 py-2.5 ${collapsed ? "justify-center" : ""}`}>
             <Avatar className="h-8 w-8 shrink-0">
               <AvatarFallback className="bg-gradient-to-br from-cyber-green/80 to-cyber-green text-[11px] text-white">
-                FS
+                {initials}
               </AvatarFallback>
             </Avatar>
             {!collapsed && (
               <div className="flex-1 overflow-hidden">
-                <p className="truncate text-sm font-medium">Fatou Sow</p>
-                <p className="truncate text-[11px] opacity-40">f.sow@safisenegal.com</p>
+                <p className="truncate text-sm font-medium">{userName}</p>
+                <p className="truncate text-[11px] opacity-40">{userEmail}</p>
               </div>
             )}
             {!collapsed && (

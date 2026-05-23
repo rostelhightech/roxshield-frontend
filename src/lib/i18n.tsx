@@ -125,6 +125,7 @@ const dictionaries = {
     "profile.currentPassword": "Mot de passe actuel",
     "profile.newPassword": "Nouveau mot de passe",
     "profile.confirmPassword": "Confirmer",
+    "profile.changePassword": "Changer le mot de passe",
     "profile.2fa": "Authentification 2FA",
 
     // Employee space
@@ -677,6 +678,7 @@ const dictionaries = {
     "profile.currentPassword": "Current password",
     "profile.newPassword": "New password",
     "profile.confirmPassword": "Confirm",
+    "profile.changePassword": "Change password",
     "profile.2fa": "Two-factor authentication",
 
     // Employee space
