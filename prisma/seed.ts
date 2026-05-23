@@ -398,6 +398,61 @@ async function main() {
     });
   }
 
+  // ── Badges ──
+  console.log("  🏅 Badges...");
+
+  const badgeDefs = [
+    { slug: "first_training", name: "Premiers pas", description: "Complétez votre première formation", icon: "BookOpen", color: "from-cyber-green/80 to-cyber-green", category: "training", condition: { type: "trainings_completed", threshold: 1 } },
+    { slug: "phishing_eye", name: "Œil de lynx", description: "Détectez 3 tentatives de phishing", icon: "Eye", color: "from-rht-violet to-rht-violet-light", category: "phishing", condition: { type: "phishing_reported", threshold: 3 } },
+    { slug: "cyber_defender", name: "Cyber Défenseur", description: "Complétez 3 formations", icon: "Shield", color: "from-blue-500 to-blue-600", category: "training", condition: { type: "trainings_completed", threshold: 3 } },
+    { slug: "streak_7", name: "Série de 7", description: "Connectez-vous 7 jours consécutifs", icon: "Flame", color: "from-rht-orange to-yellow-500", category: "streak", condition: { type: "streak_days", threshold: 7 } },
+    { slug: "perfect_quiz", name: "Score parfait", description: "Obtenez 100% à un quiz", icon: "Target", color: "from-cyber-green to-emerald-500", category: "training", condition: { type: "quiz_perfect", threshold: 1 } },
+    { slug: "phishing_hunter", name: "Phishing Hunter", description: "Signalez 5 tentatives de phishing", icon: "Zap", color: "from-purple-500 to-pink-500", category: "phishing", condition: { type: "phishing_reported", threshold: 5 } },
+    { slug: "all_modules", name: "Expert Cyber", description: "Complétez tous les modules", icon: "Trophy", color: "from-yellow-500 to-amber-600", category: "special", condition: { type: "all_trainings_completed", threshold: 1 } },
+    { slug: "streak_30", name: "Série de 30", description: "Connectez-vous 30 jours consécutifs", icon: "Crown", color: "from-rht-orange to-red-500", category: "streak", condition: { type: "streak_days", threshold: 30 } },
+  ];
+
+  for (const b of badgeDefs) {
+    await prisma.badge.upsert({
+      where: { slug: b.slug },
+      update: {},
+      create: b,
+    });
+  }
+
+  // Award some badges to demo employees
+  const allBadges = await prisma.badge.findMany();
+  const badgeMap = Object.fromEntries(allBadges.map((b) => [b.slug, b.id]));
+
+  const badgeAwards = [
+    // Ousmane Fall (dev IT, 3 formations completed) - most badges
+    { userId: createdEmployees[3].id, slugs: ["first_training", "cyber_defender", "perfect_quiz", "streak_7"] },
+    // Aminata Diallo (1 completed, 1 in progress)
+    { userId: createdEmployees[0].id, slugs: ["first_training"] },
+    // Moussa Ndiaye (2 completed)
+    { userId: createdEmployees[1].id, slugs: ["first_training", "phishing_eye"] },
+    // Khady Ba (1 completed)
+    { userId: createdEmployees[2].id, slugs: ["first_training"] },
+    // Ibrahima Sarr (1 completed)
+    { userId: createdEmployees[5].id, slugs: ["first_training"] },
+  ];
+
+  for (const award of badgeAwards) {
+    for (const slug of award.slugs) {
+      if (badgeMap[slug]) {
+        await prisma.userBadge.upsert({
+          where: { userId_badgeId: { userId: award.userId, badgeId: badgeMap[slug] } },
+          update: {},
+          create: {
+            userId: award.userId,
+            badgeId: badgeMap[slug],
+            earnedAt: new Date(Date.now() - Math.random() * 60 * 24 * 60 * 60 * 1000),
+          },
+        });
+      }
+    }
+  }
+
   // ── Notifications ──
   console.log("  🔔 Notifications...");
 
@@ -429,6 +484,7 @@ async function main() {
   console.log("  5 audits chiffrement (5 zones)");
   console.log("  4 frameworks GRC");
   console.log("  5 entrées registre des risques");
+  console.log("  8 badges gamification");
 }
 
 main()

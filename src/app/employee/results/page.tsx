@@ -4,6 +4,7 @@ import { Header } from "@/components/layout/header";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
+import { Skeleton } from "@/components/ui/skeleton";
 import {
   Shield,
   Target,
@@ -16,70 +17,80 @@ import {
 import { FadeIn, StaggerContainer, StaggerItem, GlowCard } from "@/components/motion";
 import { motion } from "framer-motion";
 import { useTranslation } from "@/lib/i18n";
-import {
-  AreaChart,
-  Area,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  Tooltip,
-  ResponsiveContainer,
-} from "recharts";
+import { useApi } from "@/hooks/use-api";
 
-const riskHistory = [
-  { month: "Jan", score: 72 },
-  { month: "Fév", score: 65 },
-  { month: "Mar", score: 58 },
-  { month: "Avr", score: 50 },
-  { month: "Mai", score: 45 },
-];
+interface ResultsResponse {
+  stats: {
+    riskScore: number;
+    trainingsCompleted: number;
+    trainingsTotal: number;
+    avgQuizScore: number;
+    phishingReported: number;
+    phishingClicked: number;
+    phishingTotal: number;
+  };
+  trainings: {
+    id: string;
+    moduleTitle: string;
+    category: string;
+    difficulty: string;
+    duration: number;
+    badgeName: string | null;
+    status: string;
+    progressPercent: number;
+    quizScore: number | null;
+    completedAt: string | null;
+  }[];
+  phishing: {
+    id: string;
+    campaignName: string;
+    templateType: string;
+    action: string;
+    clickedAt: string | null;
+    reportedAt: string | null;
+    createdAt: string;
+  }[];
+  recentActivity: {
+    id: string;
+    action: string;
+    description: string | null;
+    createdAt: string;
+  }[];
+}
 
-const simulations = [
-  {
-    id: 1,
-    name: "Faux email RH — Bulletin de paie",
-    date: "2026-05-01",
-    type: "Email phishing",
-    result: "detected",
-    detail: "Signalé en 12 secondes",
-  },
-  {
-    id: 2,
-    name: "Faux message PDG — Virement urgent",
-    date: "2026-04-15",
-    type: "Spear-phishing",
-    result: "clicked",
-    detail: "Lien cliqué après 45 secondes",
-  },
-  {
-    id: 3,
-    name: "Faux fournisseur — Facture à régler",
-    date: "2026-03-28",
-    type: "Email phishing",
-    result: "detected",
-    detail: "Signalé en 8 secondes",
-  },
-];
-
-const quizResults = [
-  { module: "Phishing & Spear-phishing", score: 90, total: 100, date: "2026-04-20" },
-  { module: "Ingénierie sociale", score: 75, total: 100, date: "2026-04-25" },
-  { module: "Mots de passe & MFA", score: 85, total: 100, date: "2026-04-28" },
-  { module: "Faux emails professionnels", score: 70, total: 100, date: "2026-05-02" },
-  { module: "Sécurité des appareils", score: 80, total: 100, date: "2026-05-06" },
-  { module: "Réseaux sociaux & Fraude", score: 68, total: 100, date: "2026-05-10" },
-];
-
-const resultStyle = {
-  detected: { label: "Détecté", style: "bg-cyber-green/10 text-cyber-green", icon: CheckCircle },
-  clicked: { label: "Cliqué", style: "bg-cyber-red/10 text-cyber-red", icon: XCircle },
-  ignored: { label: "Ignoré", style: "bg-rht-orange/10 text-rht-orange", icon: AlertTriangle },
+const actionStyle = {
+  REPORTED: { label: "Signalé", style: "bg-cyber-green/10 text-cyber-green", icon: CheckCircle },
+  CLICKED: { label: "Cliqué", style: "bg-cyber-red/10 text-cyber-red", icon: XCircle },
+  SENT: { label: "Envoyé", style: "bg-muted text-muted-foreground", icon: AlertTriangle },
+  OPENED: { label: "Ouvert", style: "bg-rht-orange/10 text-rht-orange", icon: AlertTriangle },
+  IGNORED: { label: "Ignoré", style: "bg-rht-orange/10 text-rht-orange", icon: AlertTriangle },
 } as const;
 
 export default function EmployeeResultsPage() {
   const { t } = useTranslation();
-  const avgQuiz = Math.round(quizResults.reduce((a, q) => a + q.score, 0) / quizResults.length);
-  const detected = simulations.filter((s) => s.result === "detected").length;
+  const { data, loading } = useApi<ResultsResponse>("/api/employee/results");
+
+  if (loading) {
+    return (
+      <div>
+        <Header title={t("nav.results")} />
+        <div className="space-y-6 p-6">
+          <div className="grid gap-4 sm:grid-cols-3">
+            {[1, 2, 3].map((i) => (
+              <Card key={i}><CardContent className="p-5"><Skeleton className="h-16 w-full" /></CardContent></Card>
+            ))}
+          </div>
+          <Card><CardContent className="p-6"><Skeleton className="h-[300px] w-full" /></CardContent></Card>
+        </div>
+      </div>
+    );
+  }
+
+  const stats = data?.stats || { riskScore: 50, trainingsCompleted: 0, trainingsTotal: 0, avgQuizScore: 0, phishingReported: 0, phishingClicked: 0, phishingTotal: 0 };
+  const trainings = data?.trainings || [];
+  const phishing = data?.phishing || [];
+  const completedTrainings = trainings.filter((t) => t.status === "COMPLETED");
+  const phishingDetectRate = stats.phishingTotal > 0 ? Math.round((stats.phishingReported / stats.phishingTotal) * 100) : 0;
 
   return (
     <div>
@@ -87,9 +98,30 @@ export default function EmployeeResultsPage() {
       <div className="space-y-6 p-6">
         <StaggerContainer className="grid gap-4 sm:grid-cols-3">
           {[
-            { icon: Shield, label: "Score de risque actuel", value: "45%", sub: "-27 pts depuis janvier", bg: "bg-rht-orange/10", text: "text-rht-orange" },
-            { icon: Target, label: "Simulations détectées", value: `${detected}/${simulations.length}`, sub: `${Math.round((detected / simulations.length) * 100)}% de réussite`, bg: "bg-cyber-green/10", text: "text-cyber-green" },
-            { icon: BarChart3, label: "Score quiz moyen", value: `${avgQuiz}%`, sub: "Sur 6 modules", bg: "bg-rht-violet-light/10", text: "text-rht-violet-light" },
+            {
+              icon: Shield,
+              label: "Score de risque actuel",
+              value: `${stats.riskScore}%`,
+              sub: stats.riskScore <= 30 ? "Zone sûre" : stats.riskScore <= 60 ? "Modéré" : "À risque",
+              bg: "bg-rht-orange/10",
+              text: stats.riskScore <= 30 ? "text-cyber-green" : stats.riskScore <= 60 ? "text-rht-orange" : "text-cyber-red",
+            },
+            {
+              icon: Target,
+              label: "Simulations détectées",
+              value: `${stats.phishingReported}/${stats.phishingTotal}`,
+              sub: `${phishingDetectRate}% de réussite`,
+              bg: "bg-cyber-green/10",
+              text: "text-cyber-green",
+            },
+            {
+              icon: BarChart3,
+              label: "Score quiz moyen",
+              value: `${stats.avgQuizScore}%`,
+              sub: `Sur ${stats.trainingsCompleted} module${stats.trainingsCompleted > 1 ? "s" : ""}`,
+              bg: "bg-rht-violet-light/10",
+              text: "text-rht-violet-light",
+            },
           ].map((s) => (
             <StaggerItem key={s.label}>
               <GlowCard>
@@ -115,42 +147,6 @@ export default function EmployeeResultsPage() {
           ))}
         </StaggerContainer>
 
-        <FadeIn>
-          <Card>
-            <CardHeader className="pb-2">
-              <CardTitle className="text-sm font-semibold">Évolution de mon score de risque</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="h-[250px]">
-                <ResponsiveContainer width="100%" height="100%">
-                  <AreaChart data={riskHistory}>
-                    <defs>
-                      <linearGradient id="riskGrad" x1="0" y1="0" x2="0" y2="1">
-                        <stop offset="5%" stopColor="#25d366" stopOpacity={0.3} />
-                        <stop offset="95%" stopColor="#25d366" stopOpacity={0} />
-                      </linearGradient>
-                    </defs>
-                    <CartesianGrid strokeDasharray="3 3" className="stroke-border" />
-                    <XAxis dataKey="month" tick={{ fill: "var(--muted-foreground)", fontSize: 12 }} />
-                    <YAxis domain={[0, 100]} tick={{ fill: "var(--muted-foreground)", fontSize: 11 }} />
-                    <Tooltip
-                      contentStyle={{
-                        backgroundColor: "var(--card)",
-                        border: "1px solid var(--border)",
-                        borderRadius: "12px",
-                        fontSize: "12px",
-                        color: "var(--foreground)",
-                      }}
-                      formatter={(value) => [`${value}%`, "Score de risque"]}
-                    />
-                    <Area type="monotone" dataKey="score" stroke="#25d366" fill="url(#riskGrad)" strokeWidth={2} />
-                  </AreaChart>
-                </ResponsiveContainer>
-              </div>
-            </CardContent>
-          </Card>
-        </FadeIn>
-
         <div className="grid gap-6 lg:grid-cols-2">
           <FadeIn delay={0.1}>
             <Card>
@@ -158,35 +154,40 @@ export default function EmployeeResultsPage() {
                 <CardTitle className="text-sm font-semibold">Historique des simulations</CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="space-y-3">
-                  {simulations.map((sim, i) => {
-                    const res = resultStyle[sim.result as keyof typeof resultStyle];
-                    const ResIcon = res.icon;
-                    return (
-                      <motion.div
-                        key={sim.id}
-                        initial={{ opacity: 0, y: 10 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ delay: i * 0.08 }}
-                        className="rounded-xl border p-4 transition-colors hover:bg-accent"
-                      >
-                        <div className="flex items-start justify-between gap-3">
-                          <div className="flex items-start gap-3">
-                            <div className={`mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-lg ${res.style}`}>
-                              <ResIcon className="h-4 w-4" />
+                {phishing.length === 0 ? (
+                  <p className="py-8 text-center text-sm text-muted-foreground">Aucune simulation reçue</p>
+                ) : (
+                  <div className="space-y-3">
+                    {phishing.map((sim, i) => {
+                      const res = actionStyle[sim.action as keyof typeof actionStyle] || actionStyle.SENT;
+                      const ResIcon = res.icon;
+                      return (
+                        <motion.div
+                          key={sim.id}
+                          initial={{ opacity: 0, y: 10 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          transition={{ delay: i * 0.08 }}
+                          className="rounded-xl border p-4 transition-colors hover:bg-accent"
+                        >
+                          <div className="flex items-start justify-between gap-3">
+                            <div className="flex items-start gap-3">
+                              <div className={`mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-lg ${res.style}`}>
+                                <ResIcon className="h-4 w-4" />
+                              </div>
+                              <div>
+                                <p className="text-sm font-medium">{sim.campaignName}</p>
+                                <p className="text-xs text-muted-foreground">
+                                  {sim.templateType} — {new Date(sim.createdAt).toLocaleDateString("fr-FR")}
+                                </p>
+                              </div>
                             </div>
-                            <div>
-                              <p className="text-sm font-medium">{sim.name}</p>
-                              <p className="text-xs text-muted-foreground">{sim.type} — {sim.date}</p>
-                              <p className="mt-1 text-xs text-muted-foreground">{sim.detail}</p>
-                            </div>
+                            <Badge className={`shrink-0 border-0 text-[10px] ${res.style}`}>{res.label}</Badge>
                           </div>
-                          <Badge className={`shrink-0 border-0 text-[10px] ${res.style}`}>{res.label}</Badge>
-                        </div>
-                      </motion.div>
-                    );
-                  })}
-                </div>
+                        </motion.div>
+                      );
+                    })}
+                  </div>
+                )}
               </CardContent>
             </Card>
           </FadeIn>
@@ -197,26 +198,34 @@ export default function EmployeeResultsPage() {
                 <CardTitle className="text-sm font-semibold">Scores des quiz</CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="space-y-3">
-                  {quizResults.map((quiz, i) => (
-                    <motion.div
-                      key={quiz.module}
-                      initial={{ opacity: 0, y: 10 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      transition={{ delay: i * 0.06 }}
-                      className="rounded-xl border p-3"
-                    >
-                      <div className="flex items-center justify-between text-sm">
-                        <span className="font-medium">{quiz.module}</span>
-                        <span className={`font-bold ${
-                          quiz.score >= 80 ? "text-cyber-green" : quiz.score >= 60 ? "text-rht-orange" : "text-cyber-red"
-                        }`}>{quiz.score}%</span>
-                      </div>
-                      <Progress value={quiz.score} className="mt-2 h-2" />
-                      <p className="mt-1 text-[10px] text-muted-foreground">{quiz.date}</p>
-                    </motion.div>
-                  ))}
-                </div>
+                {completedTrainings.length === 0 ? (
+                  <p className="py-8 text-center text-sm text-muted-foreground">Aucun quiz complété</p>
+                ) : (
+                  <div className="space-y-3">
+                    {completedTrainings.map((quiz, i) => (
+                      <motion.div
+                        key={quiz.id}
+                        initial={{ opacity: 0, y: 10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: i * 0.06 }}
+                        className="rounded-xl border p-3"
+                      >
+                        <div className="flex items-center justify-between text-sm">
+                          <span className="font-medium">{quiz.moduleTitle}</span>
+                          <span className={`font-bold ${
+                            (quiz.quizScore || 0) >= 80 ? "text-cyber-green" : (quiz.quizScore || 0) >= 60 ? "text-rht-orange" : "text-cyber-red"
+                          }`}>{quiz.quizScore || 0}%</span>
+                        </div>
+                        <Progress value={quiz.quizScore || 0} className="mt-2 h-2" />
+                        {quiz.completedAt && (
+                          <p className="mt-1 text-[10px] text-muted-foreground">
+                            {new Date(quiz.completedAt).toLocaleDateString("fr-FR")}
+                          </p>
+                        )}
+                      </motion.div>
+                    ))}
+                  </div>
+                )}
               </CardContent>
             </Card>
           </FadeIn>

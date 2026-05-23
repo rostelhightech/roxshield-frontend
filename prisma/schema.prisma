@@ -109,6 +109,7 @@ model User {
   trainingProgress   TrainingProgress[]
   activityLogs       ActivityLog[]
   notifications      Notification[]
+  badges             UserBadge[]
 }
 
 // ── Module 2 : Simulations de Phishing ──
@@ -328,6 +329,32 @@ model RiskEntry {
   organization    Organization @relation(fields: [organizationId], references: [id])
   createdAt       DateTime @default(now())
   updatedAt       DateTime @updatedAt
+}
+
+// ── Badges & Gamification ──
+
+model Badge {
+  id          String      @id @default(cuid())
+  slug        String      @unique // "first_training", "phishing_hunter", "cyber_defender", etc.
+  name        String
+  description String
+  icon        String      @default("Award") // Lucide icon name
+  color       String      @default("from-rht-violet to-rht-violet-light")
+  category    String      @default("training") // "training", "phishing", "streak", "special"
+  condition   Json?       // { type: "trainings_completed", threshold: 1 }
+  earnedBy    UserBadge[]
+  createdAt   DateTime    @default(now())
+}
+
+model UserBadge {
+  id       String   @id @default(cuid())
+  userId   String
+  user     User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  badgeId  String
+  badge    Badge    @relation(fields: [badgeId], references: [id], onDelete: Cascade)
+  earnedAt DateTime @default(now())
+
+  @@unique([userId, badgeId])
 }
 
 // ── Activité & Notifications ──
