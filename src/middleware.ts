@@ -1,6 +1,8 @@
 import { auth } from "@/auth";
 import { NextResponse } from "next/server";
 
+export const runtime = "nodejs";
+
 const protectedPaths = ["/dashboard", "/employee", "/admin"];
 const publicPaths = ["/", "/login", "/pricing", "/about", "/demo", "/contact", "/legal"];
 

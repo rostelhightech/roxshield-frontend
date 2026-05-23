@@ -10,6 +10,12 @@ export function LanguageSwitcher() {
   const toggle = () => {
     const next: Locale = locale === "fr" ? "en" : "fr";
     setLocale(next);
+    // Persister la préférence de langue côté serveur
+    fetch("/api/me", {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ locale: next }),
+    }).catch(() => {});
   };
 
   return (

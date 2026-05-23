@@ -12,9 +12,17 @@ import {
   Building2,
   MessageSquare,
 } from "lucide-react";
-import { supportTickets } from "@/lib/mock-data";
 import { FadeIn, StaggerContainer, StaggerItem, GlowCard } from "@/components/motion";
 import { motion } from "framer-motion";
+
+// Données de support (fonctionnalité à venir — pas de modèle DB)
+const supportTickets = [
+  { id: "TK-001", subject: "Impossible de lancer une campagne", org: "TechDakar SARL", date: "22 mai 2025", priority: "high", status: "open" },
+  { id: "TK-002", subject: "Export PDF ne fonctionne pas", org: "SenFinance SA", date: "21 mai 2025", priority: "medium", status: "in-progress" },
+  { id: "TK-003", subject: "Demande d'ajout de module personnalisé", org: "EduCampus Thiès", date: "20 mai 2025", priority: "low", status: "resolved" },
+  { id: "TK-004", subject: "Erreur lors de l'import CSV employés", org: "TechDakar SARL", date: "19 mai 2025", priority: "medium", status: "open" },
+  { id: "TK-005", subject: "Question sur la facturation Enterprise", org: "SenFinance SA", date: "18 mai 2025", priority: "low", status: "resolved" },
+];
 
 const priorityStyle = {
   low: { label: "Basse", style: "bg-cyber-green/10 text-cyber-green" },

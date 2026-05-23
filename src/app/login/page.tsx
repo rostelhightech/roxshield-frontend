@@ -230,9 +230,9 @@ export default function LoginPage() {
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
-  const [selectedRole, setSelectedRole] = useState("admin-client");
-  const [email, setEmail] = useState("f.sow@safisenegal.com");
-  const [password, setPassword] = useState("demo1234");
+  const [selectedRole, setSelectedRole] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
 
   const selectRole = (roleId: string) => {
     setSelectedRole(roleId);

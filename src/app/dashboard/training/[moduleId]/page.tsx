@@ -6,6 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
+import { Skeleton } from "@/components/ui/skeleton";
 import {
   ArrowLeft,
   ArrowRight,
@@ -18,10 +19,11 @@ import {
   Play,
   RotateCcw,
 } from "lucide-react";
-import { trainingModules } from "@/lib/mock-data";
 import Link from "next/link";
 import { FadeIn } from "@/components/motion";
 import { motion, AnimatePresence } from "framer-motion";
+import { toast } from "sonner";
+import { useApi } from "@/hooks/use-api";
 
 type Lesson = {
   title: string;
@@ -358,9 +360,25 @@ const defaultContent: { lessons: Lesson[]; quiz: Quiz[] } = {
   ],
 };
 
+interface TrainingModule {
+  id: string;
+  title: string;
+  description: string | null;
+  category: string;
+  difficulty: string;
+  durationMinutes: number;
+  badgeIcon: string | null;
+  badgeName: string | null;
+  progress: { status: string; progressPercent: number; quizScore: number | null };
+}
+
+interface TrainingResponse {
+  modules: TrainingModule[];
+}
+
 export default function ModulePage({ params }: { params: Promise<{ moduleId: string }> }) {
   const { moduleId } = use(params);
-  const module = trainingModules.find((m) => m.id === moduleId);
+  const { data, loading } = useApi<TrainingResponse>("/api/training");
   const content = moduleContent[moduleId] || defaultContent;
 
   const [phase, setPhase] = useState<"lessons" | "quiz" | "results">("lessons");
@@ -370,6 +388,29 @@ export default function ModulePage({ params }: { params: Promise<{ moduleId: str
   const [answered, setAnswered] = useState(false);
   const [score, setScore] = useState(0);
   const [completedLessons, setCompletedLessons] = useState<number[]>([]);
+
+  const module = data?.modules.find((m) => m.id === moduleId);
+
+  if (loading) {
+    return (
+      <div>
+        <Header title="Chargement..." />
+        <div className="space-y-6 p-6">
+          <Skeleton className="h-10 w-48" />
+          <div className="grid gap-6 lg:grid-cols-3">
+            <div className="space-y-6 lg:col-span-2">
+              <Card><CardContent className="p-6"><Skeleton className="h-24 w-full" /></CardContent></Card>
+              <Card><CardContent className="p-6"><Skeleton className="h-[400px] w-full" /></CardContent></Card>
+            </div>
+            <div className="space-y-4">
+              <Card><CardContent className="p-6"><Skeleton className="h-20 w-full" /></CardContent></Card>
+              <Card><CardContent className="p-6"><Skeleton className="h-40 w-full" /></CardContent></Card>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   if (!module) {
     return (
@@ -387,10 +428,24 @@ export default function ModulePage({ params }: { params: Promise<{ moduleId: str
     );
   }
 
+  const difficultyLabel = module.difficulty === "BEGINNER" ? "Débutant" : module.difficulty === "INTERMEDIATE" ? "Intermédiaire" : "Avancé";
+  const durationLabel = module.durationMinutes >= 60 ? `${Math.floor(module.durationMinutes / 60)}h${module.durationMinutes % 60 > 0 ? module.durationMinutes % 60 + "min" : ""}` : `${module.durationMinutes} min`;
+
   const handleCompleteLesson = () => {
+    const newCompleted = completedLessons.includes(currentLesson)
+      ? completedLessons
+      : [...completedLessons, currentLesson];
     if (!completedLessons.includes(currentLesson)) {
-      setCompletedLessons([...completedLessons, currentLesson]);
+      setCompletedLessons(newCompleted);
     }
+    // Envoyer la progression partielle
+    const percent = Math.round((newCompleted.length / (content.lessons.length + content.quiz.length)) * 100);
+    fetch("/api/training", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ moduleId, progressPercent: Math.min(percent, 99) }),
+    }).catch(() => {});
+
     if (currentLesson < content.lessons.length - 1) {
       setCurrentLesson(currentLesson + 1);
     } else {
@@ -414,6 +469,19 @@ export default function ModulePage({ params }: { params: Promise<{ moduleId: str
       setAnswered(false);
     } else {
       setPhase("results");
+      // Envoyer la progression au serveur
+      const finalScore = score + (selectedAnswer === content.quiz[currentQuestion].correct ? 1 : 0);
+      fetch("/api/training", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          moduleId,
+          progressPercent: 100,
+          quizScore: Math.round((finalScore / content.quiz.length) * 100),
+        }),
+      })
+        .then((res) => { if (res.ok) toast.success("Progression enregistrée !"); })
+        .catch(() => {});
     }
   };
 
@@ -451,7 +519,7 @@ export default function ModulePage({ params }: { params: Promise<{ moduleId: str
               <Card>
                 <CardContent className="p-6">
                   <div className="mb-4 flex items-center gap-3">
-                    <span className="text-3xl">{module.icon}</span>
+                    <span className="text-3xl">{module.badgeIcon || "📚"}</span>
                     <div>
                       <h2 className="text-xl font-bold">{module.title}</h2>
                       <p className="text-sm text-muted-foreground">{module.description}</p>
@@ -461,7 +529,7 @@ export default function ModulePage({ params }: { params: Promise<{ moduleId: str
                     <Badge className="border-0 bg-rht-violet/10 text-rht-violet-light">{module.category}</Badge>
                     <span className="flex items-center gap-1">
                       <Clock className="h-4 w-4" />
-                      {module.duration}
+                      {durationLabel}
                     </span>
                   </div>
                 </CardContent>
@@ -743,11 +811,11 @@ export default function ModulePage({ params }: { params: Promise<{ moduleId: str
                 <CardContent className="space-y-3 text-sm">
                   <div className="flex justify-between">
                     <span className="text-muted-foreground">Difficulté</span>
-                    <span className="font-medium">{module.difficulty}</span>
+                    <span className="font-medium">{difficultyLabel}</span>
                   </div>
                   <div className="flex justify-between">
                     <span className="text-muted-foreground">Durée</span>
-                    <span className="font-medium">{module.duration}</span>
+                    <span className="font-medium">{durationLabel}</span>
                   </div>
                   <div className="flex justify-between">
                     <span className="text-muted-foreground">Leçons</span>

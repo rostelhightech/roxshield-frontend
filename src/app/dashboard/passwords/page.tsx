@@ -4,6 +4,7 @@ import { Header } from "@/components/layout/header";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { Skeleton } from "@/components/ui/skeleton";
 import {
   ShieldAlert,
   AlertTriangle,
@@ -13,36 +14,67 @@ import {
 import { FadeIn } from "@/components/motion";
 import { useTranslation } from "@/lib/i18n";
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip } from "recharts";
+import { useApi } from "@/hooks/use-api";
 
-const mfaData = [
-  { name: "enabled", value: 10, color: "#16a34a" },
-  { name: "disabled", value: 35, color: "#ef4444" },
-];
-
-const sevStyle = {
-  critical: "bg-cyber-red/10 text-cyber-red",
-  high: "bg-rht-orange/10 text-rht-orange",
-  medium: "bg-yellow-500/10 text-yellow-500",
-};
+interface PasswordsResponse {
+  audit: any;
+  stats: {
+    hygieneScore: number;
+    weakPercent: number;
+    reusedPercent: number;
+    mfaPercent: number;
+    mfaEnabled?: number;
+    noMfa?: number;
+    totalAccounts: number;
+  };
+}
 
 export default function PasswordsPage() {
   const { t } = useTranslation();
+  const { data, loading } = useApi<PasswordsResponse>("/api/passwords");
 
-  const stats = [
-    { label: t("passwords.hygieneScore" as any), value: "42/100", status: t("status.critical" as any), color: "text-cyber-red" },
-    { label: t("passwords.weakDetected" as any), value: "34%", status: t("passwords.ofEmployees" as any), color: "text-cyber-red" },
-    { label: t("passwords.reused" as any), value: "28%", status: t("passwords.ofEmployees" as any), color: "text-rht-orange" },
-    { label: t("passwords.mfaActive" as any), value: "23%", status: t("passwords.ofAccounts" as any), color: "text-rht-orange" },
-  ];
+  if (loading) {
+    return (
+      <div>
+        <Header title={t("passwords.title" as any)} />
+        <div className="space-y-6 p-6">
+          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+            {[1, 2, 3, 4].map((i) => (
+              <Card key={i}><CardContent className="p-4"><Skeleton className="h-16 w-full" /></CardContent></Card>
+            ))}
+          </div>
+          <div className="grid gap-6 lg:grid-cols-2">
+            <Card><CardContent className="p-6"><Skeleton className="h-[300px] w-full" /></CardContent></Card>
+            <Card><CardContent className="p-6"><Skeleton className="h-[300px] w-full" /></CardContent></Card>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
-  const passwordIssues = [
-    { issue: t("passwords.issue.short" as any), count: 8, severity: "critical" as const },
-    { issue: t("passwords.issue.noSpecial" as any), count: 15, severity: "high" as const },
-    { issue: t("passwords.issue.reused" as any), count: 12, severity: "high" as const },
-    { issue: t("passwords.issue.old" as any), count: 22, severity: "medium" as const },
-    { issue: t("passwords.issue.shared" as any), count: 6, severity: "critical" as const },
-    { issue: t("passwords.issue.written" as any), count: 4, severity: "critical" as const },
-  ];
+  const stats = data?.stats || { hygieneScore: 0, weakPercent: 0, reusedPercent: 0, mfaPercent: 0, totalAccounts: 0 };
+  const audit = data?.audit;
+
+  const mfaEnabled = stats.mfaEnabled || 0;
+  const noMfa = stats.noMfa || 0;
+  const mfaData = [
+    { name: "enabled", value: mfaEnabled, color: "#16a34a" },
+    { name: "disabled", value: noMfa, color: "#ef4444" },
+  ].filter((d) => d.value > 0);
+
+  const sevStyle = {
+    critical: "bg-cyber-red/10 text-cyber-red",
+    high: "bg-rht-orange/10 text-rht-orange",
+    medium: "bg-yellow-500/10 text-yellow-500",
+  };
+
+  // Issues from audit JSON or derive from stats
+  const issues = audit?.issues as any[] || [];
+  const passwordIssues = issues.length > 0 ? issues : [
+    { issue: t("passwords.issue.short" as any), count: Math.round(stats.weakPercent * stats.totalAccounts / 100), severity: "critical" as const },
+    { issue: t("passwords.issue.reused" as any), count: Math.round(stats.reusedPercent * stats.totalAccounts / 100), severity: "high" as const },
+    { issue: t("passwords.issue.noSpecial" as any), count: Math.round(stats.weakPercent * stats.totalAccounts / 200), severity: "high" as const },
+  ].filter((i) => i.count > 0);
 
   const recommendations = [
     {
@@ -82,12 +114,16 @@ export default function PasswordsPage() {
         {/* Stats */}
         <FadeIn>
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-            {stats.map((s) => (
+            {[
+              { label: t("passwords.hygieneScore" as any), value: `${stats.hygieneScore}/100`, color: stats.hygieneScore < 50 ? "text-cyber-red" : "text-rht-orange" },
+              { label: t("passwords.weakDetected" as any), value: `${stats.weakPercent}%`, color: "text-cyber-red" },
+              { label: t("passwords.reused" as any), value: `${stats.reusedPercent}%`, color: "text-rht-orange" },
+              { label: t("passwords.mfaActive" as any), value: `${stats.mfaPercent}%`, color: stats.mfaPercent < 50 ? "text-rht-orange" : "text-cyber-green" },
+            ].map((s) => (
               <Card key={s.label}>
                 <CardContent className="p-4">
                   <p className="text-xs text-muted-foreground">{s.label}</p>
                   <p className={`mt-1 text-2xl font-bold ${s.color}`}>{s.value}</p>
-                  <p className="text-[11px] text-muted-foreground">{s.status}</p>
                 </CardContent>
               </Card>
             ))}
@@ -95,7 +131,7 @@ export default function PasswordsPage() {
         </FadeIn>
 
         <div className="grid gap-6 lg:grid-cols-2">
-          {/* Problèmes détectés */}
+          {/* Problemes detectes */}
           <FadeIn delay={0.1}>
             <Card>
               <CardHeader>
@@ -105,25 +141,27 @@ export default function PasswordsPage() {
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="space-y-3">
-                  {passwordIssues.map((issue) => (
-                    <div key={issue.issue} className="flex items-center justify-between rounded-lg border p-3">
-                      <div className="flex items-center gap-3">
-                        {issue.severity === "critical" ? (
-                          <XCircle className="h-4 w-4 shrink-0 text-cyber-red" />
-                        ) : issue.severity === "high" ? (
-                          <AlertTriangle className="h-4 w-4 shrink-0 text-rht-orange" />
-                        ) : (
-                          <AlertTriangle className="h-4 w-4 shrink-0 text-yellow-500" />
-                        )}
-                        <span className="text-sm">{issue.issue}</span>
+                {passwordIssues.length === 0 ? (
+                  <p className="py-8 text-center text-sm text-muted-foreground">{t("passwords.noIssues" as any)}</p>
+                ) : (
+                  <div className="space-y-3">
+                    {passwordIssues.map((issue: any, idx: number) => (
+                      <div key={idx} className="flex items-center justify-between rounded-lg border p-3">
+                        <div className="flex items-center gap-3">
+                          {issue.severity === "critical" ? (
+                            <XCircle className="h-4 w-4 shrink-0 text-cyber-red" />
+                          ) : (
+                            <AlertTriangle className={`h-4 w-4 shrink-0 ${issue.severity === "high" ? "text-rht-orange" : "text-yellow-500"}`} />
+                          )}
+                          <span className="text-sm">{issue.issue}</span>
+                        </div>
+                        <Badge className={`text-[10px] ${sevStyle[issue.severity as keyof typeof sevStyle] || sevStyle.medium}`}>
+                          {issue.count} {t("common.employees" as any)}
+                        </Badge>
                       </div>
-                      <Badge className={`text-[10px] ${sevStyle[issue.severity]}`}>
-                        {issue.count} {t("common.employees" as any)}
-                      </Badge>
-                    </div>
-                  ))}
-                </div>
+                    ))}
+                  </div>
+                )}
               </CardContent>
             </Card>
           </FadeIn>
@@ -152,11 +190,11 @@ export default function PasswordsPage() {
                     <div className="space-y-2">
                       <div className="flex items-center gap-2">
                         <div className="h-3 w-3 rounded-full bg-cyber-green" />
-                        <span className="text-sm">{t("passwords.mfaEnabled" as any)} — 10 {t("passwords.accounts" as any)} (23%)</span>
+                        <span className="text-sm">{t("passwords.mfaEnabled" as any)} — {mfaEnabled} ({stats.mfaPercent}%)</span>
                       </div>
                       <div className="flex items-center gap-2">
                         <div className="h-3 w-3 rounded-full bg-cyber-red" />
-                        <span className="text-sm">{t("passwords.mfaDisabled" as any)} — 35 {t("passwords.accounts" as any)} (77%)</span>
+                        <span className="text-sm">{t("passwords.mfaDisabled" as any)} — {noMfa} ({100 - stats.mfaPercent}%)</span>
                       </div>
                       <p className="mt-2 text-xs text-muted-foreground">
                         {t("passwords.mfaGoal" as any)}

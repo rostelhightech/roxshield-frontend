@@ -6,6 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { Button } from "@/components/ui/button";
+import { Skeleton } from "@/components/ui/skeleton";
 import {
   Dialog,
   DialogContent,
@@ -27,8 +28,6 @@ import {
   Clock,
   Eye,
 } from "lucide-react";
-import { simulationResults } from "@/lib/mock-data";
-import type { SimulationResult } from "@/lib/mock-data";
 import {
   BarChart,
   Bar,
@@ -42,45 +41,103 @@ import {
 import { FadeIn, StaggerContainer, StaggerItem, GlowCard } from "@/components/motion";
 import { motion, AnimatePresence } from "framer-motion";
 import { useTranslation } from "@/lib/i18n";
+import { useApi } from "@/hooks/use-api";
 
-const chartData = simulationResults.map((sim) => ({
-  name: sim.campaign.length > 25 ? sim.campaign.slice(0, 25) + "…" : sim.campaign,
-  Cliqué: sim.clicked,
-  Signalé: sim.reported,
-  Ignoré: sim.ignored,
-}));
+interface Campaign {
+  id: string;
+  name: string;
+  templateType: string;
+  status: string;
+  totalTargets: number;
+  sentCount: number;
+  clickCount: number;
+  reportCount: number;
+  startedAt: string | null;
+  completedAt: string | null;
+  createdAt: string;
+}
+
+interface CampaignsResponse {
+  campaigns: Campaign[];
+  stats: {
+    totalCampaigns: number;
+    totalSent: number;
+    clickRate: number;
+    reportRate: number;
+  };
+}
 
 const templateOptions = [
-  { id: "rh-paie", label: "Faux bulletin de paie", type: "Email phishing", description: "Un email imitant les RH demandant de vérifier un bulletin de paie" },
-  { id: "pdg-virement", label: "Virement urgent du PDG", type: "Spear-phishing", description: "Usurpation d'identité du PDG demandant un virement immédiat" },
+  { id: "rh-paie", label: "Faux bulletin de paie", type: "Email phishing", description: "Un email imitant les RH demandant de verifier un bulletin de paie" },
+  { id: "pdg-virement", label: "Virement urgent du PDG", type: "Spear-phishing", description: "Usurpation d'identite du PDG demandant un virement immediat" },
   { id: "facture-fournisseur", label: "Facture fournisseur", type: "Email phishing", description: "Fausse facture avec un lien vers un portail de paiement frauduleux" },
-  { id: "momo-verification", label: "Vérification Mobile Money", type: "Smishing", description: "SMS simulant une vérification de compte Mobile Money" },
+  { id: "momo-verification", label: "Verification Mobile Money", type: "Smishing", description: "SMS simulant une verification de compte Mobile Money" },
 ];
 
 export default function SimulationsPage() {
   const { t } = useTranslation();
+  const { data, loading, refetch } = useApi<CampaignsResponse>("/api/campaigns");
   const [createOpen, setCreateOpen] = useState(false);
-  const [detailSim, setDetailSim] = useState<SimulationResult | null>(null);
+  const [detailCampaign, setDetailCampaign] = useState<Campaign | null>(null);
   const [selectedTemplate, setSelectedTemplate] = useState<string | null>(null);
   const [launching, setLaunching] = useState(false);
   const [launched, setLaunched] = useState(false);
 
-  const totalSent = simulationResults.reduce((a, s) => a + s.totalTargets, 0);
-  const totalClicked = simulationResults.reduce((a, s) => a + s.clicked, 0);
-  const totalReported = simulationResults.reduce((a, s) => a + s.reported, 0);
+  const campaigns = data?.campaigns || [];
+  const stats = data?.stats || { totalCampaigns: 0, totalSent: 0, clickRate: 0, reportRate: 0 };
 
-  const handleLaunch = () => {
+  const chartData = campaigns.map((c) => ({
+    name: c.name.length > 25 ? c.name.slice(0, 25) + "…" : c.name,
+    Clique: c.clickCount,
+    Signale: c.reportCount,
+    Ignore: Math.max(0, c.sentCount - c.clickCount - c.reportCount),
+  }));
+
+  const handleLaunch = async () => {
+    if (!selectedTemplate) return;
     setLaunching(true);
-    setTimeout(() => {
+    try {
+      const tpl = templateOptions.find((t) => t.id === selectedTemplate);
+      const res = await fetch("/api/campaigns", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          name: tpl?.label || "Nouvelle campagne",
+          templateType: tpl?.type || "email_phishing",
+          description: tpl?.description,
+        }),
+      });
+      if (res.ok) {
+        setLaunched(true);
+        await refetch();
+        setTimeout(() => {
+          setCreateOpen(false);
+          setLaunched(false);
+          setSelectedTemplate(null);
+        }, 2000);
+      }
+    } catch {
+      // silently fail
+    } finally {
       setLaunching(false);
-      setLaunched(true);
-      setTimeout(() => {
-        setCreateOpen(false);
-        setLaunched(false);
-        setSelectedTemplate(null);
-      }, 2000);
-    }, 1500);
+    }
   };
+
+  if (loading) {
+    return (
+      <div>
+        <Header title={t("simulations.title")} />
+        <div className="space-y-6 p-6">
+          <div className="grid gap-4 sm:grid-cols-4">
+            {[1, 2, 3, 4].map((i) => (
+              <Card key={i}><CardContent className="p-4"><Skeleton className="h-16 w-full" /></CardContent></Card>
+            ))}
+          </div>
+          <Card><CardContent className="p-6"><Skeleton className="h-[300px] w-full" /></CardContent></Card>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div>
@@ -89,7 +146,7 @@ export default function SimulationsPage() {
         <FadeIn>
           <div className="flex items-center justify-between">
             <p className="text-sm text-muted-foreground">
-              Testez la vigilance de vos équipes avec des campagnes de phishing simulées
+              {t("simulations.description" as any)}
             </p>
             <motion.div whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.98 }}>
               <Button
@@ -105,10 +162,10 @@ export default function SimulationsPage() {
 
         <StaggerContainer className="grid gap-4 sm:grid-cols-4">
           {[
-            { icon: Crosshair, value: simulationResults.length, label: t("simulations.activeCampaigns"), bg: "bg-rht-violet/10", text: "text-rht-violet" },
-            { icon: Send, value: totalSent, label: t("simulations.totalSent"), bg: "bg-rht-violet-light/10", text: "text-rht-violet-light" },
-            { icon: MousePointerClick, value: Math.round((totalClicked / totalSent) * 100) + "%", label: t("simulations.clickRate"), bg: "bg-cyber-red/10", text: "text-cyber-red" },
-            { icon: Flag, value: Math.round((totalReported / totalSent) * 100) + "%", label: t("simulations.reportRate"), bg: "bg-cyber-green/10", text: "text-cyber-green" },
+            { icon: Crosshair, value: stats.totalCampaigns, label: t("simulations.activeCampaigns"), bg: "bg-rht-violet/10", text: "text-rht-violet" },
+            { icon: Send, value: stats.totalSent, label: t("simulations.totalSent"), bg: "bg-rht-violet-light/10", text: "text-rht-violet-light" },
+            { icon: MousePointerClick, value: stats.clickRate + "%", label: t("simulations.clickRate"), bg: "bg-cyber-red/10", text: "text-cyber-red" },
+            { icon: Flag, value: stats.reportRate + "%", label: t("simulations.reportRate"), bg: "bg-cyber-green/10", text: "text-cyber-green" },
           ].map((s) => (
             <StaggerItem key={s.label}>
               <GlowCard>
@@ -130,102 +187,103 @@ export default function SimulationsPage() {
           ))}
         </StaggerContainer>
 
-        <FadeIn>
-          <Card>
-            <CardHeader className="pb-2">
-              <CardTitle className="text-sm font-semibold">Résultats par campagne</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="h-[300px]">
-                <ResponsiveContainer width="100%" height="100%">
-                  <BarChart data={chartData}>
-                    <CartesianGrid strokeDasharray="3 3" className="stroke-border" />
-                    <XAxis dataKey="name" tick={{ fill: "var(--muted-foreground)", fontSize: 11 }} />
-                    <YAxis tick={{ fill: "var(--muted-foreground)", fontSize: 12 }} />
-                    <Tooltip
-                      contentStyle={{
-                        backgroundColor: "var(--card)",
-                        border: "1px solid var(--border)",
-                        borderRadius: "12px",
-                        fontSize: "12px",
-                        color: "var(--foreground)",
-                      }}
-                    />
-                    <Legend formatter={(value) => <span style={{ color: "var(--foreground)", fontSize: "12px" }}>{value}</span>} />
-                    <Bar dataKey="Cliqué" fill="#ef4444" radius={[4, 4, 0, 0]} />
-                    <Bar dataKey="Signalé" fill="#25d366" radius={[4, 4, 0, 0]} />
-                    <Bar dataKey="Ignoré" fill="#fa990e" radius={[4, 4, 0, 0]} />
-                  </BarChart>
-                </ResponsiveContainer>
-              </div>
-            </CardContent>
-          </Card>
-        </FadeIn>
+        {chartData.length > 0 && (
+          <FadeIn>
+            <Card>
+              <CardHeader className="pb-2">
+                <CardTitle className="text-sm font-semibold">{t("simulations.resultsByCampaign" as any)}</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="h-[300px]">
+                  <ResponsiveContainer width="100%" height="100%">
+                    <BarChart data={chartData}>
+                      <CartesianGrid strokeDasharray="3 3" className="stroke-border" />
+                      <XAxis dataKey="name" tick={{ fill: "var(--muted-foreground)", fontSize: 11 }} />
+                      <YAxis tick={{ fill: "var(--muted-foreground)", fontSize: 12 }} />
+                      <Tooltip
+                        contentStyle={{
+                          backgroundColor: "var(--card)",
+                          border: "1px solid var(--border)",
+                          borderRadius: "12px",
+                          fontSize: "12px",
+                          color: "var(--foreground)",
+                        }}
+                      />
+                      <Legend formatter={(value) => <span style={{ color: "var(--foreground)", fontSize: "12px" }}>{value}</span>} />
+                      <Bar dataKey="Clique" fill="#ef4444" radius={[4, 4, 0, 0]} />
+                      <Bar dataKey="Signale" fill="#25d366" radius={[4, 4, 0, 0]} />
+                      <Bar dataKey="Ignore" fill="#fa990e" radius={[4, 4, 0, 0]} />
+                    </BarChart>
+                  </ResponsiveContainer>
+                </div>
+              </CardContent>
+            </Card>
+          </FadeIn>
+        )}
 
         <FadeIn delay={0.1}>
           <Card>
             <CardHeader className="pb-3">
-              <CardTitle className="text-sm font-semibold">Historique des campagnes</CardTitle>
+              <CardTitle className="text-sm font-semibold">{t("simulations.campaignHistory" as any)}</CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="space-y-4">
-                {simulationResults.map((sim, i) => {
-                  const clickRate = Math.round((sim.clicked / sim.totalTargets) * 100);
-                  const reportRate = Math.round((sim.reported / sim.totalTargets) * 100);
-                  return (
-                    <motion.div
-                      key={sim.id}
-                      initial={{ opacity: 0, y: 10 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      transition={{ delay: i * 0.1 }}
-                      className="cursor-pointer rounded-xl border p-4 transition-colors hover:bg-accent"
-                      onClick={() => setDetailSim(sim)}
-                    >
-                      <div className="mb-3 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
-                        <div>
-                          <h3 className="font-semibold">{sim.campaign}</h3>
-                          <div className="mt-1 flex items-center gap-3 text-xs text-muted-foreground">
-                            <Badge variant="outline" className="text-[10px]">
-                              {sim.type}
+              {campaigns.length === 0 ? (
+                <div className="py-12 text-center">
+                  <Send className="mx-auto mb-3 h-8 w-8 text-muted-foreground/30" />
+                  <p className="text-sm text-muted-foreground">{t("simulations.noCampaigns" as any)}</p>
+                </div>
+              ) : (
+                <div className="space-y-4">
+                  {campaigns.map((cam, i) => {
+                    const clickRate = cam.sentCount > 0 ? Math.round((cam.clickCount / cam.sentCount) * 100) : 0;
+                    const reportRate = cam.sentCount > 0 ? Math.round((cam.reportCount / cam.sentCount) * 100) : 0;
+                    return (
+                      <motion.div
+                        key={cam.id}
+                        initial={{ opacity: 0, y: 10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: i * 0.1 }}
+                        className="cursor-pointer rounded-xl border p-4 transition-colors hover:bg-accent"
+                        onClick={() => setDetailCampaign(cam)}
+                      >
+                        <div className="mb-3 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+                          <div>
+                            <h3 className="font-semibold">{cam.name}</h3>
+                            <div className="mt-1 flex items-center gap-3 text-xs text-muted-foreground">
+                              <Badge variant="outline" className="text-[10px]">{cam.templateType}</Badge>
+                              <Badge variant="outline" className={`text-[10px] ${cam.status === "ACTIVE" ? "border-cyber-green text-cyber-green" : cam.status === "COMPLETED" ? "border-rht-violet text-rht-violet" : ""}`}>
+                                {cam.status}
+                              </Badge>
+                              <span>{cam.totalTargets} cibles</span>
+                            </div>
+                          </div>
+                          {clickRate > 40 && (
+                            <Badge className="w-fit border-0 bg-cyber-red/10 text-cyber-red">
+                              <AlertTriangle className="mr-1 h-3 w-3" />
+                              {t("simulations.highClickRate" as any)}
                             </Badge>
-                            <span>{sim.sentDate}</span>
-                            <span>{sim.totalTargets} cibles</span>
+                          )}
+                        </div>
+                        <div className="grid gap-4 sm:grid-cols-3">
+                          <div>
+                            <p className="text-xs text-muted-foreground">{t("simulations.clicked" as any)}</p>
+                            <p className="text-lg font-bold text-cyber-red">{clickRate}%</p>
+                          </div>
+                          <div>
+                            <p className="text-xs text-muted-foreground">{t("simulations.reported" as any)}</p>
+                            <p className="text-lg font-bold text-cyber-green">{reportRate}%</p>
+                          </div>
+                          <div>
+                            <p className="text-xs text-muted-foreground">{t("simulations.sent" as any)}</p>
+                            <p className="text-lg font-bold text-muted-foreground">{cam.sentCount}</p>
                           </div>
                         </div>
-                        {clickRate > 40 && (
-                          <Badge className="w-fit border-0 bg-cyber-red/10 text-cyber-red">
-                            <AlertTriangle className="mr-1 h-3 w-3" />
-                            Taux de clic élevé
-                          </Badge>
-                        )}
-                      </div>
-                      <div className="grid gap-4 sm:grid-cols-4">
-                        <div>
-                          <p className="text-xs text-muted-foreground">Ouvert</p>
-                          <p className="text-lg font-bold">
-                            {Math.round((sim.opened / sim.totalTargets) * 100)}%
-                          </p>
-                        </div>
-                        <div>
-                          <p className="text-xs text-muted-foreground">Cliqué</p>
-                          <p className="text-lg font-bold text-cyber-red">{clickRate}%</p>
-                        </div>
-                        <div>
-                          <p className="text-xs text-muted-foreground">Signalé</p>
-                          <p className="text-lg font-bold text-cyber-green">{reportRate}%</p>
-                        </div>
-                        <div>
-                          <p className="text-xs text-muted-foreground">Ignoré</p>
-                          <p className="text-lg font-bold text-muted-foreground">
-                            {Math.round((sim.ignored / sim.totalTargets) * 100)}%
-                          </p>
-                        </div>
-                      </div>
-                      <Progress value={clickRate} className="mt-3 h-2" />
-                    </motion.div>
-                  );
-                })}
-              </div>
+                        <Progress value={clickRate} className="mt-3 h-2" />
+                      </motion.div>
+                    );
+                  })}
+                </div>
+              )}
             </CardContent>
           </Card>
         </FadeIn>
@@ -235,10 +293,8 @@ export default function SimulationsPage() {
       <Dialog open={createOpen} onOpenChange={setCreateOpen}>
         <DialogContent className="sm:max-w-lg">
           <DialogHeader>
-            <DialogTitle>Lancer une nouvelle campagne</DialogTitle>
-            <DialogDescription>
-              Choisissez un template de simulation de phishing à envoyer à vos employés.
-            </DialogDescription>
+            <DialogTitle>{t("simulations.launchNewCampaign" as any)}</DialogTitle>
+            <DialogDescription>{t("simulations.chooseTemplate" as any)}</DialogDescription>
           </DialogHeader>
 
           <AnimatePresence mode="wait">
@@ -252,8 +308,8 @@ export default function SimulationsPage() {
                 <div className="flex h-14 w-14 items-center justify-center rounded-full bg-cyber-green/10">
                   <CheckCircle2 className="h-7 w-7 text-cyber-green" />
                 </div>
-                <p className="font-semibold">Campagne lancée !</p>
-                <p className="text-xs text-muted-foreground">Les emails seront envoyés dans les prochaines minutes.</p>
+                <p className="font-semibold">{t("simulations.campaignLaunched" as any)}</p>
+                <p className="text-xs text-muted-foreground">{t("simulations.emailsSending" as any)}</p>
               </motion.div>
             ) : (
               <motion.div key="form" className="space-y-3">
@@ -274,13 +330,6 @@ export default function SimulationsPage() {
                     <p className="mt-1 text-xs text-muted-foreground">{tpl.description}</p>
                   </div>
                 ))}
-
-                <div className="rounded-xl border border-dashed p-3">
-                  <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                    <Users className="h-3.5 w-3.5" />
-                    <span>Cibles : <strong className="text-foreground">Tous les employés (10)</strong></span>
-                  </div>
-                </div>
               </motion.div>
             )}
           </AnimatePresence>
@@ -295,12 +344,12 @@ export default function SimulationsPage() {
                 {launching ? (
                   <>
                     <Clock className="mr-2 h-4 w-4 animate-spin" />
-                    Envoi en cours...
+                    {t("simulations.sending" as any)}
                   </>
                 ) : (
                   <>
                     <Play className="mr-2 h-4 w-4" />
-                    Lancer la campagne
+                    {t("simulations.launch" as any)}
                   </>
                 )}
               </Button>
@@ -309,66 +358,52 @@ export default function SimulationsPage() {
         </DialogContent>
       </Dialog>
 
-      {/* Dialog : Détails d'une campagne */}
-      <Dialog open={!!detailSim} onOpenChange={(open) => !open && setDetailSim(null)}>
-        {detailSim && (
+      {/* Dialog : Details d'une campagne */}
+      <Dialog open={!!detailCampaign} onOpenChange={(open) => !open && setDetailCampaign(null)}>
+        {detailCampaign && (
           <DialogContent className="sm:max-w-lg">
             <DialogHeader>
-              <DialogTitle>{detailSim.campaign}</DialogTitle>
-              <DialogDescription>
-                Détails de la campagne envoyée le {detailSim.sentDate}
-              </DialogDescription>
+              <DialogTitle>{detailCampaign.name}</DialogTitle>
+              <DialogDescription>{detailCampaign.templateType} - {detailCampaign.totalTargets} cibles</DialogDescription>
             </DialogHeader>
 
             <div className="space-y-4">
               <div className="flex items-center gap-3">
-                <Badge variant="outline">{detailSim.type}</Badge>
-                <span className="text-xs text-muted-foreground">{detailSim.totalTargets} cibles</span>
+                <Badge variant="outline">{detailCampaign.status}</Badge>
+                <span className="text-xs text-muted-foreground">{detailCampaign.totalTargets} cibles</span>
               </div>
 
               <div className="grid grid-cols-2 gap-3">
                 <div className="rounded-xl border p-3 text-center">
                   <div className="flex items-center justify-center gap-1.5">
-                    <Eye className="h-4 w-4 text-muted-foreground" />
-                    <span className="text-xs text-muted-foreground">Ouvert</span>
-                  </div>
-                  <p className="mt-1 text-2xl font-bold">{detailSim.opened}/{detailSim.totalTargets}</p>
-                  <p className="text-xs text-muted-foreground">{Math.round((detailSim.opened / detailSim.totalTargets) * 100)}%</p>
-                </div>
-                <div className="rounded-xl border p-3 text-center">
-                  <div className="flex items-center justify-center gap-1.5">
                     <MousePointerClick className="h-4 w-4 text-cyber-red" />
-                    <span className="text-xs text-muted-foreground">Cliqué</span>
+                    <span className="text-xs text-muted-foreground">{t("simulations.clicked" as any)}</span>
                   </div>
-                  <p className="mt-1 text-2xl font-bold text-cyber-red">{detailSim.clicked}/{detailSim.totalTargets}</p>
-                  <p className="text-xs text-muted-foreground">{Math.round((detailSim.clicked / detailSim.totalTargets) * 100)}%</p>
+                  <p className="mt-1 text-2xl font-bold text-cyber-red">{detailCampaign.clickCount}</p>
+                  <p className="text-xs text-muted-foreground">
+                    {detailCampaign.sentCount > 0 ? Math.round((detailCampaign.clickCount / detailCampaign.sentCount) * 100) : 0}%
+                  </p>
                 </div>
                 <div className="rounded-xl border p-3 text-center">
                   <div className="flex items-center justify-center gap-1.5">
                     <Flag className="h-4 w-4 text-cyber-green" />
-                    <span className="text-xs text-muted-foreground">Signalé</span>
+                    <span className="text-xs text-muted-foreground">{t("simulations.reported" as any)}</span>
                   </div>
-                  <p className="mt-1 text-2xl font-bold text-cyber-green">{detailSim.reported}/{detailSim.totalTargets}</p>
-                  <p className="text-xs text-muted-foreground">{Math.round((detailSim.reported / detailSim.totalTargets) * 100)}%</p>
-                </div>
-                <div className="rounded-xl border p-3 text-center">
-                  <div className="flex items-center justify-center gap-1.5">
-                    <Mail className="h-4 w-4 text-muted-foreground" />
-                    <span className="text-xs text-muted-foreground">Ignoré</span>
-                  </div>
-                  <p className="mt-1 text-2xl font-bold">{detailSim.ignored}/{detailSim.totalTargets}</p>
-                  <p className="text-xs text-muted-foreground">{Math.round((detailSim.ignored / detailSim.totalTargets) * 100)}%</p>
+                  <p className="mt-1 text-2xl font-bold text-cyber-green">{detailCampaign.reportCount}</p>
+                  <p className="text-xs text-muted-foreground">
+                    {detailCampaign.sentCount > 0 ? Math.round((detailCampaign.reportCount / detailCampaign.sentCount) * 100) : 0}%
+                  </p>
                 </div>
               </div>
 
               <div className="rounded-xl bg-accent/50 p-3">
-                <p className="text-xs font-medium text-muted-foreground">Recommandation</p>
+                <p className="text-xs font-medium text-muted-foreground">{t("simulations.recommendation" as any)}</p>
                 <p className="mt-1 text-sm">
-                  {Math.round((detailSim.clicked / detailSim.totalTargets) * 100) > 40
-                    ? "Taux de clic critique. Planifiez une formation ciblée pour les collaborateurs ayant cliqué sur le lien."
-                    : Math.round((detailSim.clicked / detailSim.totalTargets) * 100) > 25
-                    ? "Vigilance moyenne. Un rappel de bonnes pratiques serait bénéfique pour l'équipe."
-                    : "Bons résultats ! Continuez à renforcer la sensibilisation avec des campagnes régulières."}
+                  {detailCampaign.sentCount > 0 && Math.round((detailCampaign.clickCount / detailCampaign.sentCount) * 100) > 40
+                    ? t("simulations.recHighClick" as any)
+                    : detailCampaign.sentCount > 0 && Math.round((detailCampaign.clickCount / detailCampaign.sentCount) * 100) > 25
+                    ? t("simulations.recMediumClick" as any)
+                    : t("simulations.recLowClick" as any)}
                 </p>
               </div>
             </div>

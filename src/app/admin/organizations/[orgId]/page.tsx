@@ -1,13 +1,13 @@
 "use client";
 
 import { use } from "react";
-import { notFound } from "next/navigation";
 import Link from "next/link";
 import { Header } from "@/components/layout/header";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
+import { Skeleton } from "@/components/ui/skeleton";
 import {
   Building2,
   Users,
@@ -17,54 +17,57 @@ import {
   Mail,
   Calendar,
   ArrowLeft,
-  TrendingDown,
-  TrendingUp,
   DollarSign,
   Shield,
   AlertTriangle,
   CheckCircle,
-  Clock,
   Phone,
 } from "lucide-react";
-import { organizations, employees } from "@/lib/mock-data";
 import { FadeIn, StaggerContainer, StaggerItem, GlowCard } from "@/components/motion";
 import { motion } from "framer-motion";
-import {
-  AreaChart,
-  Area,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  Tooltip,
-  ResponsiveContainer,
-} from "recharts";
+import { useApi } from "@/hooks/use-api";
+
+interface OrgDetail {
+  id: string;
+  name: string;
+  plan: string;
+  sector: string;
+  country: string;
+  city: string;
+  status: string;
+  employees: number;
+  maxEmployees: number;
+  campaignsRun: number;
+  trainingsCompleted: number;
+  riskScore: number;
+  mrr: number;
+  joinedDate: string;
+  contactName: string;
+  contactEmail: string;
+  recentEmployees: {
+    id: string;
+    name: string;
+    email: string;
+    department: string;
+    riskScore: number;
+    role: string;
+  }[];
+}
+
+interface OrgsResponse {
+  organizations: OrgDetail[];
+}
 
 function formatCFA(amount: number) {
   return new Intl.NumberFormat("fr-FR").format(amount) + " F";
 }
 
-const riskHistory = [
-  { month: "Jan", score: 58 },
-  { month: "Fév", score: 52 },
-  { month: "Mar", score: 48 },
-  { month: "Avr", score: 45 },
-  { month: "Mai", score: 42 },
-];
-
-const recentActivity = [
-  { type: "campaign", text: "Campagne « Virement urgent » lancée", date: "Il y a 2j", icon: Target, color: "text-rht-orange", bg: "bg-rht-orange/10" },
-  { type: "training", text: "12 employés ont complété « Phishing 101 »", date: "Il y a 4j", icon: GraduationCap, color: "text-cyber-green", bg: "bg-cyber-green/10" },
-  { type: "alert", text: "Taux de clic élevé détecté (60%)", date: "Il y a 5j", icon: AlertTriangle, color: "text-cyber-red", bg: "bg-cyber-red/10" },
-  { type: "training", text: "Module « Sécurité Mobile Money » assigné", date: "Il y a 1sem", icon: GraduationCap, color: "text-rht-violet-light", bg: "bg-rht-violet/10" },
-  { type: "campaign", text: "Campagne « Facture fournisseur » terminée", date: "Il y a 2sem", icon: CheckCircle, color: "text-cyber-green", bg: "bg-cyber-green/10" },
-];
-
-const statusLabel = { active: "Actif", trial: "Essai", expired: "Expiré" } as const;
-const statusStyle = {
+const statusLabel: Record<string, string> = { active: "Actif", trial: "Essai", expired: "Expiré" };
+const statusStyle: Record<string, string> = {
   active: "bg-cyber-green/10 text-cyber-green",
   trial: "bg-rht-orange/10 text-rht-orange",
   expired: "bg-cyber-red/10 text-cyber-red",
-} as const;
+};
 
 export default function OrganizationDetailPage({
   params,
@@ -72,12 +75,44 @@ export default function OrganizationDetailPage({
   params: Promise<{ orgId: string }>;
 }) {
   const { orgId } = use(params);
-  const org = organizations.find((o) => o.id === orgId);
+  const { data, loading } = useApi<OrgsResponse>("/api/admin/organizations");
 
-  if (!org) return notFound();
+  if (loading || !data) {
+    return (
+      <div>
+        <Header title="Chargement..." />
+        <div className="space-y-6 p-6">
+          <Skeleton className="h-10 w-48" />
+          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+            {[1, 2, 3, 4].map((i) => (
+              <Card key={i}><CardContent className="p-5"><Skeleton className="h-20 w-full" /></CardContent></Card>
+            ))}
+          </div>
+          <Card><CardContent className="p-6"><Skeleton className="h-[300px] w-full" /></CardContent></Card>
+        </div>
+      </div>
+    );
+  }
 
-  const orgEmployees = employees.slice(0, Math.min(org.employees, 5));
-  const completionRate = Math.round((org.trainingsCompleted / (org.employees * 6)) * 100);
+  const org = data.organizations.find((o) => o.id === orgId);
+
+  if (!org) {
+    return (
+      <div>
+        <Header title="Organisation introuvable" />
+        <div className="p-6">
+          <Link href="/admin/organizations">
+            <Button variant="outline">
+              <ArrowLeft className="mr-2 h-4 w-4" />
+              Retour
+            </Button>
+          </Link>
+        </div>
+      </div>
+    );
+  }
+
+  const completionRate = org.employees > 0 ? Math.round((org.trainingsCompleted / (org.employees * 6)) * 100) : 0;
 
   return (
     <div>
@@ -97,8 +132,8 @@ export default function OrganizationDetailPage({
               <div>
                 <div className="flex items-center gap-2">
                   <h2 className="text-xl font-bold">{org.name}</h2>
-                  <Badge className={`border-0 text-[10px] ${statusStyle[org.status]}`}>
-                    {statusLabel[org.status]}
+                  <Badge className={`border-0 text-[10px] ${statusStyle[org.status] || statusStyle.active}`}>
+                    {statusLabel[org.status] || "Actif"}
                   </Badge>
                 </div>
                 <div className="flex items-center gap-3 text-xs text-muted-foreground">
@@ -182,41 +217,52 @@ export default function OrganizationDetailPage({
         <div className="grid gap-6 lg:grid-cols-3">
           <FadeIn className="lg:col-span-2">
             <Card>
-              <CardHeader className="pb-2">
+              <CardHeader className="pb-3">
                 <div className="flex items-center justify-between">
-                  <CardTitle className="text-sm font-semibold">Évolution du score de risque</CardTitle>
-                  <div className="flex items-center gap-1 text-xs text-cyber-green">
-                    <TrendingDown className="h-3 w-3" />
-                    -16 pts en 5 mois
-                  </div>
+                  <CardTitle className="text-sm font-semibold">Employés récents</CardTitle>
+                  <Badge variant="outline" className="text-[10px]">
+                    {org.employees} total
+                  </Badge>
                 </div>
               </CardHeader>
               <CardContent>
-                <div className="h-[220px]">
-                  <ResponsiveContainer width="100%" height="100%">
-                    <AreaChart data={riskHistory}>
-                      <defs>
-                        <linearGradient id="riskGrad" x1="0" y1="0" x2="0" y2="1">
-                          <stop offset="5%" stopColor="#9c1e99" stopOpacity={0.3} />
-                          <stop offset="95%" stopColor="#9c1e99" stopOpacity={0} />
-                        </linearGradient>
-                      </defs>
-                      <CartesianGrid strokeDasharray="3 3" className="stroke-border" />
-                      <XAxis dataKey="month" tick={{ fill: "var(--muted-foreground)", fontSize: 12 }} />
-                      <YAxis domain={[0, 100]} tick={{ fill: "var(--muted-foreground)", fontSize: 11 }} />
-                      <Tooltip
-                        contentStyle={{
-                          backgroundColor: "var(--card)",
-                          border: "1px solid var(--border)",
-                          borderRadius: "12px",
-                          fontSize: "12px",
-                          color: "var(--foreground)",
-                        }}
-                        formatter={(value) => [`${value}%`, "Score"]}
-                      />
-                      <Area type="monotone" dataKey="score" stroke="#9c1e99" fill="url(#riskGrad)" strokeWidth={2} />
-                    </AreaChart>
-                  </ResponsiveContainer>
+                <div className="space-y-3">
+                  {org.recentEmployees.length === 0 ? (
+                    <p className="py-8 text-center text-sm text-muted-foreground">Aucun employé</p>
+                  ) : (
+                    org.recentEmployees.map((emp, i) => (
+                      <motion.div
+                        key={emp.id}
+                        initial={{ opacity: 0, y: 8 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: i * 0.06 }}
+                        className="flex items-center justify-between rounded-xl border p-3 transition-colors hover:bg-accent"
+                      >
+                        <div className="flex items-center gap-3">
+                          <div className="flex h-8 w-8 items-center justify-center rounded-full bg-rht-violet/10 text-xs font-bold text-rht-violet-light">
+                            {emp.name.split(" ").map((n) => n[0]).join("").slice(0, 2).toUpperCase()}
+                          </div>
+                          <div>
+                            <p className="text-sm font-medium">{emp.name}</p>
+                            <p className="text-xs text-muted-foreground">{emp.department}</p>
+                          </div>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <Badge
+                            className={`border-0 text-[10px] ${
+                              emp.riskScore < 35
+                                ? "bg-cyber-green/10 text-cyber-green"
+                                : emp.riskScore < 55
+                                ? "bg-rht-orange/10 text-rht-orange"
+                                : "bg-cyber-red/10 text-cyber-red"
+                            }`}
+                          >
+                            {emp.riskScore}%
+                          </Badge>
+                        </div>
+                      </motion.div>
+                    ))
+                  )}
                 </div>
               </CardContent>
             </Card>
@@ -232,7 +278,7 @@ export default function OrganizationDetailPage({
                   {[
                     { icon: Mail, label: "Contact", value: org.contactName },
                     { icon: Mail, label: "Email", value: org.contactEmail },
-                    { icon: Phone, label: "Téléphone", value: "+221 7X XXX XX XX" },
+                    { icon: Phone, label: "Téléphone", value: "—" },
                     { icon: Calendar, label: "Inscription", value: org.joinedDate },
                     { icon: Globe, label: "Localisation", value: `${org.city}, ${org.country}` },
                     { icon: Shield, label: "Secteur", value: org.sector },
@@ -251,86 +297,6 @@ export default function OrganizationDetailPage({
           </FadeIn>
         </div>
 
-        <div className="grid gap-6 lg:grid-cols-2">
-          <FadeIn delay={0.15}>
-            <Card>
-              <CardHeader className="pb-3">
-                <div className="flex items-center justify-between">
-                  <CardTitle className="text-sm font-semibold">Employés récents</CardTitle>
-                  <Badge variant="outline" className="text-[10px]">
-                    {org.employees} total
-                  </Badge>
-                </div>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-3">
-                  {orgEmployees.map((emp, i) => (
-                    <motion.div
-                      key={emp.id}
-                      initial={{ opacity: 0, y: 8 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      transition={{ delay: i * 0.06 }}
-                      className="flex items-center justify-between rounded-xl border p-3 transition-colors hover:bg-accent"
-                    >
-                      <div className="flex items-center gap-3">
-                        <div className="flex h-8 w-8 items-center justify-center rounded-full bg-rht-violet/10 text-xs font-bold text-rht-violet-light">
-                          {emp.name.split(" ").map((n) => n[0]).join("")}
-                        </div>
-                        <div>
-                          <p className="text-sm font-medium">{emp.name}</p>
-                          <p className="text-xs text-muted-foreground">{emp.department}</p>
-                        </div>
-                      </div>
-                      <div className="flex items-center gap-2">
-                        <Badge
-                          className={`border-0 text-[10px] ${
-                            emp.riskScore < 35
-                              ? "bg-cyber-green/10 text-cyber-green"
-                              : emp.riskScore < 55
-                              ? "bg-rht-orange/10 text-rht-orange"
-                              : "bg-cyber-red/10 text-cyber-red"
-                          }`}
-                        >
-                          {emp.riskScore}%
-                        </Badge>
-                      </div>
-                    </motion.div>
-                  ))}
-                </div>
-              </CardContent>
-            </Card>
-          </FadeIn>
-
-          <FadeIn delay={0.2}>
-            <Card>
-              <CardHeader className="pb-3">
-                <CardTitle className="text-sm font-semibold">Activité récente</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-3">
-                  {recentActivity.map((activity, i) => (
-                    <motion.div
-                      key={i}
-                      initial={{ opacity: 0, x: -10 }}
-                      animate={{ opacity: 1, x: 0 }}
-                      transition={{ delay: i * 0.06 }}
-                      className="flex items-start gap-3"
-                    >
-                      <div className={`mt-0.5 flex h-7 w-7 shrink-0 items-center justify-center rounded-lg ${activity.bg}`}>
-                        <activity.icon className={`h-3.5 w-3.5 ${activity.color}`} />
-                      </div>
-                      <div className="flex-1">
-                        <p className="text-sm">{activity.text}</p>
-                        <p className="text-[10px] text-muted-foreground">{activity.date}</p>
-                      </div>
-                    </motion.div>
-                  ))}
-                </div>
-              </CardContent>
-            </Card>
-          </FadeIn>
-        </div>
-
         <FadeIn delay={0.25}>
           <Card>
             <CardHeader className="pb-3">
@@ -341,7 +307,7 @@ export default function OrganizationDetailPage({
                 {[
                   { label: "Taux de clic phishing", value: org.riskScore, target: "< 20%", status: org.riskScore < 20 },
                   { label: "Formations complétées", value: completionRate, target: "> 80%", status: completionRate > 80 },
-                  { label: "Signalements suspects", value: 67, target: "> 50%", status: true },
+                  { label: "Signalements suspects", value: 0, target: "> 50%", status: false },
                 ].map((m) => (
                   <div key={m.label} className="rounded-xl border p-4">
                     <div className="flex items-center justify-between">

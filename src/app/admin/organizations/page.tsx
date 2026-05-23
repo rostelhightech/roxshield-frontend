@@ -3,11 +3,12 @@
 import { useState } from "react";
 import Link from "next/link";
 import { Header } from "@/components/layout/header";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Progress } from "@/components/ui/progress";
+import { Skeleton } from "@/components/ui/skeleton";
 import {
   Building2,
   Search,
@@ -20,31 +21,81 @@ import {
   Calendar,
   ArrowUpRight,
 } from "lucide-react";
-import { organizations } from "@/lib/mock-data";
 import { FadeIn, StaggerContainer, StaggerItem, GlowCard } from "@/components/motion";
 import { motion } from "framer-motion";
+import { useApi } from "@/hooks/use-api";
+
+interface OrgItem {
+  id: string;
+  name: string;
+  plan: string;
+  sector: string;
+  country: string;
+  city: string;
+  status: string;
+  employees: number;
+  maxEmployees: number;
+  campaignsRun: number;
+  trainingsCompleted: number;
+  riskScore: number;
+  mrr: number;
+  joinedDate: string;
+  contactName: string;
+  contactEmail: string;
+}
+
+interface OrgsResponse {
+  organizations: OrgItem[];
+}
 
 function formatCFA(amount: number) {
   return new Intl.NumberFormat("fr-FR").format(amount) + " F";
 }
 
-const statusLabel = { active: "Actif", trial: "Essai", expired: "Expiré" } as const;
-const statusStyle = {
+const statusStyle: Record<string, string> = {
   active: "bg-cyber-green/10 text-cyber-green",
   trial: "bg-rht-orange/10 text-rht-orange",
   expired: "bg-cyber-red/10 text-cyber-red",
-} as const;
+};
 
-const planStyle = {
+const statusLabel: Record<string, string> = {
+  active: "Actif",
+  trial: "Essai",
+  expired: "Expiré",
+};
+
+const planStyle: Record<string, string> = {
   Starter: "bg-cyber-green/10 text-cyber-green",
   Business: "bg-rht-orange/10 text-rht-orange",
   Enterprise: "bg-rht-violet/10 text-rht-violet-light",
   Campus: "bg-sky-500/10 text-sky-500",
-} as const;
+};
 
 export default function OrganizationsPage() {
+  const { data, loading } = useApi<OrgsResponse>("/api/admin/organizations");
   const [search, setSearch] = useState("");
   const [filterPlan, setFilterPlan] = useState<string>("all");
+
+  if (loading || !data) {
+    return (
+      <div>
+        <Header title="Organisations" />
+        <div className="space-y-6 p-6">
+          <Skeleton className="h-10 w-full max-w-xs" />
+          <div className="grid gap-3 sm:grid-cols-3">
+            {[1, 2, 3].map((i) => (
+              <Card key={i}><CardContent className="p-4"><Skeleton className="h-16 w-full" /></CardContent></Card>
+            ))}
+          </div>
+          {[1, 2, 3].map((i) => (
+            <Card key={i}><CardContent className="p-5"><Skeleton className="h-32 w-full" /></CardContent></Card>
+          ))}
+        </div>
+      </div>
+    );
+  }
+
+  const organizations = data.organizations;
 
   const filtered = organizations.filter((org) => {
     const matchSearch =
@@ -130,10 +181,10 @@ export default function OrganizationsPage() {
                         <div>
                           <div className="flex items-center gap-2">
                             <h3 className="font-semibold">{org.name}</h3>
-                            <Badge className={`border-0 text-[10px] ${statusStyle[org.status]}`}>
-                              {statusLabel[org.status]}
+                            <Badge className={`border-0 text-[10px] ${statusStyle[org.status] || statusStyle.active}`}>
+                              {statusLabel[org.status] || "Actif"}
                             </Badge>
-                            <Badge className={`border-0 text-[10px] ${planStyle[org.plan]}`}>
+                            <Badge className={`border-0 text-[10px] ${planStyle[org.plan] || ""}`}>
                               {org.plan}
                             </Badge>
                           </div>

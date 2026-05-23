@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
+import { Skeleton } from "@/components/ui/skeleton";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import {
   Mail,
@@ -20,24 +21,94 @@ import {
   Globe,
   User,
 } from "lucide-react";
-import { currentUser } from "@/lib/mock-data";
-import { FadeIn, StaggerContainer, StaggerItem } from "@/components/motion";
+import { FadeIn } from "@/components/motion";
 import { motion } from "framer-motion";
 import { toast } from "sonner";
 import { useTranslation } from "@/lib/i18n";
+import { useApi } from "@/hooks/use-api";
+
+interface UserProfile {
+  id: string;
+  name: string | null;
+  email: string;
+  phone: string | null;
+  department: string | null;
+  position: string | null;
+  role: string;
+  locale: string;
+  riskScore: number;
+  organization: {
+    id: string;
+    name: string;
+    plan: string;
+  } | null;
+}
+
+function getInitials(name?: string | null, email?: string): string {
+  if (name) return name.split(" ").map((n) => n[0]).join("").toUpperCase().slice(0, 2);
+  return (email || "").slice(0, 2).toUpperCase();
+}
 
 export default function ProfilePage() {
   const { t } = useTranslation();
-  const [saved, setSaved] = useState(false);
+  const { data: user, loading, refetch } = useApi<UserProfile>("/api/me");
+  const [saving, setSaving] = useState(false);
   const [notifEmail, setNotifEmail] = useState(true);
   const [notifCampaign, setNotifCampaign] = useState(true);
   const [notifReport, setNotifReport] = useState(false);
 
-  const handleSave = () => {
-    setSaved(true);
-    toast.success("Profil mis à jour avec succès");
-    setTimeout(() => setSaved(false), 2000);
+  const [name, setName] = useState("");
+  const [phone, setPhone] = useState("");
+  const [position, setPosition] = useState("");
+  const [department, setDepartment] = useState("");
+
+  // Sync form when data loads
+  const [initialized, setInitialized] = useState(false);
+  if (user && !initialized) {
+    setName(user.name || "");
+    setPhone(user.phone || "");
+    setPosition(user.position || "");
+    setDepartment(user.department || "");
+    setInitialized(true);
+  }
+
+  const handleSave = async () => {
+    setSaving(true);
+    try {
+      const res = await fetch("/api/me", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ name, phone, position, department }),
+      });
+      if (res.ok) {
+        toast.success(t("common.saved" as any));
+        await refetch();
+      } else {
+        toast.error(t("common.error" as any));
+      }
+    } catch {
+      toast.error(t("common.error" as any));
+    } finally {
+      setSaving(false);
+    }
   };
+
+  if (loading || !user) {
+    return (
+      <div>
+        <Header title={t("profile.title")} />
+        <div className="space-y-6 p-6">
+          <Card><CardContent className="p-6"><Skeleton className="h-24 w-full" /></CardContent></Card>
+          <div className="grid gap-6 lg:grid-cols-2">
+            <Card><CardContent className="p-6"><Skeleton className="h-[300px] w-full" /></CardContent></Card>
+            <Card><CardContent className="p-6"><Skeleton className="h-[300px] w-full" /></CardContent></Card>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  const roleLabel = user.role === "SUPER_ADMIN" ? "Super Admin" : user.role === "ADMIN" ? "Administrateur" : "Employe";
 
   return (
     <div>
@@ -50,7 +121,7 @@ export default function ProfilePage() {
                 <div className="relative">
                   <Avatar className="h-20 w-20">
                     <AvatarFallback className="bg-gradient-to-br from-rht-violet to-rht-violet-light text-xl text-white">
-                      {currentUser.name.split(" ").map((n) => n[0]).join("")}
+                      {getInitials(user.name, user.email)}
                     </AvatarFallback>
                   </Avatar>
                   <button className="absolute bottom-0 right-0 flex h-7 w-7 items-center justify-center rounded-full border-2 border-background bg-rht-violet text-white">
@@ -58,17 +129,19 @@ export default function ProfilePage() {
                   </button>
                 </div>
                 <div className="text-center sm:text-left">
-                  <h2 className="text-xl font-bold">{currentUser.name}</h2>
-                  <p className="text-sm text-muted-foreground">{currentUser.email}</p>
+                  <h2 className="text-xl font-bold">{user.name || user.email}</h2>
+                  <p className="text-sm text-muted-foreground">{user.email}</p>
                   <div className="mt-2 flex flex-wrap items-center justify-center gap-2 sm:justify-start">
                     <Badge className="border-0 bg-rht-violet/10 text-rht-violet-light text-xs">
                       <Shield className="mr-1 h-3 w-3" />
-                      {currentUser.role === "admin" ? "Administrateur" : "Utilisateur"}
+                      {roleLabel}
                     </Badge>
-                    <Badge variant="outline" className="text-xs">
-                      <Building2 className="mr-1 h-3 w-3" />
-                      {currentUser.org}
-                    </Badge>
+                    {user.organization && (
+                      <Badge variant="outline" className="text-xs">
+                        <Building2 className="mr-1 h-3 w-3" />
+                        {user.organization.name}
+                      </Badge>
+                    )}
                   </div>
                 </div>
               </div>
@@ -86,39 +159,33 @@ export default function ProfilePage() {
                 </div>
               </CardHeader>
               <CardContent className="space-y-4">
-                <div className="grid gap-4 sm:grid-cols-2">
-                  <div className="space-y-2">
-                    <Label className="text-xs">{t("profile.firstName")}</Label>
-                    <Input defaultValue="Fatou" />
-                  </div>
-                  <div className="space-y-2">
-                    <Label className="text-xs">{t("profile.lastName")}</Label>
-                    <Input defaultValue="Sow" />
-                  </div>
+                <div className="space-y-2">
+                  <Label className="text-xs">{t("profile.fullName" as any)}</Label>
+                  <Input value={name} onChange={(e) => setName(e.target.value)} />
                 </div>
                 <div className="space-y-2">
                   <Label className="text-xs">{t("profile.email")}</Label>
-                  <Input defaultValue={currentUser.email} type="email" />
+                  <Input value={user.email} type="email" disabled className="opacity-60" />
                 </div>
                 <div className="space-y-2">
                   <Label className="text-xs">{t("profile.phone")}</Label>
-                  <Input defaultValue="+221 7X XXX XX XX" type="tel" />
+                  <Input value={phone} onChange={(e) => setPhone(e.target.value)} type="tel" />
                 </div>
                 <div className="grid gap-4 sm:grid-cols-2">
                   <div className="space-y-2">
                     <Label className="text-xs">{t("profile.position")}</Label>
-                    <Input defaultValue="Directrice des Systèmes d'Information" />
+                    <Input value={position} onChange={(e) => setPosition(e.target.value)} />
                   </div>
                   <div className="space-y-2">
                     <Label className="text-xs">{t("profile.department")}</Label>
-                    <Input defaultValue="IT / Sécurité" />
+                    <Input value={department} onChange={(e) => setDepartment(e.target.value)} />
                   </div>
                 </div>
                 <div className="space-y-2">
                   <Label className="text-xs">{t("profile.language")}</Label>
                   <div className="flex items-center gap-2">
                     <Globe className="h-4 w-4 text-muted-foreground" />
-                    <span className="text-sm">Français</span>
+                    <span className="text-sm">{user.locale === "en" ? "English" : "Francais"}</span>
                   </div>
                 </div>
               </CardContent>
@@ -136,9 +203,9 @@ export default function ProfilePage() {
                 </CardHeader>
                 <CardContent className="space-y-3">
                   {[
-                    { label: "Alertes par email", desc: "Recevoir les alertes de sécurité par email", state: notifEmail, toggle: setNotifEmail },
-                    { label: "Résultats de campagne", desc: "Notification après chaque simulation", state: notifCampaign, toggle: setNotifCampaign },
-                    { label: "Rapports mensuels", desc: "Recevoir le rapport mensuel automatique", state: notifReport, toggle: setNotifReport },
+                    { label: t("profile.alertEmail" as any), desc: t("profile.alertEmailDesc" as any), state: notifEmail, toggle: setNotifEmail },
+                    { label: t("profile.campaignResults" as any), desc: t("profile.campaignResultsDesc" as any), state: notifCampaign, toggle: setNotifCampaign },
+                    { label: t("profile.monthlyReports" as any), desc: t("profile.monthlyReportsDesc" as any), state: notifReport, toggle: setNotifReport },
                   ].map((item) => (
                     <div key={item.label} className="flex items-center justify-between rounded-xl border p-3">
                       <div>
@@ -188,9 +255,9 @@ export default function ProfilePage() {
                   <div className="flex items-center justify-between rounded-xl border p-3">
                     <div>
                       <p className="text-sm font-medium">{t("profile.2fa")}</p>
-                      <p className="text-xs text-muted-foreground">Sécurisez votre compte avec un second facteur</p>
+                      <p className="text-xs text-muted-foreground">{t("profile.2faDesc" as any)}</p>
                     </div>
-                    <Badge className="border-0 bg-rht-orange/10 text-rht-orange text-[10px]">Bientôt</Badge>
+                    <Badge className="border-0 bg-rht-orange/10 text-rht-orange text-[10px]">{t("common.soon" as any)}</Badge>
                   </div>
                 </CardContent>
               </Card>
@@ -204,12 +271,13 @@ export default function ProfilePage() {
             <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
               <Button
                 onClick={handleSave}
+                disabled={saving}
                 className="bg-gradient-to-r from-rht-orange to-rht-orange-light text-white hover:opacity-90"
               >
-                {saved ? (
+                {saving ? (
                   <span className="flex items-center gap-2">
-                    <CheckCircle className="h-4 w-4" />
-                    {t("common.saved")}
+                    <CheckCircle className="h-4 w-4 animate-spin" />
+                    {t("common.saving" as any)}
                   </span>
                 ) : (
                   t("common.save")

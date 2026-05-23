@@ -6,13 +6,13 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
+import { Skeleton } from "@/components/ui/skeleton";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   FileBarChart,
   Download,
   TrendingDown,
   TrendingUp,
-  Calendar,
   Shield,
   Users,
   AlertTriangle,
@@ -20,8 +20,6 @@ import {
   Loader2,
 } from "lucide-react";
 import {
-  AreaChart,
-  Area,
   BarChart,
   Bar,
   XAxis,
@@ -34,58 +32,88 @@ import {
   Cell,
   Legend,
 } from "recharts";
-import { employees, monthlyStats, departmentStats, simulationResults, trainingModules } from "@/lib/mock-data";
 import { FadeIn, StaggerContainer, StaggerItem, GlowCard } from "@/components/motion";
 import { motion } from "framer-motion";
 import { toast } from "sonner";
 import { useTranslation } from "@/lib/i18n";
-import { exportCSV } from "@/lib/export-csv";
+import { useApi } from "@/hooks/use-api";
 
-const riskEvolution = monthlyStats.map((m) => ({
-  month: m.month,
-  "Score de risque": m.riskScore,
-  "Formations complétées": m.trainingsCompleted,
-}));
+interface DashboardData {
+  totalEmployees: number;
+  employeesAtRisk: number;
+  avgRiskScore: number;
+  trainingsCompleted: number;
+  totalTrainings: number;
+  trainingRate: number;
+  activeCampaigns: number;
+  deptRisk: { department: string | null; avgRisk: number; count: number }[];
+}
 
-const phishingTrend = monthlyStats.map((m) => ({
-  month: m.month,
-  "Clics phishing": m.phishingClicked,
-}));
+interface EmployeesData {
+  employees: {
+    id: string;
+    name: string | null;
+    email: string;
+    department: string | null;
+    riskScore: number;
+    trainingsCompleted: number;
+    role: string;
+  }[];
+}
 
-const statusData = [
-  { name: "Sûr", value: employees.filter((e) => e.status === "safe").length, color: "#25d366" },
-  { name: "Modéré", value: employees.filter((e) => e.status === "moderate").length, color: "#fa990e" },
-  { name: "À risque", value: employees.filter((e) => e.status === "at-risk").length, color: "#ef4444" },
-];
+interface CampaignsData {
+  campaigns: any[];
+  stats: { totalCampaigns: number; totalSent: number; clickRate: number; reportRate: number };
+}
 
-const deptCompletion = departmentStats.map((d) => {
-  const deptEmployees = employees.filter((e) => e.department === d.name);
-  const avgCompletion = deptEmployees.length
-    ? Math.round(deptEmployees.reduce((a, e) => a + (e.trainingsCompleted / e.totalTrainings) * 100, 0) / deptEmployees.length)
-    : 0;
-  return { name: d.name, completion: avgCompletion, risk: d.riskScore };
-});
+interface TrainingData {
+  modules: { id: string; title: string; category: string; progress: { progressPercent: number } }[];
+  stats: { total: number; completed: number; inProgress: number };
+}
 
-const reports = [
-  { id: 1, name: "Rapport mensuel — Mai 2026", date: "2026-05-12", type: "Mensuel", status: "Généré" },
-  { id: 2, name: "Rapport mensuel — Avril 2026", date: "2026-04-30", type: "Mensuel", status: "Généré" },
-  { id: 3, name: "Bilan campagne — Virement urgent", date: "2026-04-16", type: "Campagne", status: "Généré" },
-  { id: 4, name: "Rapport mensuel — Mars 2026", date: "2026-03-31", type: "Mensuel", status: "Généré" },
-  { id: 5, name: "Bilan campagne — Bulletin de paie", date: "2026-05-02", type: "Campagne", status: "Généré" },
-];
+function getStatus(riskScore: number) {
+  if (riskScore <= 30) return "safe";
+  if (riskScore <= 60) return "moderate";
+  return "at-risk";
+}
 
 export default function ReportsPage() {
   const { t } = useTranslation();
+  const { data: dashData, loading: l1 } = useApi<DashboardData>("/api/dashboard");
+  const { data: empData, loading: l2 } = useApi<EmployeesData>("/api/employees");
+  const { data: campData } = useApi<CampaignsData>("/api/campaigns");
+  const { data: trainData } = useApi<TrainingData>("/api/training");
   const [exporting, setExporting] = useState(false);
   const [exported, setExported] = useState(false);
 
-  const avgRisk = Math.round(employees.reduce((a, e) => a + e.riskScore, 0) / employees.length);
-  const avgCompletion = Math.round(
-    employees.reduce((a, e) => a + (e.trainingsCompleted / e.totalTrainings) * 100, 0) / employees.length
-  );
-  const totalSimClicks = simulationResults.reduce((a, s) => a + s.clicked, 0);
-  const totalSimTargets = simulationResults.reduce((a, s) => a + s.totalTargets, 0);
-  const clickRate = Math.round((totalSimClicks / totalSimTargets) * 100);
+  if (l1 || l2 || !dashData || !empData) {
+    return (
+      <div>
+        <Header title={t("reports.title")} />
+        <div className="space-y-6 p-6">
+          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+            {[1, 2, 3, 4].map((i) => (
+              <Card key={i}><CardContent className="p-5"><Skeleton className="h-20 w-full" /></CardContent></Card>
+            ))}
+          </div>
+          <Card><CardContent className="p-6"><Skeleton className="h-[300px] w-full" /></CardContent></Card>
+        </div>
+      </div>
+    );
+  }
+
+  const employees = empData.employees;
+  const safeCount = employees.filter((e) => getStatus(e.riskScore) === "safe").length;
+  const moderateCount = employees.filter((e) => getStatus(e.riskScore) === "moderate").length;
+  const atRiskCount = employees.filter((e) => getStatus(e.riskScore) === "at-risk").length;
+
+  const statusData = [
+    { name: t("employees.safe"), value: safeCount, color: "#25d366" },
+    { name: t("employees.moderate"), value: moderateCount, color: "#fa990e" },
+    { name: t("employees.atRisk"), value: atRiskCount, color: "#ef4444" },
+  ];
+
+  const clickRate = campData?.stats.clickRate || 0;
 
   const handleExport = () => {
     setExporting(true);
@@ -98,36 +126,27 @@ export default function ReportsPage() {
   };
 
   const handleCSV = () => {
-    exportCSV({
-      filename: `roxshield-rapport-employes-${new Date().toISOString().slice(0, 10)}`,
-      headers: ["Nom", "Email", "Département", "Rôle", "Score de risque", "Formations complétées", "Total formations", "Statut"],
-      rows: employees.map((e) => [
-        e.name,
-        e.email,
-        e.department,
-        e.role,
-        e.riskScore,
-        e.trainingsCompleted,
-        e.totalTrainings,
-        e.status,
-      ]),
-    });
-    toast.success("Export CSV employés téléchargé");
+    const headers = ["Nom", "Email", "Departement", "Role", "Score de risque", "Formations completees"];
+    const rows = employees.map((e) => [
+      e.name || "",
+      e.email,
+      e.department || "",
+      e.role,
+      String(e.riskScore),
+      String(e.trainingsCompleted),
+    ]);
+    const csvContent = [headers.join(","), ...rows.map((r) => r.join(","))].join("\n");
+    const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `roxshield-employes-${new Date().toISOString().slice(0, 10)}.csv`;
+    a.click();
+    URL.revokeObjectURL(url);
+    toast.success("Export CSV telecharge");
   };
 
-  const handleDeptCSV = () => {
-    exportCSV({
-      filename: `roxshield-rapport-departements-${new Date().toISOString().slice(0, 10)}`,
-      headers: ["Département", "Employés", "Score de risque", "Complétion (%)"],
-      rows: deptCompletion.map((d) => [
-        d.name,
-        departmentStats.find((ds) => ds.name === d.name)?.employees ?? 0,
-        d.risk,
-        d.completion,
-      ]),
-    });
-    toast.success("Export CSV départements téléchargé");
-  };
+  const modules = trainData?.modules || [];
 
   return (
     <div>
@@ -135,9 +154,7 @@ export default function ReportsPage() {
       <div className="space-y-6 p-6">
         <FadeIn>
           <div className="flex items-center justify-between">
-            <p className="text-sm text-muted-foreground">
-              Suivez l&apos;évolution de la posture de sécurité de votre organisation
-            </p>
+            <p className="text-sm text-muted-foreground">{t("reports.description" as any)}</p>
             <div className="flex items-center gap-2">
               <Button variant="outline" onClick={handleCSV}>
                 <Download className="mr-2 h-4 w-4" />
@@ -150,9 +167,9 @@ export default function ReportsPage() {
                   disabled={exporting}
                 >
                   {exporting ? (
-                    <><Loader2 className="mr-2 h-4 w-4 animate-spin" />Génération...</>
+                    <><Loader2 className="mr-2 h-4 w-4 animate-spin" />{t("reports.generating" as any)}</>
                   ) : exported ? (
-                    <><CheckCircle className="mr-2 h-4 w-4" />Exporté !</>
+                    <><CheckCircle className="mr-2 h-4 w-4" />{t("reports.exported" as any)}</>
                   ) : (
                     <><Download className="mr-2 h-4 w-4" />{t("reports.exportPDF")}</>
                   )}
@@ -164,42 +181,10 @@ export default function ReportsPage() {
 
         <StaggerContainer className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
           {[
-            {
-              icon: Shield,
-              label: "Score de risque moyen",
-              value: avgRisk + "%",
-              trend: "-26% depuis Jan",
-              trendDown: true,
-              bg: "bg-rht-orange/10",
-              text: "text-rht-orange",
-            },
-            {
-              icon: Users,
-              label: "Taux de complétion",
-              value: avgCompletion + "%",
-              trend: "+35% depuis Jan",
-              trendDown: false,
-              bg: "bg-cyber-green/10",
-              text: "text-cyber-green",
-            },
-            {
-              icon: AlertTriangle,
-              label: "Taux de clic phishing",
-              value: clickRate + "%",
-              trend: "-62% depuis Jan",
-              trendDown: true,
-              bg: "bg-cyber-red/10",
-              text: "text-cyber-red",
-            },
-            {
-              icon: FileBarChart,
-              label: "Rapports générés",
-              value: reports.length.toString(),
-              trend: "Ce mois-ci : 2",
-              trendDown: false,
-              bg: "bg-rht-violet/10",
-              text: "text-rht-violet",
-            },
+            { icon: Shield, label: t("reports.avgRiskScore" as any), value: dashData.avgRiskScore + "%", bg: "bg-rht-orange/10", text: "text-rht-orange" },
+            { icon: Users, label: t("reports.completionRate" as any), value: dashData.trainingRate + "%", bg: "bg-cyber-green/10", text: "text-cyber-green" },
+            { icon: AlertTriangle, label: t("reports.phishingClickRate" as any), value: clickRate + "%", bg: "bg-cyber-red/10", text: "text-cyber-red" },
+            { icon: FileBarChart, label: t("reports.totalEmployees" as any), value: String(dashData.totalEmployees), bg: "bg-rht-violet/10", text: "text-rht-violet" },
           ].map((s) => (
             <StaggerItem key={s.label}>
               <GlowCard>
@@ -214,14 +199,6 @@ export default function ReportsPage() {
                         <p className="text-2xl font-bold">{s.value}</p>
                       </div>
                     </div>
-                    <div className="mt-2 flex items-center gap-1 text-xs text-muted-foreground">
-                      {s.trendDown ? (
-                        <TrendingDown className="h-3 w-3 text-cyber-green" />
-                      ) : (
-                        <TrendingUp className="h-3 w-3 text-cyber-green" />
-                      )}
-                      <span>{s.trend}</span>
-                    </div>
                   </CardContent>
                 </Card>
               </GlowCard>
@@ -231,121 +208,28 @@ export default function ReportsPage() {
 
         <Tabs defaultValue="overview" className="space-y-4">
           <TabsList>
-            <TabsTrigger value="overview">Vue d&apos;ensemble</TabsTrigger>
-            <TabsTrigger value="departments">Départements</TabsTrigger>
-            <TabsTrigger value="history">Historique</TabsTrigger>
+            <TabsTrigger value="overview">{t("reports.overview" as any)}</TabsTrigger>
+            <TabsTrigger value="departments">{t("reports.departments" as any)}</TabsTrigger>
           </TabsList>
 
           <TabsContent value="overview" className="space-y-6">
-            <div className="grid gap-6 lg:grid-cols-2">
+            <div className="grid gap-6 lg:grid-cols-3">
               <FadeIn>
                 <Card>
                   <CardHeader className="pb-2">
-                    <CardTitle className="text-sm font-semibold">Évolution du risque</CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="h-[280px]">
-                      <ResponsiveContainer width="100%" height="100%">
-                        <AreaChart data={riskEvolution}>
-                          <defs>
-                            <linearGradient id="riskGrad" x1="0" y1="0" x2="0" y2="1">
-                              <stop offset="5%" stopColor="#9c1e99" stopOpacity={0.3} />
-                              <stop offset="95%" stopColor="#9c1e99" stopOpacity={0} />
-                            </linearGradient>
-                          </defs>
-                          <CartesianGrid strokeDasharray="3 3" className="stroke-border" />
-                          <XAxis dataKey="month" tick={{ fill: "var(--muted-foreground)", fontSize: 12 }} />
-                          <YAxis tick={{ fill: "var(--muted-foreground)", fontSize: 12 }} />
-                          <Tooltip
-                            contentStyle={{
-                              backgroundColor: "var(--card)",
-                              border: "1px solid var(--border)",
-                              borderRadius: "12px",
-                              fontSize: "12px",
-                              color: "var(--foreground)",
-                            }}
-                          />
-                          <Area
-                            type="monotone"
-                            dataKey="Score de risque"
-                            stroke="#9c1e99"
-                            fill="url(#riskGrad)"
-                            strokeWidth={2}
-                          />
-                        </AreaChart>
-                      </ResponsiveContainer>
-                    </div>
-                  </CardContent>
-                </Card>
-              </FadeIn>
-
-              <FadeIn delay={0.1}>
-                <Card>
-                  <CardHeader className="pb-2">
-                    <CardTitle className="text-sm font-semibold">Clics phishing par mois</CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="h-[280px]">
-                      <ResponsiveContainer width="100%" height="100%">
-                        <BarChart data={phishingTrend}>
-                          <CartesianGrid strokeDasharray="3 3" className="stroke-border" />
-                          <XAxis dataKey="month" tick={{ fill: "var(--muted-foreground)", fontSize: 12 }} />
-                          <YAxis tick={{ fill: "var(--muted-foreground)", fontSize: 12 }} />
-                          <Tooltip
-                            contentStyle={{
-                              backgroundColor: "var(--card)",
-                              border: "1px solid var(--border)",
-                              borderRadius: "12px",
-                              fontSize: "12px",
-                              color: "var(--foreground)",
-                            }}
-                          />
-                          <Bar dataKey="Clics phishing" fill="#ef4444" radius={[6, 6, 0, 0]} />
-                        </BarChart>
-                      </ResponsiveContainer>
-                    </div>
-                  </CardContent>
-                </Card>
-              </FadeIn>
-            </div>
-
-            <div className="grid gap-6 lg:grid-cols-3">
-              <FadeIn delay={0.15}>
-                <Card>
-                  <CardHeader className="pb-2">
-                    <CardTitle className="text-sm font-semibold">Répartition des statuts</CardTitle>
+                    <CardTitle className="text-sm font-semibold">{t("reports.statusDistribution" as any)}</CardTitle>
                   </CardHeader>
                   <CardContent>
                     <div className="h-[220px]">
                       <ResponsiveContainer width="100%" height="100%">
                         <PieChart>
-                          <Pie
-                            data={statusData}
-                            cx="50%"
-                            cy="50%"
-                            innerRadius={50}
-                            outerRadius={80}
-                            paddingAngle={4}
-                            dataKey="value"
-                          >
+                          <Pie data={statusData} cx="50%" cy="50%" innerRadius={50} outerRadius={80} paddingAngle={4} dataKey="value">
                             {statusData.map((entry) => (
                               <Cell key={entry.name} fill={entry.color} />
                             ))}
                           </Pie>
-                          <Legend
-                            formatter={(value) => (
-                              <span style={{ color: "var(--foreground)", fontSize: "12px" }}>{value}</span>
-                            )}
-                          />
-                          <Tooltip
-                            contentStyle={{
-                              backgroundColor: "var(--card)",
-                              border: "1px solid var(--border)",
-                              borderRadius: "12px",
-                              fontSize: "12px",
-                              color: "var(--foreground)",
-                            }}
-                          />
+                          <Legend formatter={(value) => <span style={{ color: "var(--foreground)", fontSize: "12px" }}>{value}</span>} />
+                          <Tooltip contentStyle={{ backgroundColor: "var(--card)", border: "1px solid var(--border)", borderRadius: "12px", fontSize: "12px", color: "var(--foreground)" }} />
                         </PieChart>
                       </ResponsiveContainer>
                     </div>
@@ -353,34 +237,37 @@ export default function ReportsPage() {
                 </Card>
               </FadeIn>
 
-              <FadeIn delay={0.2} className="lg:col-span-2">
+              <FadeIn delay={0.1} className="lg:col-span-2">
                 <Card>
                   <CardHeader className="pb-2">
-                    <CardTitle className="text-sm font-semibold">Top modules par complétion</CardTitle>
+                    <CardTitle className="text-sm font-semibold">{t("reports.topModules" as any)}</CardTitle>
                   </CardHeader>
                   <CardContent>
-                    <div className="space-y-4">
-                      {[...trainingModules]
-                        .sort((a, b) => b.completionRate - a.completionRate)
-                        .map((m, i) => (
-                          <motion.div
-                            key={m.id}
-                            initial={{ opacity: 0, x: -10 }}
-                            animate={{ opacity: 1, x: 0 }}
-                            transition={{ delay: i * 0.05 }}
-                            className="flex items-center gap-3"
-                          >
-                            <span className="text-lg">{m.icon}</span>
-                            <div className="flex-1">
-                              <div className="flex items-center justify-between text-sm">
-                                <span className="font-medium">{m.title}</span>
-                                <span className="text-muted-foreground">{m.completionRate}%</span>
+                    {modules.length === 0 ? (
+                      <p className="py-8 text-center text-sm text-muted-foreground">{t("training.noModules" as any)}</p>
+                    ) : (
+                      <div className="space-y-4">
+                        {[...modules]
+                          .sort((a, b) => b.progress.progressPercent - a.progress.progressPercent)
+                          .map((m, i) => (
+                            <motion.div
+                              key={m.id}
+                              initial={{ opacity: 0, x: -10 }}
+                              animate={{ opacity: 1, x: 0 }}
+                              transition={{ delay: i * 0.05 }}
+                              className="flex items-center gap-3"
+                            >
+                              <div className="flex-1">
+                                <div className="flex items-center justify-between text-sm">
+                                  <span className="font-medium">{m.title}</span>
+                                  <span className="text-muted-foreground">{m.progress.progressPercent}%</span>
+                                </div>
+                                <Progress value={m.progress.progressPercent} className="mt-1 h-2" />
                               </div>
-                              <Progress value={m.completionRate} className="mt-1 h-2" />
-                            </div>
-                          </motion.div>
-                        ))}
-                    </div>
+                            </motion.div>
+                          ))}
+                      </div>
+                    )}
                   </CardContent>
                 </Card>
               </FadeIn>
@@ -388,115 +275,51 @@ export default function ReportsPage() {
           </TabsContent>
 
           <TabsContent value="departments" className="space-y-6">
-            <FadeIn>
-              <div className="flex justify-end">
-                <Button variant="outline" size="sm" onClick={handleDeptCSV}>
-                  <Download className="mr-2 h-3 w-3" />
-                  CSV départements
-                </Button>
-              </div>
-              <Card>
-                <CardHeader className="pb-2">
-                  <CardTitle className="text-sm font-semibold">Risque vs Complétion par département</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="h-[350px]">
-                    <ResponsiveContainer width="100%" height="100%">
-                      <BarChart data={deptCompletion} layout="vertical">
-                        <CartesianGrid strokeDasharray="3 3" className="stroke-border" />
-                        <XAxis type="number" tick={{ fill: "var(--muted-foreground)", fontSize: 12 }} />
-                        <YAxis dataKey="name" type="category" tick={{ fill: "var(--muted-foreground)", fontSize: 12 }} width={100} />
-                        <Tooltip
-                          contentStyle={{
-                            backgroundColor: "var(--card)",
-                            border: "1px solid var(--border)",
-                            borderRadius: "12px",
-                            fontSize: "12px",
-                            color: "var(--foreground)",
-                          }}
-                        />
-                        <Legend formatter={(value) => <span style={{ color: "var(--foreground)", fontSize: "12px" }}>{value}</span>} />
-                        <Bar dataKey="completion" name="Complétion %" fill="#25d366" radius={[0, 4, 4, 0]} />
-                        <Bar dataKey="risk" name="Risque %" fill="#ef4444" radius={[0, 4, 4, 0]} />
-                      </BarChart>
-                    </ResponsiveContainer>
-                  </div>
-                </CardContent>
-              </Card>
-            </FadeIn>
-
-            <StaggerContainer className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-              {departmentStats.map((dept) => (
-                <StaggerItem key={dept.name}>
-                  <Card className="transition-all hover:border-rht-violet/20">
-                    <CardContent className="p-5">
-                      <div className="flex items-center justify-between">
-                        <h3 className="font-semibold">{dept.name}</h3>
-                        <Badge
-                          className={`border-0 ${
-                            dept.riskScore < 35
-                              ? "bg-cyber-green/10 text-cyber-green"
-                              : dept.riskScore < 60
-                              ? "bg-rht-orange/10 text-rht-orange"
-                              : "bg-cyber-red/10 text-cyber-red"
-                          }`}
-                        >
-                          {dept.riskScore}%
-                        </Badge>
+            {dashData.deptRisk.length === 0 ? (
+              <Card><CardContent className="py-12 text-center text-sm text-muted-foreground">{t("reports.noDeptData" as any)}</CardContent></Card>
+            ) : (
+              <>
+                <FadeIn>
+                  <Card>
+                    <CardHeader className="pb-2">
+                      <CardTitle className="text-sm font-semibold">{t("reports.riskByDept" as any)}</CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      <div className="h-[350px]">
+                        <ResponsiveContainer width="100%" height="100%">
+                          <BarChart data={dashData.deptRisk} layout="vertical">
+                            <CartesianGrid strokeDasharray="3 3" className="stroke-border" />
+                            <XAxis type="number" domain={[0, 100]} tick={{ fill: "var(--muted-foreground)", fontSize: 12 }} />
+                            <YAxis dataKey="department" type="category" tick={{ fill: "var(--muted-foreground)", fontSize: 12 }} width={100} />
+                            <Tooltip contentStyle={{ backgroundColor: "var(--card)", border: "1px solid var(--border)", borderRadius: "12px", fontSize: "12px", color: "var(--foreground)" }} />
+                            <Bar dataKey="avgRisk" name="Risque %" fill="#ef4444" radius={[0, 4, 4, 0]} />
+                          </BarChart>
+                        </ResponsiveContainer>
                       </div>
-                      <p className="mt-1 text-xs text-muted-foreground">{dept.employees} employé(s)</p>
-                      <Progress
-                        value={100 - dept.riskScore}
-                        className="mt-3 h-2"
-                      />
-                      <p className="mt-1 text-[10px] text-muted-foreground">Niveau de sécurité</p>
                     </CardContent>
                   </Card>
-                </StaggerItem>
-              ))}
-            </StaggerContainer>
-          </TabsContent>
+                </FadeIn>
 
-          <TabsContent value="history" className="space-y-4">
-            <FadeIn>
-              <Card>
-                <CardHeader className="pb-3">
-                  <CardTitle className="text-sm font-semibold">Rapports générés</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="space-y-3">
-                    {reports.map((report, i) => (
-                      <motion.div
-                        key={report.id}
-                        initial={{ opacity: 0, y: 10 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ delay: i * 0.08 }}
-                        className="flex items-center justify-between rounded-xl border p-4 transition-colors hover:bg-accent"
-                      >
-                        <div className="flex items-center gap-3">
-                          <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-rht-violet/10">
-                            <FileBarChart className="h-5 w-5 text-rht-violet-light" />
+                <StaggerContainer className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+                  {dashData.deptRisk.map((dept) => (
+                    <StaggerItem key={dept.department}>
+                      <Card className="transition-all hover:border-rht-violet/20">
+                        <CardContent className="p-5">
+                          <div className="flex items-center justify-between">
+                            <h3 className="font-semibold">{dept.department || "—"}</h3>
+                            <Badge className={`border-0 ${dept.avgRisk < 35 ? "bg-cyber-green/10 text-cyber-green" : dept.avgRisk < 60 ? "bg-rht-orange/10 text-rht-orange" : "bg-cyber-red/10 text-cyber-red"}`}>
+                              {dept.avgRisk}%
+                            </Badge>
                           </div>
-                          <div>
-                            <p className="text-sm font-medium">{report.name}</p>
-                            <div className="mt-0.5 flex items-center gap-2 text-xs text-muted-foreground">
-                              <Calendar className="h-3 w-3" />
-                              <span>{report.date}</span>
-                              <Badge variant="outline" className="text-[10px]">
-                                {report.type}
-                              </Badge>
-                            </div>
-                          </div>
-                        </div>
-                        <Button variant="ghost" size="sm">
-                          <Download className="h-4 w-4" />
-                        </Button>
-                      </motion.div>
-                    ))}
-                  </div>
-                </CardContent>
-              </Card>
-            </FadeIn>
+                          <p className="mt-1 text-xs text-muted-foreground">{dept.count} {t("common.employees" as any)}</p>
+                          <Progress value={100 - dept.avgRisk} className="mt-3 h-2" />
+                        </CardContent>
+                      </Card>
+                    </StaggerItem>
+                  ))}
+                </StaggerContainer>
+              </>
+            )}
           </TabsContent>
         </Tabs>
       </div>

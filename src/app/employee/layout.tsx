@@ -2,10 +2,12 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { signOut } from "next-auth/react";
 import { useState, useEffect } from "react";
 import { AnimatePresence } from "framer-motion";
 import { Onboarding } from "@/components/onboarding";
 import { PageTransition } from "@/components/page-transition";
+import { AuthProvider } from "@/components/auth-provider";
 import {
   LayoutDashboard,
   GraduationCap,
@@ -54,6 +56,7 @@ export default function EmployeeLayout({ children }: { children: React.ReactNode
   }, [pathname]);
 
   return (
+    <AuthProvider>
     <div className="flex min-h-screen">
       <AnimatePresence>
         {showOnboarding && (
@@ -165,9 +168,9 @@ export default function EmployeeLayout({ children }: { children: React.ReactNode
               </div>
             )}
             {!collapsed && (
-              <Link href="/login">
+              <button onClick={() => signOut({ callbackUrl: "/login" })}>
                 <LogOut className="h-4 w-4 shrink-0 opacity-30 transition-opacity hover:opacity-100" />
-              </Link>
+              </button>
             )}
           </div>
         </div>
@@ -201,5 +204,6 @@ export default function EmployeeLayout({ children }: { children: React.ReactNode
         })}
       </nav>
     </div>
+    </AuthProvider>
   );
 }

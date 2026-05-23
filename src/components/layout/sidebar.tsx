@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { signOut, useSession } from "next-auth/react";
 import {
   LayoutDashboard,
   Users,
@@ -22,17 +23,30 @@ import {
   X,
 } from "lucide-react";
 import { useState, useEffect } from "react";
-import { currentUser } from "@/lib/mock-data";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { useTranslation } from "@/lib/i18n";
 
+function getInitials(name?: string | null, email?: string | null): string {
+  if (name) {
+    return name.split(" ").map((n) => n[0]).join("").toUpperCase().slice(0, 2);
+  }
+  if (email) return email.slice(0, 2).toUpperCase();
+  return "??";
+}
+
 export function Sidebar() {
   const pathname = usePathname();
   const { t, locale } = useTranslation();
+  const { data: session } = useSession();
   const [collapsed, setCollapsed] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
+
+  const user = session?.user;
+  const userName = user?.name || user?.email || "";
+  const userEmail = user?.email || "";
+  const orgName = (user as any)?.organizationName || "Organisation";
 
   const navItems = [
     { label: t("nav.dashboard"), href: "/dashboard", icon: LayoutDashboard },
@@ -112,7 +126,7 @@ export function Sidebar() {
         {!collapsed && (
           <div className="px-4 py-3">
             <p className="text-[10px] font-medium uppercase tracking-widest opacity-30">Organisation</p>
-            <p className="mt-0.5 text-sm font-medium">{currentUser.org}</p>
+            <p className="mt-0.5 text-sm font-medium">{orgName}</p>
           </div>
         )}
 
@@ -145,20 +159,20 @@ export function Sidebar() {
             <Link href="/dashboard/profile">
               <Avatar className="h-8 w-8 shrink-0 cursor-pointer transition-opacity hover:opacity-80">
                 <AvatarFallback className="bg-gradient-to-br from-rht-violet to-rht-violet-light text-[11px] text-white">
-                  {currentUser.name.split(" ").map((n) => n[0]).join("")}
+                  {getInitials(user?.name, user?.email)}
                 </AvatarFallback>
               </Avatar>
             </Link>
             {!collapsed && (
               <Link href="/dashboard/profile" className="flex-1 overflow-hidden transition-opacity hover:opacity-80">
-                <p className="truncate text-sm font-medium">{currentUser.name}</p>
-                <p className="truncate text-[11px] opacity-40">{currentUser.email}</p>
+                <p className="truncate text-sm font-medium">{userName}</p>
+                <p className="truncate text-[11px] opacity-40">{userEmail}</p>
               </Link>
             )}
             {!collapsed && (
-              <Link href="/login">
+              <button onClick={() => signOut({ callbackUrl: "/login" })}>
                 <LogOut className="h-4 w-4 shrink-0 opacity-30 transition-opacity hover:opacity-100" />
-              </Link>
+              </button>
             )}
           </div>
         </div>

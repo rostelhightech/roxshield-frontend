@@ -6,9 +6,10 @@ import { Button } from "@/components/ui/button";
 import { Clock, LogOut } from "lucide-react";
 import { useTranslation } from "@/lib/i18n";
 import { usePathname } from "next/navigation";
+import { signOut } from "next-auth/react";
 
-const TIMEOUT_MS = 15 * 60 * 1000; // 15 minutes d'inactivité
-const WARNING_MS = 2 * 60 * 1000; // Avertir 2 minutes avant
+const TIMEOUT_MS = 15 * 60 * 1000;
+const WARNING_MS = 2 * 60 * 1000;
 
 export function SessionTimeout() {
   const [showWarning, setShowWarning] = useState(false);
@@ -19,28 +20,28 @@ export function SessionTimeout() {
   const warningRef = useRef<ReturnType<typeof setTimeout>>(null);
   const countdownRef = useRef<ReturnType<typeof setInterval>>(null);
 
-  // Only active in authenticated areas
   const isAuthArea = pathname.startsWith("/dashboard") || pathname.startsWith("/employee") || pathname.startsWith("/admin");
+
+  const clearAllTimers = useCallback(() => {
+    if (timeoutRef.current) clearTimeout(timeoutRef.current);
+    if (warningRef.current) clearTimeout(warningRef.current);
+    if (countdownRef.current) clearInterval(countdownRef.current);
+  }, []);
 
   const resetTimers = useCallback(() => {
     if (!isAuthArea) return;
 
     setShowWarning(false);
     setCountdown(120);
+    clearAllTimers();
 
-    if (timeoutRef.current) clearTimeout(timeoutRef.current);
-    if (warningRef.current) clearTimeout(warningRef.current);
-    if (countdownRef.current) clearInterval(countdownRef.current);
-
-    // Warning timer
     warningRef.current = setTimeout(() => {
       setShowWarning(true);
       setCountdown(120);
       countdownRef.current = setInterval(() => {
         setCountdown((prev) => {
           if (prev <= 1) {
-            // Session expired — redirect to login
-            window.location.href = "/login?reason=timeout";
+            signOut({ callbackUrl: "/login?reason=timeout" });
             return 0;
           }
           return prev - 1;
@@ -48,20 +49,20 @@ export function SessionTimeout() {
       }, 1000);
     }, TIMEOUT_MS - WARNING_MS);
 
-    // Hard timeout
     timeoutRef.current = setTimeout(() => {
-      window.location.href = "/login?reason=timeout";
+      signOut({ callbackUrl: "/login?reason=timeout" });
     }, TIMEOUT_MS);
-  }, [isAuthArea]);
+  }, [isAuthArea, clearAllTimers]);
 
   const handleStayConnected = () => {
     setShowWarning(false);
-    if (countdownRef.current) clearInterval(countdownRef.current);
+    clearAllTimers();
     resetTimers();
   };
 
   const handleLogout = () => {
-    window.location.href = "/login";
+    clearAllTimers();
+    signOut({ callbackUrl: "/login" });
   };
 
   useEffect(() => {
@@ -77,11 +78,9 @@ export function SessionTimeout() {
 
     return () => {
       events.forEach((event) => document.removeEventListener(event, resetOnActivity));
-      if (timeoutRef.current) clearTimeout(timeoutRef.current);
-      if (warningRef.current) clearTimeout(warningRef.current);
-      if (countdownRef.current) clearInterval(countdownRef.current);
+      clearAllTimers();
     };
-  }, [isAuthArea, resetTimers, showWarning]);
+  }, [isAuthArea, resetTimers, showWarning, clearAllTimers]);
 
   if (!isAuthArea) return null;
 
@@ -89,7 +88,7 @@ export function SessionTimeout() {
   const seconds = countdown % 60;
 
   return (
-    <Dialog open={showWarning} onOpenChange={() => {}}>
+    <Dialog open={showWarning} onOpenChange={(open) => { if (!open) handleStayConnected(); }}>
       <DialogContent className="sm:max-w-[400px]">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2 text-destructive">

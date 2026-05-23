@@ -1,31 +1,22 @@
 "use client";
 
 import { ThemeProvider as NextThemesProvider } from "next-themes";
-import { SessionProvider } from "next-auth/react";
 import { I18nProvider } from "@/lib/i18n";
-import { CommandPalette } from "@/components/command-palette";
-import { KeyboardShortcuts } from "@/components/keyboard-shortcuts";
 import { BackToTop } from "@/components/back-to-top";
 import { ScrollProgress } from "@/components/scroll-progress";
 import { SkipToContent } from "@/components/skip-to-content";
 import { NetworkStatus } from "@/components/network-status";
-import { SessionTimeout } from "@/components/session-timeout";
 
 export function ThemeProvider({ children }: { children: React.ReactNode }) {
   return (
-    <SessionProvider>
-      <NextThemesProvider attribute="class" defaultTheme="dark" enableSystem={false}>
-        <I18nProvider>
-          <SkipToContent />
-          {children}
-          <CommandPalette />
-          <KeyboardShortcuts />
-          <BackToTop />
-          <ScrollProgress />
-          <NetworkStatus />
-          <SessionTimeout />
-        </I18nProvider>
-      </NextThemesProvider>
-    </SessionProvider>
+    <NextThemesProvider attribute="class" defaultTheme="dark" enableSystem={false}>
+      <I18nProvider>
+        <SkipToContent />
+        {children}
+        <BackToTop />
+        <ScrollProgress />
+        <NetworkStatus />
+      </I18nProvider>
+    </NextThemesProvider>
   );
 }

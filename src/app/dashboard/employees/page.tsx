@@ -8,6 +8,7 @@ import { Progress } from "@/components/ui/progress";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import { Skeleton } from "@/components/ui/skeleton";
 import {
   Dialog,
   DialogContent,
@@ -29,15 +30,43 @@ import {
   Mail,
   Building2,
   Briefcase,
-  CheckCircle,
-  AlertTriangle,
-  XCircle,
 } from "lucide-react";
-import { employees } from "@/lib/mock-data";
-import type { Employee } from "@/lib/mock-data";
+import { Label } from "@/components/ui/label";
 import { FadeIn, StaggerContainer, StaggerItem } from "@/components/motion";
 import { motion, AnimatePresence } from "framer-motion";
 import { useTranslation } from "@/lib/i18n";
+import { useApi } from "@/hooks/use-api";
+import { toast } from "sonner";
+
+interface Employee {
+  id: string;
+  name: string | null;
+  email: string;
+  department: string | null;
+  position: string | null;
+  role: string;
+  riskScore: number;
+  trainingsCompleted: number;
+}
+
+interface EmployeesResponse {
+  employees: Employee[];
+  departments: string[];
+}
+
+function getStatus(riskScore: number): "safe" | "moderate" | "at-risk" {
+  if (riskScore <= 30) return "safe";
+  if (riskScore <= 60) return "moderate";
+  return "at-risk";
+}
+
+function getInitials(name: string | null, email: string): string {
+  if (name) {
+    const parts = name.split(" ");
+    return parts.map((p) => p[0]).join("").toUpperCase().slice(0, 2);
+  }
+  return email.slice(0, 2).toUpperCase();
+}
 
 function StatusBadge({ status, t }: { status: string; t: (key: any) => string }) {
   switch (status) {
@@ -50,25 +79,86 @@ function StatusBadge({ status, t }: { status: string; t: (key: any) => string })
   }
 }
 
-type SortKey = "name" | "department" | "riskScore" | "trainingsCompleted" | "lastActive";
+type SortKey = "name" | "department" | "riskScore" | "trainingsCompleted";
 type SortDir = "asc" | "desc";
-
-const departments = [...new Set(employees.map((e) => e.department))].sort();
-const statuses = [
-  { value: "all", label: "Tous" },
-  { value: "safe", label: "Sûr" },
-  { value: "moderate", label: "Modéré" },
-  { value: "at-risk", label: "À risque" },
-];
 
 export default function EmployeesPage() {
   const { t } = useTranslation();
+  const { data, loading, refetch } = useApi<EmployeesResponse>("/api/employees");
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
   const [deptFilter, setDeptFilter] = useState("all");
   const [sortKey, setSortKey] = useState<SortKey>("riskScore");
   const [sortDir, setSortDir] = useState<SortDir>("desc");
   const [selectedEmployee, setSelectedEmployee] = useState<Employee | null>(null);
+  const [showAddDialog, setShowAddDialog] = useState(false);
+  const [addForm, setAddForm] = useState({ name: "", email: "", department: "", position: "" });
+  const [adding, setAdding] = useState(false);
+  const [deleting, setDeleting] = useState(false);
+
+  const handleAddEmployee = async () => {
+    if (!addForm.email) { toast.error("L'email est requis"); return; }
+    setAdding(true);
+    try {
+      const res = await fetch("/api/employees", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(addForm),
+      });
+      if (res.ok) {
+        toast.success("Employé ajouté avec succès");
+        setShowAddDialog(false);
+        setAddForm({ name: "", email: "", department: "", position: "" });
+        await refetch();
+      } else {
+        const err = await res.json();
+        toast.error(err.error || "Erreur lors de l'ajout");
+      }
+    } catch { toast.error("Erreur réseau"); }
+    finally { setAdding(false); }
+  };
+
+  const handleDeleteEmployee = async (emp: Employee) => {
+    setDeleting(true);
+    try {
+      const res = await fetch(`/api/employees?id=${emp.id}`, { method: "DELETE" });
+      if (res.ok) {
+        toast.success("Employé supprimé");
+        setSelectedEmployee(null);
+        await refetch();
+      } else {
+        const err = await res.json();
+        toast.error(err.error || "Erreur lors de la suppression");
+      }
+    } catch { toast.error("Erreur réseau"); }
+    finally { setDeleting(false); }
+  };
+
+  const handleExportCSV = () => {
+    const headers = ["Nom", "Email", "Département", "Poste", "Rôle", "Score de risque", "Formations"];
+    const rows = (data?.employees || []).map((e) => [
+      e.name || "", e.email, e.department || "", e.position || "", e.role, String(e.riskScore), String(e.trainingsCompleted),
+    ]);
+    const csvContent = [headers.join(","), ...rows.map((r) => r.join(","))].join("\n");
+    const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `roxshield-employes-${new Date().toISOString().slice(0, 10)}.csv`;
+    a.click();
+    URL.revokeObjectURL(url);
+    toast.success("Export CSV téléchargé");
+  };
+
+  const employees = data?.employees || [];
+  const departments = data?.departments || [];
+
+  const statuses = [
+    { value: "all", label: t("common.all" as any) },
+    { value: "safe", label: t("employees.safe") },
+    { value: "moderate", label: t("employees.moderate") },
+    { value: "at-risk", label: t("employees.atRisk") },
+  ];
 
   const handleSort = (key: SortKey) => {
     if (sortKey === key) {
@@ -80,26 +170,28 @@ export default function EmployeesPage() {
   };
 
   const filtered = useMemo(() => {
-    let result = employees.filter(
-      (e) =>
-        (e.name.toLowerCase().includes(search.toLowerCase()) ||
-          e.department.toLowerCase().includes(search.toLowerCase()) ||
-          e.email.toLowerCase().includes(search.toLowerCase())) &&
-        (statusFilter === "all" || e.status === statusFilter) &&
-        (deptFilter === "all" || e.department === deptFilter)
-    );
+    let result = employees.filter((e) => {
+      const matchSearch =
+        !search ||
+        (e.name || "").toLowerCase().includes(search.toLowerCase()) ||
+        (e.department || "").toLowerCase().includes(search.toLowerCase()) ||
+        e.email.toLowerCase().includes(search.toLowerCase());
+      const status = getStatus(e.riskScore);
+      const matchStatus = statusFilter === "all" || status === statusFilter;
+      const matchDept = deptFilter === "all" || e.department === deptFilter;
+      return matchSearch && matchStatus && matchDept;
+    });
 
     result.sort((a, b) => {
       const dir = sortDir === "asc" ? 1 : -1;
-      if (sortKey === "name") return dir * a.name.localeCompare(b.name);
-      if (sortKey === "department") return dir * a.department.localeCompare(b.department);
-      if (sortKey === "lastActive") return dir * a.lastActive.localeCompare(b.lastActive);
+      if (sortKey === "name") return dir * (a.name || "").localeCompare(b.name || "");
+      if (sortKey === "department") return dir * (a.department || "").localeCompare(b.department || "");
       if (sortKey === "trainingsCompleted") return dir * (a.trainingsCompleted - b.trainingsCompleted);
       return dir * (a.riskScore - b.riskScore);
     });
 
     return result;
-  }, [search, statusFilter, deptFilter, sortKey, sortDir]);
+  }, [employees, search, statusFilter, deptFilter, sortKey, sortDir]);
 
   const SortIcon = ({ column }: { column: SortKey }) => {
     if (sortKey !== column) return <ArrowUpDown className="ml-1 inline h-3 w-3 opacity-30" />;
@@ -109,6 +201,26 @@ export default function EmployeesPage() {
       <ChevronDown className="ml-1 inline h-3 w-3" />
     );
   };
+
+  if (loading) {
+    return (
+      <div>
+        <Header title={t("employees.title")} />
+        <div className="space-y-6 p-6">
+          <div className="grid gap-3 sm:grid-cols-3">
+            {[1, 2, 3].map((i) => (
+              <Card key={i}><CardContent className="p-4"><Skeleton className="h-16 w-full" /></CardContent></Card>
+            ))}
+          </div>
+          <Card><CardContent className="p-6"><Skeleton className="h-[400px] w-full" /></CardContent></Card>
+        </div>
+      </div>
+    );
+  }
+
+  const safeCount = employees.filter((e) => getStatus(e.riskScore) === "safe").length;
+  const moderateCount = employees.filter((e) => getStatus(e.riskScore) === "moderate").length;
+  const atRiskCount = employees.filter((e) => getStatus(e.riskScore) === "at-risk").length;
 
   return (
     <div>
@@ -140,16 +252,16 @@ export default function EmployeesPage() {
                 value={deptFilter}
                 onChange={(e) => setDeptFilter(e.target.value)}
               >
-                <option value="all">Tous les départements</option>
+                <option value="all">{t("common.allDepartments" as any)}</option>
                 {departments.map((d) => (
                   <option key={d} value={d}>{d}</option>
                 ))}
               </select>
-              <Button variant="outline" size="sm" className="h-10">
+              <Button variant="outline" size="sm" className="h-10" onClick={handleExportCSV}>
                 <Download className="mr-2 h-4 w-4" />
                 {t("common.export")}
               </Button>
-              <Button size="sm" className="h-10 bg-gradient-to-r from-rht-violet to-rht-violet-light text-white hover:opacity-90">
+              <Button size="sm" className="h-10 bg-gradient-to-r from-rht-violet to-rht-violet-light text-white hover:opacity-90" onClick={() => setShowAddDialog(true)}>
                 <UserPlus className="mr-2 h-4 w-4" />
                 {t("common.add")}
               </Button>
@@ -159,14 +271,14 @@ export default function EmployeesPage() {
 
         <StaggerContainer className="grid gap-3 sm:grid-cols-3">
           {[
-            { color: "bg-cyber-green", count: employees.filter((e) => e.status === "safe").length, label: "Zone sûre", active: statusFilter === "safe" },
-            { color: "bg-rht-orange", count: employees.filter((e) => e.status === "moderate").length, label: "Risque modéré", active: statusFilter === "moderate" },
-            { color: "bg-cyber-red", count: employees.filter((e) => e.status === "at-risk").length, label: "À risque", active: statusFilter === "at-risk" },
+            { color: "bg-cyber-green", count: safeCount, label: t("employees.safe"), filterValue: "safe", active: statusFilter === "safe" },
+            { color: "bg-rht-orange", count: moderateCount, label: t("employees.moderate"), filterValue: "moderate", active: statusFilter === "moderate" },
+            { color: "bg-cyber-red", count: atRiskCount, label: t("employees.atRisk"), filterValue: "at-risk", active: statusFilter === "at-risk" },
           ].map((s) => (
-            <StaggerItem key={s.label}>
+            <StaggerItem key={s.filterValue}>
               <Card
                 className={`cursor-pointer transition-all duration-200 ${s.active ? "ring-2 ring-rht-violet/30" : "hover:border-rht-violet/20"}`}
-                onClick={() => setStatusFilter(s.active ? "all" : s.label === "Zone sûre" ? "safe" : s.label === "Risque modéré" ? "moderate" : "at-risk")}
+                onClick={() => setStatusFilter(s.active ? "all" : s.filterValue)}
               >
                 <CardContent className="flex items-center gap-3 p-4">
                   <div className={`h-3 w-3 rounded-full ${s.color}`} />
@@ -185,8 +297,8 @@ export default function EmployeesPage() {
             <CardHeader className="pb-3">
               <CardTitle className="text-sm font-semibold">
                 {filtered.length === employees.length
-                  ? `Tous les employés (${filtered.length})`
-                  : `${filtered.length} résultat${filtered.length > 1 ? "s" : ""} sur ${employees.length}`}
+                  ? `${t("employees.allEmployees" as any)} (${filtered.length})`
+                  : `${filtered.length} ${t("common.results" as any)} / ${employees.length}`}
               </CardTitle>
             </CardHeader>
             <CardContent>
@@ -207,9 +319,6 @@ export default function EmployeesPage() {
                         {t("employees.trainings")} <SortIcon column="trainingsCompleted" />
                       </th>
                       <th className="pb-3 pr-4">{t("employees.status")}</th>
-                      <th className="cursor-pointer pb-3 select-none" onClick={() => handleSort("lastActive")}>
-                        Dernière activité <SortIcon column="lastActive" />
-                      </th>
                     </tr>
                   </thead>
                   <tbody>
@@ -228,16 +337,16 @@ export default function EmployeesPage() {
                             <div className="flex items-center gap-3">
                               <Avatar className="h-8 w-8">
                                 <AvatarFallback className="bg-rht-violet/10 text-[10px] text-rht-violet-light">
-                                  {emp.avatar}
+                                  {getInitials(emp.name, emp.email)}
                                 </AvatarFallback>
                               </Avatar>
                               <div>
-                                <p className="text-sm font-medium">{emp.name}</p>
+                                <p className="text-sm font-medium">{emp.name || emp.email}</p>
                                 <p className="text-xs text-muted-foreground">{emp.email}</p>
                               </div>
                             </div>
                           </td>
-                          <td className="py-3 pr-4 text-sm">{emp.department}</td>
+                          <td className="py-3 pr-4 text-sm">{emp.department || "—"}</td>
                           <td className="py-3 pr-4">
                             <div className="flex items-center gap-2">
                               <Progress value={emp.riskScore} className="h-2 w-16" />
@@ -254,11 +363,8 @@ export default function EmployeesPage() {
                               </span>
                             </div>
                           </td>
-                          <td className="py-3 pr-4 text-sm">
-                            {emp.trainingsCompleted}/{emp.totalTrainings}
-                          </td>
-                          <td className="py-3 pr-4"><StatusBadge status={emp.status} t={t} /></td>
-                          <td className="py-3 text-sm text-muted-foreground">{emp.lastActive}</td>
+                          <td className="py-3 pr-4 text-sm">{emp.trainingsCompleted}</td>
+                          <td className="py-3 pr-4"><StatusBadge status={getStatus(emp.riskScore)} t={t} /></td>
                         </motion.tr>
                       ))}
                     </AnimatePresence>
@@ -267,7 +373,7 @@ export default function EmployeesPage() {
                 {filtered.length === 0 && (
                   <div className="py-12 text-center">
                     <Search className="mx-auto mb-3 h-8 w-8 text-muted-foreground/30" />
-                    <p className="text-sm text-muted-foreground">Aucun employé ne correspond à votre recherche</p>
+                    <p className="text-sm text-muted-foreground">{t("employees.noResults" as any)}</p>
                   </div>
                 )}
               </div>
@@ -276,7 +382,7 @@ export default function EmployeesPage() {
         </FadeIn>
       </div>
 
-      {/* Dialog profil employé */}
+      {/* Dialog profil employe */}
       <Dialog open={!!selectedEmployee} onOpenChange={(open) => !open && setSelectedEmployee(null)}>
         {selectedEmployee && (
           <DialogContent className="sm:max-w-lg">
@@ -284,15 +390,15 @@ export default function EmployeesPage() {
               <DialogTitle className="flex items-center gap-3">
                 <Avatar className="h-10 w-10">
                   <AvatarFallback className="bg-gradient-to-br from-rht-violet to-rht-violet-light text-sm text-white">
-                    {selectedEmployee.avatar}
+                    {getInitials(selectedEmployee.name, selectedEmployee.email)}
                   </AvatarFallback>
                 </Avatar>
                 <div>
-                  <span>{selectedEmployee.name}</span>
-                  <p className="text-xs font-normal text-muted-foreground">{selectedEmployee.role}</p>
+                  <span>{selectedEmployee.name || selectedEmployee.email}</span>
+                  <p className="text-xs font-normal text-muted-foreground">{selectedEmployee.position || selectedEmployee.role}</p>
                 </div>
               </DialogTitle>
-              <DialogDescription>Profil détaillé et statistiques de sécurité</DialogDescription>
+              <DialogDescription>{t("employees.profileDesc" as any)}</DialogDescription>
             </DialogHeader>
 
             <div className="space-y-4">
@@ -303,19 +409,15 @@ export default function EmployeesPage() {
                 </div>
                 <div className="flex items-center gap-2 text-muted-foreground">
                   <Building2 className="h-4 w-4" />
-                  <span>{selectedEmployee.department}</span>
+                  <span>{selectedEmployee.department || "—"}</span>
                 </div>
                 <div className="flex items-center gap-2 text-muted-foreground">
                   <Briefcase className="h-4 w-4" />
-                  <span>{selectedEmployee.role}</span>
-                </div>
-                <div className="flex items-center gap-2 text-muted-foreground">
-                  <Clock className="h-4 w-4" />
-                  <span>Actif le {selectedEmployee.lastActive}</span>
+                  <span>{selectedEmployee.position || selectedEmployee.role}</span>
                 </div>
               </div>
 
-              <div className="grid grid-cols-3 gap-3">
+              <div className="grid grid-cols-2 gap-3">
                 <div className="rounded-xl border p-3 text-center">
                   <Shield className={`mx-auto h-5 w-5 ${
                     selectedEmployee.riskScore <= 30 ? "text-cyber-green" : selectedEmployee.riskScore <= 60 ? "text-rht-orange" : "text-cyber-red"
@@ -323,51 +425,103 @@ export default function EmployeesPage() {
                   <p className={`mt-1 text-xl font-bold ${
                     selectedEmployee.riskScore <= 30 ? "text-cyber-green" : selectedEmployee.riskScore <= 60 ? "text-rht-orange" : "text-cyber-red"
                   }`}>{selectedEmployee.riskScore}%</p>
-                  <p className="text-[10px] text-muted-foreground">Score de risque</p>
+                  <p className="text-[10px] text-muted-foreground">{t("employees.riskScore")}</p>
                 </div>
                 <div className="rounded-xl border p-3 text-center">
                   <GraduationCap className="mx-auto h-5 w-5 text-rht-violet-light" />
-                  <p className="mt-1 text-xl font-bold">{selectedEmployee.trainingsCompleted}/{selectedEmployee.totalTrainings}</p>
-                  <p className="text-[10px] text-muted-foreground">Formations</p>
+                  <p className="mt-1 text-xl font-bold">{selectedEmployee.trainingsCompleted}</p>
+                  <p className="text-[10px] text-muted-foreground">{t("employees.trainings")}</p>
                 </div>
-                <div className="rounded-xl border p-3 text-center">
-                  <Target className="mx-auto h-5 w-5 text-rht-orange" />
-                  <p className="mt-1 text-xl font-bold">{Math.round((selectedEmployee.trainingsCompleted / selectedEmployee.totalTrainings) * 100)}%</p>
-                  <p className="text-[10px] text-muted-foreground">Complétion</p>
-                </div>
-              </div>
-
-              <div>
-                <p className="mb-2 text-xs font-medium text-muted-foreground">Progression des formations</p>
-                <Progress value={(selectedEmployee.trainingsCompleted / selectedEmployee.totalTrainings) * 100} className="h-3" />
-              </div>
-
-              <div className="rounded-xl bg-accent/50 p-3">
-                <p className="text-xs font-medium text-muted-foreground">Recommandation</p>
-                <p className="mt-1 text-sm">
-                  {selectedEmployee.status === "at-risk"
-                    ? "Employé à haut risque. Assignez des formations prioritaires et planifiez un entretien de sensibilisation."
-                    : selectedEmployee.status === "moderate"
-                    ? "Risque modéré. Encouragez la complétion des modules restants et surveillez les résultats des prochaines simulations."
-                    : "Bon niveau de sécurité. Maintenez l'engagement avec des formations avancées et des défis réguliers."}
-                </p>
               </div>
 
               <div className="flex gap-2">
-                {selectedEmployee.status !== "safe" && (
+                {getStatus(selectedEmployee.riskScore) !== "safe" && (
                   <Button size="sm" className="flex-1 bg-gradient-to-r from-rht-violet to-rht-violet-light text-white hover:opacity-90">
                     <GraduationCap className="mr-2 h-4 w-4" />
-                    Assigner une formation
+                    {t("employees.assignTraining" as any)}
                   </Button>
                 )}
                 <Button size="sm" variant="outline" className="flex-1">
                   <Target className="mr-2 h-4 w-4" />
-                  Inclure dans campagne
+                  {t("employees.includeCampaign" as any)}
                 </Button>
               </div>
+              {selectedEmployee.role === "EMPLOYEE" && (
+                <Button
+                  size="sm"
+                  variant="destructive"
+                  className="w-full"
+                  disabled={deleting}
+                  onClick={() => handleDeleteEmployee(selectedEmployee)}
+                >
+                  {deleting ? "Suppression..." : "Supprimer cet employé"}
+                </Button>
+              )}
             </div>
           </DialogContent>
         )}
+      </Dialog>
+
+      {/* Dialog ajout employe */}
+      <Dialog open={showAddDialog} onOpenChange={setShowAddDialog}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <UserPlus className="h-5 w-5 text-rht-violet-light" />
+              Ajouter un employé
+            </DialogTitle>
+            <DialogDescription>Renseignez les informations du nouvel employé</DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4">
+            <div className="space-y-2">
+              <Label>Nom complet</Label>
+              <Input
+                placeholder="Amadou Diallo"
+                value={addForm.name}
+                onChange={(e) => setAddForm({ ...addForm, name: e.target.value })}
+              />
+            </div>
+            <div className="space-y-2">
+              <Label>Email *</Label>
+              <Input
+                type="email"
+                placeholder="amadou@entreprise.sn"
+                value={addForm.email}
+                onChange={(e) => setAddForm({ ...addForm, email: e.target.value })}
+              />
+            </div>
+            <div className="grid grid-cols-2 gap-3">
+              <div className="space-y-2">
+                <Label>Département</Label>
+                <Input
+                  placeholder="Finance"
+                  value={addForm.department}
+                  onChange={(e) => setAddForm({ ...addForm, department: e.target.value })}
+                />
+              </div>
+              <div className="space-y-2">
+                <Label>Poste</Label>
+                <Input
+                  placeholder="Comptable"
+                  value={addForm.position}
+                  onChange={(e) => setAddForm({ ...addForm, position: e.target.value })}
+                />
+              </div>
+            </div>
+            <div className="flex gap-2 pt-2">
+              <Button variant="outline" className="flex-1" onClick={() => setShowAddDialog(false)}>
+                Annuler
+              </Button>
+              <Button
+                className="flex-1 bg-gradient-to-r from-rht-violet to-rht-violet-light text-white hover:opacity-90"
+                onClick={handleAddEmployee}
+                disabled={adding}
+              >
+                {adding ? "Ajout..." : "Ajouter"}
+              </Button>
+            </div>
+          </div>
+        </DialogContent>
       </Dialog>
     </div>
   );
