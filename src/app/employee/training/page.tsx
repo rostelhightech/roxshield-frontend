@@ -41,14 +41,21 @@ const difficultyStyle: Record<string, string> = {
   ADVANCED: "bg-cyber-red/10 text-cyber-red",
 };
 
-const difficultyLabel: Record<string, string> = {
+const difficultyLabelFr: Record<string, string> = {
   BEGINNER: "Débutant",
   INTERMEDIATE: "Intermédiaire",
   ADVANCED: "Avancé",
 };
 
+const difficultyLabelEn: Record<string, string> = {
+  BEGINNER: "Beginner",
+  INTERMEDIATE: "Intermediate",
+  ADVANCED: "Advanced",
+};
+
 export default function EmployeeTrainingPage() {
-  const { t } = useTranslation();
+  const { t, locale } = useTranslation();
+  const difficultyLabel = locale === "en" ? difficultyLabelEn : difficultyLabelFr;
   const { data, loading } = useApi<TrainingResponse>("/api/training");
 
   if (loading || !data) {
@@ -86,8 +93,12 @@ export default function EmployeeTrainingPage() {
                     <GraduationCap className="h-6 w-6 text-cyber-green" />
                   </div>
                   <div>
-                    <p className="text-lg font-bold">{completed}/{total} modules complétés</p>
-                    <p className="text-sm text-muted-foreground">Continuez pour obtenir votre certificat !</p>
+                    <p className="text-lg font-bold">
+                      {completed}/{total} {locale === "en" ? "modules completed" : "modules complétés"}
+                    </p>
+                    <p className="text-sm text-muted-foreground">
+                      {locale === "en" ? "Keep going to get your certificate!" : "Continuez pour obtenir votre certificat !"}
+                    </p>
                   </div>
                 </div>
                 <div className="w-full sm:w-48">
@@ -142,7 +153,7 @@ export default function EmployeeTrainingPage() {
                             <Link href={`/dashboard/training/${mod.id}`}>
                               <div className="flex items-center gap-2 text-cyber-green">
                                 <CheckCircle className="h-5 w-5" />
-                                <span className="text-sm font-medium">Revoir</span>
+                                <span className="text-sm font-medium">{t("training.review")}</span>
                               </div>
                             </Link>
                           ) : isInProgress ? (
@@ -156,7 +167,7 @@ export default function EmployeeTrainingPage() {
                             <Link href={`/dashboard/training/${mod.id}`}>
                               <div className="flex items-center gap-2 text-muted-foreground/40">
                                 <PlayCircle className="h-4 w-4" />
-                                <span className="text-sm">Commencer</span>
+                                <span className="text-sm">{t("training.start")}</span>
                               </div>
                             </Link>
                           )}
@@ -166,7 +177,7 @@ export default function EmployeeTrainingPage() {
                       {isInProgress && (
                         <div className="mt-4">
                           <div className="flex justify-between text-xs text-muted-foreground">
-                            <span>Progression du module</span>
+                            <span>{locale === "en" ? "Module progress" : "Progression du module"}</span>
                             <span>{mod.progress.progressPercent}%</span>
                           </div>
                           <Progress value={mod.progress.progressPercent} className="mt-1 h-2" />
