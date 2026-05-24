@@ -24,6 +24,11 @@ export function useApi<T = any>(url: string, options?: UseApiOptions): UseApiRes
     setError(null);
     try {
       const res = await fetch(url);
+      if (res.status === 401) {
+        // Session expired — redirect to login
+        window.location.href = "/login";
+        return;
+      }
       if (!res.ok) {
         const body = await res.json().catch(() => ({}));
         throw new Error(body.error || `Erreur ${res.status}`);
