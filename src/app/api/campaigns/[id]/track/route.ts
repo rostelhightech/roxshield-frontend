@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/db";
+import { rateLimit } from "@/lib/rate-limit";
 
 export const runtime = "nodejs";
 
@@ -13,6 +14,12 @@ export async function GET(
 
   if (!uid) {
     return new NextResponse("Lien invalide", { status: 400 });
+  }
+
+  // Rate limit: 10 clicks per minute per user to prevent abuse
+  const { success: rlOk } = rateLimit(`track:${uid}`, { maxRequests: 10, windowMs: 60_000 });
+  if (!rlOk) {
+    return new NextResponse("Trop de requetes", { status: 429 });
   }
 
   // Record the click

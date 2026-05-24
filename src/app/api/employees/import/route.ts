@@ -3,6 +3,7 @@ import { db } from "@/lib/db";
 import { getSessionOrFail, sessionUser } from "@/lib/api-auth";
 import { hash } from "bcryptjs";
 import { sendInvitationEmail } from "@/lib/email";
+import { rateLimit } from "@/lib/rate-limit";
 
 export const runtime = "nodejs";
 
@@ -49,6 +50,12 @@ function parseCSV(text: string): string[][] {
 export async function POST(request: NextRequest) {
   const session = await getSessionOrFail();
   if (session instanceof NextResponse) return session;
+
+  // Rate limit: 3 imports per minute
+  const { success: rlOk } = rateLimit(`import:${session.user.id}`, { maxRequests: 3, windowMs: 60_000 });
+  if (!rlOk) {
+    return NextResponse.json({ error: "Trop d'imports. Reessayez dans une minute." }, { status: 429 });
+  }
 
   const orgId = sessionUser(session).organizationId;
   const role = sessionUser(session).role;

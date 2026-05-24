@@ -2,10 +2,17 @@ import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/db";
 import { getSessionOrFail } from "@/lib/api-auth";
 import bcrypt from "bcryptjs";
+import { rateLimit } from "@/lib/rate-limit";
 
 export async function POST(request: NextRequest) {
   const session = await getSessionOrFail();
   if (session instanceof NextResponse) return session;
+
+  // Rate limit: 5 password changes per minute per user
+  const { success: rlOk } = rateLimit(`pwd:${session.user.id}`, { maxRequests: 5, windowMs: 60_000 });
+  if (!rlOk) {
+    return NextResponse.json({ error: "Trop de tentatives. Reessayez dans une minute." }, { status: 429 });
+  }
 
   const { currentPassword, newPassword } = await request.json();
 

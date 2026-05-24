@@ -3,6 +3,7 @@ import { db } from "@/lib/db";
 import bcrypt from "bcryptjs";
 import { Resend } from "resend";
 import { EMAIL_FROM } from "@/lib/email";
+import { rateLimit } from "@/lib/rate-limit";
 
 export const runtime = "nodejs";
 
@@ -20,6 +21,13 @@ function generateTempPassword(): string {
 
 export async function POST(request: NextRequest) {
   try {
+    // Rate limit: 3 password resets per minute per IP
+    const ip = request.headers.get("x-forwarded-for")?.split(",")[0] ?? "unknown";
+    const { success: rlOk } = rateLimit(`forgot:${ip}`, { maxRequests: 3, windowMs: 60_000 });
+    if (!rlOk) {
+      return NextResponse.json({ error: "Trop de tentatives. Reessayez dans une minute." }, { status: 429 });
+    }
+
     const { email } = await request.json();
 
     if (!email) {
