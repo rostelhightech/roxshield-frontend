@@ -80,7 +80,7 @@ export async function POST(request: NextRequest) {
     },
   });
 
-  // Log si complété
+  // Log + notification si complété
   if (status === "COMPLETED" && orgId) {
     const mod = await db.trainingModule.findUnique({ where: { id: moduleId }, select: { title: true } });
     await db.activityLog.create({
@@ -89,6 +89,15 @@ export async function POST(request: NextRequest) {
         description: `Formation "${mod?.title}" complétée`,
         userId,
         organizationId: orgId,
+      },
+    });
+    await db.notification.create({
+      data: {
+        title: "Formation terminee !",
+        message: `Vous avez complete "${mod?.title}"${quizScore ? ` avec un score de ${quizScore}%` : ""}. Continuez ainsi !`,
+        type: "success",
+        link: "/employee/results",
+        userId,
       },
     });
   }

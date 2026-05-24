@@ -33,6 +33,17 @@ export async function GET(
       where: { id: uid },
       data: { riskScore: { increment: 5 } },
     });
+
+    // Notification for the employee
+    await db.notification.create({
+      data: {
+        title: "Simulation de phishing",
+        message: "Vous avez clique sur un lien de simulation. Consultez la page de sensibilisation pour apprendre a vous proteger.",
+        type: "warning",
+        link: "/employee/results",
+        userId: uid,
+      },
+    });
   } catch {
     // May fail if already clicked — that's fine
   }

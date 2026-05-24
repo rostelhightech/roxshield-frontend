@@ -232,6 +232,17 @@ export async function PATCH(
       },
     });
 
+    // Notification for the admin who launched
+    await db.notification.create({
+      data: {
+        title: "Campagne lancee",
+        message: `"${campaign.name}" — ${sentCount} emails envoyes a ${targets.length} employes`,
+        type: "success",
+        link: "/dashboard/simulations",
+        userId: session.user.id,
+      },
+    });
+
     return NextResponse.json({ ...updated, sentCount });
   }
 

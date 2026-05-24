@@ -59,6 +59,17 @@ export async function POST(
       });
     }
 
+    // Reward notification for the employee
+    await db.notification.create({
+      data: {
+        title: "Bien joue !",
+        message: "Vous avez correctement identifie et signale un email de simulation. Votre score de risque a ete ameliore.",
+        type: "success",
+        link: "/employee/results",
+        userId: session.user.id,
+      },
+    });
+
     return NextResponse.json({ success: true, message: "Email signale avec succes !" });
   } catch {
     return NextResponse.json({ error: "Erreur serveur" }, { status: 500 });

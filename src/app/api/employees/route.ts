@@ -147,6 +147,17 @@ export async function POST(request: NextRequest) {
     },
   });
 
+  // Welcome notification for the new employee
+  await db.notification.create({
+    data: {
+      title: "Bienvenue sur RoxShield !",
+      message: `Vous avez ete ajoute a ${org?.name || "votre organisation"}. Commencez par explorer vos formations.`,
+      type: "info",
+      link: "/employee/training",
+      userId: user.id,
+    },
+  });
+
   return NextResponse.json({ ...user, emailSent: emailResult.success }, { status: 201 });
 }
 
