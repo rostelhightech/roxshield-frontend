@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/db";
 import { getSessionOrFail, sessionUser } from "@/lib/api-auth";
+import { checkAndAwardBadges } from "@/lib/badges";
 
 // Employee reports a phishing simulation email
 export async function POST(
@@ -73,6 +74,9 @@ export async function POST(
         userId: session.user.id,
       },
     });
+
+    // Check for new badges (non-blocking)
+    checkAndAwardBadges(session.user.id).catch(() => {});
 
     return NextResponse.json({ success: true, message: "Email signale avec succes !" });
   } catch {

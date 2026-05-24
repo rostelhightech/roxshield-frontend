@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/db";
 import { getSessionOrFail, sessionUser } from "@/lib/api-auth";
+import { checkAndAwardBadges } from "@/lib/badges";
 
 export async function GET() {
   const session = await getSessionOrFail();
@@ -112,6 +113,9 @@ export async function POST(request: NextRequest) {
         userId,
       },
     });
+
+    // Check for new badges (non-blocking)
+    checkAndAwardBadges(userId).catch(() => {});
   }
 
   return NextResponse.json(progress);
