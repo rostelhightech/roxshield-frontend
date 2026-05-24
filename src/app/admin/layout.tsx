@@ -24,6 +24,7 @@ import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { Badge } from "@/components/ui/badge";
+import { useApi } from "@/hooks/use-api";
 
 const navItems = [
   { label: "Vue d'ensemble", href: "/admin", icon: LayoutDashboard },
@@ -33,9 +34,15 @@ const navItems = [
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
+  const { data: me } = useApi<{ name: string | null; email: string; organization: { name: string } | null }>("/api/me");
   const [collapsed, setCollapsed] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
   const [showOnboarding, setShowOnboarding] = useState(false);
+
+  const userName = me?.name || "Admin";
+  const userEmail = me?.email || "";
+  const orgName = me?.organization?.name || "";
+  const initials = userName.split(" ").map((n) => n[0]).join("").toUpperCase().slice(0, 2);
 
   useEffect(() => {
     const key = "roxshield_onboarding_super-admin";
@@ -155,7 +162,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
               className="flex items-center gap-2 rounded-lg px-2 py-1.5 text-xs text-sidebar-foreground/40 transition-colors hover:bg-sidebar-accent hover:text-sidebar-foreground/70"
             >
               <Building2 className="h-3.5 w-3.5" />
-              Vue client (Safi Sénégal)
+              Vue client{orgName ? ` (${orgName})` : ""}
             </Link>
           </div>
         )}
@@ -164,13 +171,13 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
           <div className={`flex items-center gap-3 rounded-xl px-3 py-2.5 ${collapsed ? "justify-center" : ""}`}>
             <Avatar className="h-8 w-8 shrink-0">
               <AvatarFallback className="bg-gradient-to-br from-rht-orange to-rht-orange-light text-[11px] text-white">
-                HY
+                {initials}
               </AvatarFallback>
             </Avatar>
             {!collapsed && (
               <div className="flex-1 overflow-hidden">
-                <p className="truncate text-sm font-medium">Herdy Youlou</p>
-                <p className="truncate text-[11px] opacity-40">admin@rostelhightech.com</p>
+                <p className="truncate text-sm font-medium">{userName}</p>
+                <p className="truncate text-[11px] opacity-40">{userEmail}</p>
               </div>
             )}
             {!collapsed && (
