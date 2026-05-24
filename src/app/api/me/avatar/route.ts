@@ -1,9 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/db";
 import { getSessionOrFail } from "@/lib/api-auth";
-import { writeFile, mkdir } from "fs/promises";
-import path from "path";
-import crypto from "crypto";
 
 export const runtime = "nodejs";
 
@@ -30,27 +27,18 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "Le fichier ne doit pas dépasser 2 Mo" }, { status: 400 });
     }
 
-    // Generate unique filename
-    const ext = file.type === "image/png" ? "png" : file.type === "image/webp" ? "webp" : "jpg";
-    const hash = crypto.randomBytes(8).toString("hex");
-    const filename = `${session.user.id}-${hash}.${ext}`;
-
-    // Ensure avatars directory exists
-    const avatarDir = path.join(process.cwd(), "public", "avatars");
-    await mkdir(avatarDir, { recursive: true });
-
-    // Write file
+    // Convert to base64 data URI for serverless compatibility (Vercel, etc.)
     const buffer = Buffer.from(await file.arrayBuffer());
-    await writeFile(path.join(avatarDir, filename), buffer);
+    const base64 = buffer.toString("base64");
+    const dataUri = `data:${file.type};base64,${base64}`;
 
-    // Update user record
-    const imageUrl = `/avatars/${filename}`;
+    // Update user record with data URI
     await db.user.update({
       where: { id: session.user.id },
-      data: { image: imageUrl },
+      data: { image: dataUri },
     });
 
-    return NextResponse.json({ image: imageUrl });
+    return NextResponse.json({ image: dataUri });
   } catch (error) {
     console.error("Avatar upload error:", error);
     return NextResponse.json({ error: "Erreur lors de l'upload" }, { status: 500 });
