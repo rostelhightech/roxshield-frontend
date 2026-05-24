@@ -25,7 +25,8 @@ export async function PATCH(request: NextRequest) {
   if (session instanceof NextResponse) return session;
 
   const body = await request.json();
-  const { notificationId, markAllRead } = body;
+  const notificationId = typeof body.notificationId === "string" ? body.notificationId.slice(0, 50) : undefined;
+  const markAllRead = body.markAllRead === true;
 
   if (markAllRead) {
     await db.notification.updateMany({
