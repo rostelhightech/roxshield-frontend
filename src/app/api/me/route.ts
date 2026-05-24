@@ -2,6 +2,12 @@ import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/db";
 import { getSessionOrFail } from "@/lib/api-auth";
 
+function sanitize(str: string) {
+  return str.replace(/[<>]/g, "").trim().slice(0, 200);
+}
+
+const VALID_LOCALES = ["fr", "en"];
+
 export async function GET() {
   const session = await getSessionOrFail();
   if (session instanceof NextResponse) return session;
@@ -40,7 +46,11 @@ export async function PATCH(request: NextRequest) {
   if (session instanceof NextResponse) return session;
 
   const body = await request.json();
-  const { name, phone, department, position, locale } = body;
+  const name = body.name !== undefined ? sanitize(body.name) : undefined;
+  const phone = body.phone !== undefined ? sanitize(body.phone) : undefined;
+  const department = body.department !== undefined ? sanitize(body.department) : undefined;
+  const position = body.position !== undefined ? sanitize(body.position) : undefined;
+  const locale = body.locale !== undefined && VALID_LOCALES.includes(body.locale) ? body.locale : undefined;
 
   const updated = await db.user.update({
     where: { id: session.user.id },

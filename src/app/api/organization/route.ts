@@ -2,6 +2,10 @@ import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/db";
 import { getSessionOrFail, sessionUser } from "@/lib/api-auth";
 
+function sanitize(str: string) {
+  return str.replace(/[<>]/g, "").trim().slice(0, 200);
+}
+
 export const runtime = "nodejs";
 
 export async function GET() {
@@ -47,7 +51,11 @@ export async function PATCH(request: NextRequest) {
   }
 
   const body = await request.json();
-  const { name, sector, country, city, size } = body;
+  const name = body.name !== undefined ? sanitize(body.name) : undefined;
+  const sector = body.sector !== undefined ? sanitize(body.sector) : undefined;
+  const country = body.country !== undefined ? sanitize(body.country) : undefined;
+  const city = body.city !== undefined ? sanitize(body.city) : undefined;
+  const size = body.size !== undefined ? (Number(body.size) > 0 && Number(body.size) <= 100000 ? Number(body.size) : null) : undefined;
 
   const updated = await db.organization.update({
     where: { id: orgId },
@@ -56,7 +64,7 @@ export async function PATCH(request: NextRequest) {
       ...(sector !== undefined && { sector }),
       ...(country !== undefined && { country }),
       ...(city !== undefined && { city }),
-      ...(size !== undefined && { size: Number(size) || null }),
+      ...(size !== undefined && { size }),
     },
     select: {
       id: true,

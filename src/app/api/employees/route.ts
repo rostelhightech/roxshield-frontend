@@ -6,6 +6,14 @@ import { hash } from "bcryptjs";
 
 export const runtime = "nodejs";
 
+function sanitize(str: string) {
+  return str.replace(/[<>]/g, "").trim().slice(0, 200);
+}
+
+function isValidEmail(email: string) {
+  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email) && email.length <= 254;
+}
+
 /** Génère un mot de passe temporaire lisible : 3 lettres + 4 chiffres + 3 lettres (ex: Kxm4927Bpq) */
 function generateTempPassword(): string {
   const alpha = "ABCDEFGHJKLMNPQRSTUVWXYZabcdefghjkmnpqrstuvwxyz";
@@ -87,9 +95,14 @@ export async function POST(request: NextRequest) {
   }
 
   const body = await request.json();
-  const { name, email, department, position } = body;
+  const email = sanitize(body.email || "");
+  const name = sanitize(body.name || "");
+  const department = sanitize(body.department || "");
+  const position = sanitize(body.position || "");
 
-  if (!email) return NextResponse.json({ error: "Email requis" }, { status: 400 });
+  if (!email || !isValidEmail(email)) {
+    return NextResponse.json({ error: "Email valide requis" }, { status: 400 });
+  }
 
   // Vérifier si l'email existe déjà
   const existing = await db.user.findUnique({ where: { email } });
@@ -190,6 +203,7 @@ export async function DELETE(request: NextRequest) {
   }
 
   // Supprimer les données liées puis l'utilisateur
+  await db.phishingResult.deleteMany({ where: { userId: id } });
   await db.trainingProgress.deleteMany({ where: { userId: id } });
   await db.activityLog.deleteMany({ where: { userId: id } });
   await db.notification.deleteMany({ where: { userId: id } });

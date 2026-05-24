@@ -12,7 +12,7 @@ export async function GET(
   const { id: campaignId } = await params;
   const uid = request.nextUrl.searchParams.get("uid");
 
-  if (!uid) {
+  if (!uid || uid.length > 100 || !/^[a-zA-Z0-9_-]+$/.test(uid)) {
     return new NextResponse("Lien invalide", { status: 400 });
   }
 
@@ -35,11 +35,14 @@ export async function GET(
       data: { clickCount: { increment: 1 } },
     });
 
-    // Update user risk score (increase by 5 points for clicking)
-    await db.user.update({
-      where: { id: uid },
-      data: { riskScore: { increment: 5 } },
-    });
+    // Update user risk score (increase by 5 points for clicking, cap at 100)
+    const targetUser = await db.user.findUnique({ where: { id: uid }, select: { riskScore: true } });
+    if (targetUser) {
+      await db.user.update({
+        where: { id: uid },
+        data: { riskScore: Math.min((targetUser.riskScore || 50) + 5, 100) },
+      });
+    }
 
     // Notification for the employee
     await db.notification.create({

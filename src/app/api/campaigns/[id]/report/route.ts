@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/db";
-import { getSessionOrFail } from "@/lib/api-auth";
+import { getSessionOrFail, sessionUser } from "@/lib/api-auth";
 
 // Employee reports a phishing simulation email
 export async function POST(
@@ -11,6 +11,16 @@ export async function POST(
   if (session instanceof NextResponse) return session;
 
   const { id: campaignId } = await params;
+  const orgId = sessionUser(session).organizationId;
+
+  // Verify campaign belongs to user's organization
+  const campaign = await db.phishingCampaign.findFirst({
+    where: { id: campaignId, organizationId: orgId! },
+    select: { id: true, name: true, organizationId: true },
+  });
+  if (!campaign) {
+    return NextResponse.json({ error: "Campagne introuvable" }, { status: 404 });
+  }
 
   try {
     // Update result to REPORTED
@@ -36,28 +46,22 @@ export async function POST(
       data: { reportCount: { increment: 1 } },
     });
 
-    // Decrease user risk score (reward for reporting)
+    // Decrease user risk score (reward for reporting, floor at 0)
+    const reporter = await db.user.findUnique({ where: { id: session.user.id }, select: { riskScore: true } });
     await db.user.update({
       where: { id: session.user.id },
-      data: { riskScore: { decrement: 3 } },
+      data: { riskScore: Math.max((reporter?.riskScore || 50) - 3, 0) },
     });
 
     // Log activity
-    const campaign = await db.phishingCampaign.findUnique({
-      where: { id: campaignId },
-      select: { name: true, organizationId: true },
+    await db.activityLog.create({
+      data: {
+        action: "phishing_reported",
+        description: `Email de simulation "${campaign.name}" signale`,
+        userId: session.user.id,
+        organizationId: campaign.organizationId,
+      },
     });
-
-    if (campaign) {
-      await db.activityLog.create({
-        data: {
-          action: "phishing_reported",
-          description: `Email de simulation "${campaign.name}" signale`,
-          userId: session.user.id,
-          organizationId: campaign.organizationId,
-        },
-      });
-    }
 
     // Reward notification for the employee
     await db.notification.create({

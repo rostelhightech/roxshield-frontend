@@ -56,9 +56,22 @@ export async function POST(request: NextRequest) {
   const userId = session.user.id;
   const orgId = sessionUser(session).organizationId;
   const body = await request.json();
-  const { moduleId, progressPercent, quizScore } = body;
+  const { moduleId } = body;
+  const progressPercent = Math.max(0, Math.min(100, Number(body.progressPercent) || 0));
+  const quizScore = body.quizScore != null ? Math.max(0, Math.min(100, Number(body.quizScore) || 0)) : null;
 
-  if (!moduleId) return NextResponse.json({ error: "moduleId requis" }, { status: 400 });
+  if (!moduleId || typeof moduleId !== "string") {
+    return NextResponse.json({ error: "moduleId requis" }, { status: 400 });
+  }
+
+  // Verify module exists and is accessible
+  const mod = await db.trainingModule.findFirst({
+    where: { id: moduleId, isActive: true, OR: [{ organizationId: null }, { organizationId: orgId }] },
+    select: { id: true, title: true },
+  });
+  if (!mod) {
+    return NextResponse.json({ error: "Module introuvable" }, { status: 404 });
+  }
 
   const status = progressPercent >= 100 ? "COMPLETED" : progressPercent > 0 ? "IN_PROGRESS" : "NOT_STARTED";
 
@@ -82,7 +95,6 @@ export async function POST(request: NextRequest) {
 
   // Log + notification si complété
   if (status === "COMPLETED" && orgId) {
-    const mod = await db.trainingModule.findUnique({ where: { id: moduleId }, select: { title: true } });
     await db.activityLog.create({
       data: {
         action: "training_completed",

@@ -2,6 +2,12 @@ import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/db";
 import { getSessionOrFail, sessionUser } from "@/lib/api-auth";
 
+function sanitize(str: string) {
+  return str.replace(/[<>]/g, "").trim().slice(0, 200);
+}
+
+const VALID_TEMPLATES = ["mobile_money", "bank", "delivery", "internal", "email_phishing"];
+
 export async function GET() {
   const session = await getSessionOrFail();
   if (session instanceof NextResponse) return session;
@@ -49,10 +55,17 @@ export async function POST(request: NextRequest) {
   if (role === "EMPLOYEE") return NextResponse.json({ error: "Accès refusé" }, { status: 403 });
 
   const body = await request.json();
-  const { name, description, templateType, targetDepts } = body;
+  const name = sanitize(body.name || "");
+  const description = sanitize(body.description || "");
+  const templateType = (body.templateType || "").trim();
+  const targetDepts = Array.isArray(body.targetDepts) ? body.targetDepts.map((d: string) => sanitize(d)) : [];
 
   if (!name || !templateType) {
     return NextResponse.json({ error: "Nom et type de template requis" }, { status: 400 });
+  }
+
+  if (!VALID_TEMPLATES.includes(templateType)) {
+    return NextResponse.json({ error: "Type de template invalide" }, { status: 400 });
   }
 
   // Compter les cibles
