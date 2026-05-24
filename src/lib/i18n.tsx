@@ -165,6 +165,7 @@ const dictionaries = {
     "leaderboard.completeTraining": "Terminer une formation",
     "leaderboard.dailyStreak": "Série quotidienne",
     "leaderboard.earnBadge": "Obtenir un badge",
+    "leaderboard.lowRiskScore": "Score de risque bas",
     "leaderboard.you": "vous",
 
     // Notifications
@@ -730,6 +731,7 @@ const dictionaries = {
     "leaderboard.completeTraining": "Complete a training",
     "leaderboard.dailyStreak": "Daily streak",
     "leaderboard.earnBadge": "Earn a badge",
+    "leaderboard.lowRiskScore": "Low risk score",
     "leaderboard.you": "you",
 
     // Notifications

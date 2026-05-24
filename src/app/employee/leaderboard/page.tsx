@@ -47,7 +47,7 @@ function getInitials(name: string): string {
 }
 
 export default function LeaderboardPage() {
-  const { t } = useTranslation();
+  const { t, locale } = useTranslation();
   const { data, loading } = useApi<LeaderboardResponse>("/api/employee/leaderboard");
 
   if (loading) {
@@ -80,7 +80,7 @@ export default function LeaderboardPage() {
                 <div className="flex-1">
                   <p className="text-sm text-muted-foreground">{t("leaderboard.yourPosition")}</p>
                   <p className="text-2xl font-bold">
-                    {currentUser.rank}<sup className="text-sm">e</sup> / {leaderboard.length}
+                    {currentUser.rank}<sup className="text-sm">{locale === "en" ? (currentUser.rank === 1 ? "st" : currentUser.rank === 2 ? "nd" : currentUser.rank === 3 ? "rd" : "th") : "e"}</sup> / {leaderboard.length}
                   </p>
                 </div>
                 <div className="hidden gap-6 sm:flex">
@@ -206,7 +206,7 @@ export default function LeaderboardPage() {
                   { action: t("leaderboard.detectPhishing"), points: "+75", color: "text-cyber-green" },
                   { action: t("leaderboard.completeTraining"), points: "+100", color: "text-rht-violet-light" },
                   { action: t("leaderboard.earnBadge"), points: "+50", color: "text-yellow-500" },
-                  { action: "Score de risque bas", points: "+3/pt", color: "text-rht-orange" },
+                  { action: t("leaderboard.lowRiskScore"), points: "+3/pt", color: "text-rht-orange" },
                 ].map((item) => (
                   <div key={item.action} className="flex items-center gap-3 rounded-xl border p-3">
                     <span className={`text-lg font-bold ${item.color}`}>{item.points}</span>
