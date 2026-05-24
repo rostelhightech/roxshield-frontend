@@ -79,7 +79,7 @@ function getStatus(riskScore: number) {
 }
 
 export default function ReportsPage() {
-  const { t } = useTranslation();
+  const { t, locale } = useTranslation();
   const { data: dashData, loading: l1 } = useApi<DashboardData>("/api/dashboard");
   const { data: empData, loading: l2 } = useApi<EmployeesData>("/api/employees");
   const { data: campData } = useApi<CampaignsData>("/api/campaigns");
@@ -145,18 +145,22 @@ export default function ReportsPage() {
         trainingModules: modules.map((m) => ({ title: m.title, progressPercent: m.progress.progressPercent })),
       });
 
-      toast.success("Rapport PDF généré — utilisez 'Enregistrer en PDF' dans la boîte d'impression");
+      toast.success(locale === "en"
+        ? "PDF report generated — use 'Save as PDF' in the print dialog"
+        : "Rapport PDF généré — utilisez 'Enregistrer en PDF' dans la boîte d'impression");
       setExported(true);
       setTimeout(() => setExported(false), 3000);
     } catch {
-      toast.error("Erreur lors de la génération du rapport");
+      toast.error(t("common.error"));
     } finally {
       setExporting(false);
     }
   };
 
   const handleCSV = () => {
-    const headers = ["Nom", "Email", "Departement", "Role", "Score de risque", "Formations completees"];
+    const headers = locale === "en"
+      ? ["Name", "Email", "Department", "Role", "Risk score", "Trainings completed"]
+      : ["Nom", "Email", "Département", "Rôle", "Score de risque", "Formations complétées"];
     const rows = employees.map((e) => [
       e.name || "",
       e.email,
@@ -173,7 +177,7 @@ export default function ReportsPage() {
     a.download = `roxshield-employes-${new Date().toISOString().slice(0, 10)}.csv`;
     a.click();
     URL.revokeObjectURL(url);
-    toast.success("Export CSV telecharge");
+    toast.success(locale === "en" ? "CSV export downloaded" : "Export CSV téléchargé");
   };
 
   const modules = trainData?.modules || [];

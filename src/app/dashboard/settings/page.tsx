@@ -76,7 +76,7 @@ const timeoutOptions = SESSION_TIMEOUT_OPTIONS.map((o) => ({
 }));
 
 export default function SettingsPage() {
-  const { t } = useTranslation();
+  const { t, locale } = useTranslation();
   const { data: user, loading: loadingUser, refetch: refetchUser } = useApi<UserProfile>("/api/me");
   const { data: empData } = useApi<EmployeesData>("/api/employees");
   const [notifications, setNotifications] = useState(
@@ -125,10 +125,10 @@ export default function SettingsPage() {
         await refetchUser();
         setTimeout(() => setSaved(false), 2000);
       } else {
-        toast.error("Erreur lors de la sauvegarde");
+        toast.error(t("common.error"));
       }
     } catch {
-      toast.error("Erreur réseau");
+      toast.error(t("profile.networkError"));
     } finally {
       setSaving(false);
     }
@@ -375,8 +375,8 @@ export default function SettingsPage() {
                           headers: { "Content-Type": "application/json" },
                           body: JSON.stringify({ sessionTimeoutMinutes: Number(v) }),
                         }).then((r) => {
-                          if (r.ok) toast.success("Timeout mis à jour");
-                          else toast.error("Erreur");
+                          if (r.ok) toast.success(t("common.saved"));
+                          else toast.error(t("common.error"));
                         });
                       }}
                       className="w-[160px]"

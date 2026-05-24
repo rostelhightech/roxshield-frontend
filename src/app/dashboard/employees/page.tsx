@@ -83,7 +83,7 @@ type SortKey = "name" | "department" | "riskScore" | "trainingsCompleted";
 type SortDir = "asc" | "desc";
 
 export default function EmployeesPage() {
-  const { t } = useTranslation();
+  const { t, locale } = useTranslation();
   const { data, loading, refetch } = useApi<EmployeesResponse>("/api/employees");
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
@@ -116,17 +116,17 @@ export default function EmployeesPage() {
         const data = await res.json();
         toast.success(
           data.emailSent
-            ? "Employé ajouté — invitation envoyée par email ✉️"
-            : "Employé ajouté avec succès"
+            ? (locale === "en" ? "Employee added — invitation sent by email" : "Employé ajouté — invitation envoyée par email")
+            : (locale === "en" ? "Employee added successfully" : "Employé ajouté avec succès")
         );
         setShowAddDialog(false);
         setAddForm({ name: "", email: "", department: "", position: "" });
         await refetch();
       } else {
         const err = await res.json();
-        toast.error(err.error || "Erreur lors de l'ajout");
+        toast.error(err.error || t("common.error"));
       }
-    } catch { toast.error("Erreur réseau"); }
+    } catch { toast.error(t("profile.networkError")); }
     finally { setAdding(false); }
   };
 
@@ -135,19 +135,21 @@ export default function EmployeesPage() {
     try {
       const res = await fetch(`/api/employees?id=${emp.id}`, { method: "DELETE" });
       if (res.ok) {
-        toast.success("Employé supprimé");
+        toast.success(locale === "en" ? "Employee deleted" : "Employé supprimé");
         setSelectedEmployee(null);
         await refetch();
       } else {
         const err = await res.json();
-        toast.error(err.error || "Erreur lors de la suppression");
+        toast.error(err.error || t("common.error"));
       }
-    } catch { toast.error("Erreur réseau"); }
+    } catch { toast.error(t("profile.networkError")); }
     finally { setDeleting(false); }
   };
 
   const handleExportCSV = () => {
-    const headers = ["Nom", "Email", "Département", "Poste", "Rôle", "Score de risque", "Formations"];
+    const headers = locale === "en"
+      ? ["Name", "Email", "Department", "Position", "Role", "Risk score", "Trainings"]
+      : ["Nom", "Email", "Département", "Poste", "Rôle", "Score de risque", "Formations"];
     const rows = (data?.employees || []).map((e) => [
       e.name || "", e.email, e.department || "", e.position || "", e.role, String(e.riskScore), String(e.trainingsCompleted),
     ]);
@@ -159,7 +161,7 @@ export default function EmployeesPage() {
     a.download = `roxshield-employes-${new Date().toISOString().slice(0, 10)}.csv`;
     a.click();
     URL.revokeObjectURL(url);
-    toast.success("Export CSV téléchargé");
+    toast.success(locale === "en" ? "CSV export downloaded" : "Export CSV téléchargé");
   };
 
   const handleImportCSV = () => {
@@ -176,16 +178,18 @@ export default function EmployeesPage() {
         const res = await fetch("/api/employees/import", { method: "POST", body: formData });
         const result = await res.json();
         if (res.ok) {
-          toast.success(`Import terminé : ${result.created} créé(s), ${result.skipped} ignoré(s)`);
+          toast.success(locale === "en"
+            ? `Import done: ${result.created} created, ${result.skipped} skipped`
+            : `Import terminé : ${result.created} créé(s), ${result.skipped} ignoré(s)`);
           if (result.errors?.length > 0) {
             toast.info(result.errors.slice(0, 3).join(", ") + (result.errors.length > 3 ? "..." : ""));
           }
           await refetch();
         } else {
-          toast.error(result.error || "Erreur d'import");
+          toast.error(result.error || t("common.error"));
         }
       } catch {
-        toast.error("Erreur réseau");
+        toast.error(t("profile.networkError"));
       } finally {
         setImporting(false);
       }
@@ -215,14 +219,16 @@ export default function EmployeesPage() {
         body: JSON.stringify({ userId: assignTarget.id, moduleId }),
       });
       if (res.ok) {
-        toast.success(`Formation assignée à ${assignTarget.name || assignTarget.email}`);
+        toast.success(locale === "en"
+          ? `Training assigned to ${assignTarget.name || assignTarget.email}`
+          : `Formation assignée à ${assignTarget.name || assignTarget.email}`);
         setShowAssignDialog(false);
         setAssignTarget(null);
       } else {
         const err = await res.json();
-        toast.error(err.error || "Erreur");
+        toast.error(err.error || t("common.error"));
       }
-    } catch { toast.error("Erreur réseau"); }
+    } catch { toast.error(t("profile.networkError")); }
     finally { setAssigning(false); }
   };
 
@@ -248,14 +254,16 @@ export default function EmployeesPage() {
         body: JSON.stringify({ userId: assignTarget.id, campaignId }),
       });
       if (res.ok) {
-        toast.success(`${assignTarget.name || assignTarget.email} inclus dans la campagne`);
+        toast.success(locale === "en"
+          ? `${assignTarget.name || assignTarget.email} included in campaign`
+          : `${assignTarget.name || assignTarget.email} inclus dans la campagne`);
         setShowCampaignDialog(false);
         setAssignTarget(null);
       } else {
         const err = await res.json();
-        toast.error(err.error || "Erreur");
+        toast.error(err.error || t("common.error"));
       }
-    } catch { toast.error("Erreur réseau"); }
+    } catch { toast.error(t("profile.networkError")); }
     finally { setAssigning(false); }
   };
 

@@ -76,7 +76,7 @@ const templateOptions = [
 ];
 
 export default function SimulationsPage() {
-  const { t } = useTranslation();
+  const { t, locale } = useTranslation();
   const { data, loading, refetch } = useApi<CampaignsResponse>("/api/campaigns");
   const [createOpen, setCreateOpen] = useState(false);
   const [detailCampaign, setDetailCampaign] = useState<Campaign | null>(null);
@@ -120,10 +120,12 @@ export default function SimulationsPage() {
         if (launchRes.ok) {
           const result = await launchRes.json();
           setLaunched(true);
-          toast.success(`Campagne lancee — ${result.sentCount} emails envoyes`);
+          toast.success(locale === "en"
+            ? `Campaign launched — ${result.sentCount} emails sent`
+            : `Campagne lancée — ${result.sentCount} emails envoyés`);
         } else {
           const err = await launchRes.json();
-          toast.error(err.error || "Erreur lors du lancement");
+          toast.error(err.error || t("common.error"));
         }
         await refetch();
         setTimeout(() => {
@@ -133,7 +135,7 @@ export default function SimulationsPage() {
         }, 2500);
       }
     } catch {
-      toast.error("Erreur reseau");
+      toast.error(t("profile.networkError"));
     } finally {
       setLaunching(false);
     }
