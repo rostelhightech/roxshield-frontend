@@ -449,6 +449,9 @@ const dictionaries = {
     "common.notConfigured": "Non configuré",
     "common.saving": "Enregistrement...",
     "common.soon": "Bientôt",
+    "common.role.superAdmin": "Super Admin",
+    "common.role.admin": "Administrateur",
+    "common.role.employee": "Employé",
 
     // Extra employees
     "employees.addEmployee": "Ajouter un employé",
@@ -528,6 +531,15 @@ const dictionaries = {
     "profile.campaignResultsDesc": "Soyez notifié des résultats de vos campagnes",
     "profile.monthlyReports": "Rapports mensuels",
     "profile.monthlyReportsDesc": "Recevez un résumé mensuel par email",
+    "profile.selectImage": "Veuillez sélectionner une image",
+    "profile.imageTooLarge": "L'image ne doit pas dépasser 2 Mo",
+    "profile.photoUpdated": "Photo mise à jour !",
+    "profile.networkError": "Erreur réseau",
+    "profile.uploadError": "Erreur lors de l'upload",
+    "profile.fillAllFields": "Veuillez remplir tous les champs",
+    "profile.passwordMinLength": "Le mot de passe doit contenir au moins 8 caractères",
+    "profile.passwordMismatch": "Les mots de passe ne correspondent pas",
+    "profile.passwordUpdated": "Mot de passe mis à jour !",
 
     // Extra email security
     "emailSecurity.criticalThreats": "Menaces critiques",
@@ -1002,6 +1014,9 @@ const dictionaries = {
     "common.notConfigured": "Not configured",
     "common.saving": "Saving...",
     "common.soon": "Coming soon",
+    "common.role.superAdmin": "Super Admin",
+    "common.role.admin": "Administrator",
+    "common.role.employee": "Employee",
 
     // Extra employees
     "employees.addEmployee": "Add employee",
@@ -1081,6 +1096,15 @@ const dictionaries = {
     "profile.campaignResultsDesc": "Get notified of your campaign results",
     "profile.monthlyReports": "Monthly reports",
     "profile.monthlyReportsDesc": "Receive a monthly summary by email",
+    "profile.selectImage": "Please select an image",
+    "profile.imageTooLarge": "Image must not exceed 2 MB",
+    "profile.photoUpdated": "Photo updated!",
+    "profile.networkError": "Network error",
+    "profile.uploadError": "Upload error",
+    "profile.fillAllFields": "Please fill in all fields",
+    "profile.passwordMinLength": "Password must be at least 8 characters",
+    "profile.passwordMismatch": "Passwords do not match",
+    "profile.passwordUpdated": "Password updated!",
 
     // Extra email security
     "emailSecurity.criticalThreats": "Critical threats",

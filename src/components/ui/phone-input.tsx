@@ -82,6 +82,8 @@ export function PhoneInput({
         onChange={(e) => handleNumberChange(e.target.value)}
         placeholder={placeholder}
         disabled={disabled}
+        aria-label="Numéro de téléphone"
+        autoComplete="tel-national"
         className={cn(
           "flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-xs transition-colors",
           "placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-ring",

@@ -20,6 +20,7 @@ import {
   Globe,
   User,
 } from "lucide-react";
+import { PasswordStrength } from "@/components/ui/password-strength";
 import { FadeIn } from "@/components/motion";
 import { motion } from "framer-motion";
 import { toast } from "sonner";
@@ -100,11 +101,11 @@ export default function EmployeeProfilePage() {
     if (!file) return;
 
     if (!file.type.startsWith("image/")) {
-      toast.error("Veuillez sélectionner une image");
+      toast.error(t("profile.selectImage"));
       return;
     }
     if (file.size > 2 * 1024 * 1024) {
-      toast.error("L'image ne doit pas dépasser 2 Mo");
+      toast.error(t("profile.imageTooLarge"));
       return;
     }
 
@@ -114,14 +115,14 @@ export default function EmployeeProfilePage() {
       formData.append("file", file);
       const res = await fetch("/api/me/avatar", { method: "POST", body: formData });
       if (res.ok) {
-        toast.success("Photo mise à jour !");
+        toast.success(t("profile.photoUpdated"));
         await refetch();
       } else {
         const data = await res.json().catch(() => ({}));
-        toast.error(data.error || "Erreur lors de l'upload");
+        toast.error(data.error || t("profile.uploadError"));
       }
     } catch {
-      toast.error("Erreur réseau");
+      toast.error(t("profile.networkError"));
     } finally {
       setUploadingPhoto(false);
       if (fileInputRef.current) fileInputRef.current.value = "";
@@ -130,15 +131,15 @@ export default function EmployeeProfilePage() {
 
   const handleChangePassword = async () => {
     if (!currentPassword || !newPassword) {
-      toast.error("Veuillez remplir tous les champs");
+      toast.error(t("profile.fillAllFields"));
       return;
     }
     if (newPassword.length < 8) {
-      toast.error("Le nouveau mot de passe doit contenir au moins 8 caractères");
+      toast.error(t("profile.passwordMinLength"));
       return;
     }
     if (newPassword !== confirmPassword) {
-      toast.error("Les mots de passe ne correspondent pas");
+      toast.error(t("profile.passwordMismatch"));
       return;
     }
     setSavingPassword(true);
@@ -150,7 +151,7 @@ export default function EmployeeProfilePage() {
       });
       const data = await res.json();
       if (res.ok) {
-        toast.success("Mot de passe mis à jour !");
+        toast.success(t("profile.passwordUpdated"));
         setCurrentPassword("");
         setNewPassword("");
         setConfirmPassword("");
@@ -167,7 +168,7 @@ export default function EmployeeProfilePage() {
   if (loading || !user) {
     return (
       <div>
-        <Header title="Mon profil" />
+        <Header title={t("profile.title")} />
         <div className="space-y-6 p-6">
           <Card><CardContent className="p-6"><Skeleton className="h-24 w-full" /></CardContent></Card>
           <Card><CardContent className="p-6"><Skeleton className="h-[300px] w-full" /></CardContent></Card>
@@ -213,7 +214,7 @@ export default function EmployeeProfilePage() {
                   <div className="mt-2 flex flex-wrap items-center justify-center gap-2 sm:justify-start">
                     <Badge className="border-0 bg-cyber-green/10 text-cyber-green text-xs">
                       <Shield className="mr-1 h-3 w-3" />
-                      Employé
+                      {t("common.role.employee")}
                     </Badge>
                     {user.organization && (
                       <Badge variant="outline" className="text-xs">
@@ -325,14 +326,18 @@ export default function EmployeeProfilePage() {
                 <div className="space-y-2">
                   <Label className="text-xs">{t("profile.newPassword")}</Label>
                   <Input type="password" placeholder="••••••••" value={newPassword} onChange={(e) => setNewPassword(e.target.value)} />
+                  <PasswordStrength password={newPassword} />
                 </div>
                 <div className="space-y-2">
                   <Label className="text-xs">{t("profile.confirmPassword")}</Label>
                   <Input type="password" placeholder="••••••••" value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} />
+                  {confirmPassword && newPassword !== confirmPassword && (
+                    <p className="text-[10px] text-red-500">Les mots de passe ne correspondent pas</p>
+                  )}
                 </div>
                 <Button
                   onClick={handleChangePassword}
-                  disabled={savingPassword || !currentPassword || !newPassword || !confirmPassword}
+                  disabled={savingPassword || !currentPassword || !newPassword || !confirmPassword || newPassword !== confirmPassword}
                   variant="outline"
                   size="sm"
                   className="w-full"

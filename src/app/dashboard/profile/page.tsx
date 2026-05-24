@@ -12,7 +12,6 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { PhoneInput } from "@/components/ui/phone-input";
 import {
-  Mail,
   Building2,
   Shield,
   Bell,
@@ -22,6 +21,7 @@ import {
   Globe,
   User,
 } from "lucide-react";
+import { PasswordStrength } from "@/components/ui/password-strength";
 import { FadeIn } from "@/components/motion";
 import { motion } from "framer-motion";
 import { toast } from "sonner";
@@ -108,11 +108,11 @@ export default function ProfilePage() {
 
     // Validate file
     if (!file.type.startsWith("image/")) {
-      toast.error("Veuillez sélectionner une image");
+      toast.error(t("profile.selectImage"));
       return;
     }
     if (file.size > 2 * 1024 * 1024) {
-      toast.error("L'image ne doit pas dépasser 2 Mo");
+      toast.error(t("profile.imageTooLarge"));
       return;
     }
 
@@ -122,14 +122,14 @@ export default function ProfilePage() {
       formData.append("file", file);
       const res = await fetch("/api/me/avatar", { method: "POST", body: formData });
       if (res.ok) {
-        toast.success("Photo mise à jour !");
+        toast.success(t("profile.photoUpdated"));
         await refetch();
       } else {
         const data = await res.json().catch(() => ({}));
-        toast.error(data.error || "Erreur lors de l'upload");
+        toast.error(data.error || t("profile.uploadError"));
       }
     } catch {
-      toast.error("Erreur réseau");
+      toast.error(t("profile.networkError"));
     } finally {
       setUploadingPhoto(false);
       // Reset input so same file can be re-selected
@@ -139,15 +139,15 @@ export default function ProfilePage() {
 
   const handleChangePassword = async () => {
     if (!currentPassword || !newPassword) {
-      toast.error("Veuillez remplir tous les champs");
+      toast.error(t("profile.fillAllFields"));
       return;
     }
     if (newPassword.length < 8) {
-      toast.error("Le nouveau mot de passe doit contenir au moins 8 caractères");
+      toast.error(t("profile.passwordMinLength"));
       return;
     }
     if (newPassword !== confirmPassword) {
-      toast.error("Les mots de passe ne correspondent pas");
+      toast.error(t("profile.passwordMismatch"));
       return;
     }
     setSavingPassword(true);
@@ -159,7 +159,7 @@ export default function ProfilePage() {
       });
       const data = await res.json();
       if (res.ok) {
-        toast.success("Mot de passe mis à jour !");
+        toast.success(t("profile.passwordUpdated"));
         setCurrentPassword("");
         setNewPassword("");
         setConfirmPassword("");
@@ -188,7 +188,7 @@ export default function ProfilePage() {
     );
   }
 
-  const roleLabel = user.role === "SUPER_ADMIN" ? "Super Admin" : user.role === "ADMIN" ? "Administrateur" : "Employé";
+  const roleLabel = user.role === "SUPER_ADMIN" ? t("common.role.superAdmin") : user.role === "ADMIN" ? t("common.role.admin") : t("common.role.employee");
 
   return (
     <div>
@@ -355,14 +355,18 @@ export default function ProfilePage() {
                   <div className="space-y-2">
                     <Label className="text-xs">{t("profile.newPassword")}</Label>
                     <Input type="password" placeholder="••••••••" value={newPassword} onChange={(e) => setNewPassword(e.target.value)} />
+                    <PasswordStrength password={newPassword} />
                   </div>
                   <div className="space-y-2">
                     <Label className="text-xs">{t("profile.confirmPassword")}</Label>
                     <Input type="password" placeholder="••••••••" value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} />
+                    {confirmPassword && newPassword !== confirmPassword && (
+                      <p className="text-[10px] text-red-500">Les mots de passe ne correspondent pas</p>
+                    )}
                   </div>
                   <Button
                     onClick={handleChangePassword}
-                    disabled={savingPassword || !currentPassword || !newPassword || !confirmPassword}
+                    disabled={savingPassword || !currentPassword || !newPassword || !confirmPassword || newPassword !== confirmPassword}
                     variant="outline"
                     size="sm"
                     className="w-full"
@@ -385,7 +389,19 @@ export default function ProfilePage() {
 
         <FadeIn delay={0.25}>
           <div className="flex justify-end gap-3">
-            <Button variant="outline">{t("common.cancel")}</Button>
+            <Button
+              variant="outline"
+              onClick={() => {
+                if (user) {
+                  setName(user.name || "");
+                  setPhone(user.phone || "");
+                  setPosition(user.position || "");
+                  setDepartment(user.department || "");
+                }
+              }}
+            >
+              {t("common.cancel")}
+            </Button>
             <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
               <Button
                 onClick={handleSave}
