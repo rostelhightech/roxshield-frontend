@@ -95,10 +95,22 @@ export async function POST(request: NextRequest) {
   }
 
   const dataRows = rows.slice(1);
-  const [org, inviter] = await Promise.all([
-    db.organization.findUnique({ where: { id: orgId }, select: { name: true } }),
+  const [org, inviter, currentCount] = await Promise.all([
+    db.organization.findUnique({ where: { id: orgId }, select: { name: true, plan: true } }),
     db.user.findUnique({ where: { id: session.user.id }, select: { name: true } }),
+    db.user.count({ where: { organizationId: orgId } }),
   ]);
+
+  // Vérifier la limite du plan
+  const planLimits: Record<string, number> = { STARTER: 50, BUSINESS: 200, CAMPUS: 500, ENTERPRISE: 10000 };
+  const maxEmployees = planLimits[org?.plan || "STARTER"] || 50;
+  const slotsLeft = Math.max(0, maxEmployees - currentCount);
+  if (slotsLeft === 0) {
+    return NextResponse.json(
+      { error: `Limite du plan atteinte (${maxEmployees} employes). Passez au plan superieur.` },
+      { status: 403 },
+    );
+  }
 
   const results = {
     total: dataRows.length,
@@ -108,6 +120,13 @@ export async function POST(request: NextRequest) {
   };
 
   for (const row of dataRows) {
+    // Check plan limit
+    if (results.created >= slotsLeft) {
+      results.skipped++;
+      results.errors.push("Limite du plan atteinte — employes restants ignores");
+      break;
+    }
+
     const email = row[emailIdx]?.trim();
     if (!email || !isValidEmail(email)) {
       results.skipped++;

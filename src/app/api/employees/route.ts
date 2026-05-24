@@ -104,6 +104,20 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: "Email valide requis" }, { status: 400 });
   }
 
+  // Vérifier la limite du plan
+  const [orgPlan, currentCount] = await Promise.all([
+    db.organization.findUnique({ where: { id: orgId }, select: { plan: true } }),
+    db.user.count({ where: { organizationId: orgId } }),
+  ]);
+  const planLimits: Record<string, number> = { STARTER: 50, BUSINESS: 200, CAMPUS: 500, ENTERPRISE: 10000 };
+  const maxEmployees = planLimits[orgPlan?.plan || "STARTER"] || 50;
+  if (currentCount >= maxEmployees) {
+    return NextResponse.json(
+      { error: `Limite du plan ${orgPlan?.plan || "Starter"} atteinte (${maxEmployees} employes). Passez au plan superieur.` },
+      { status: 403 },
+    );
+  }
+
   // Vérifier si l'email existe déjà
   const existing = await db.user.findUnique({ where: { email } });
   if (existing) return NextResponse.json({ error: "Cet email existe déjà" }, { status: 409 });
