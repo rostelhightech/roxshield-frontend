@@ -84,7 +84,7 @@ const badgeIconMap: Record<string, string> = {
 };
 
 export default function EmployeeDashboardPage() {
-  const { t } = useTranslation();
+  const { t, locale } = useTranslation();
   const { data: user, loading: loadingUser } = useApi<UserProfile>("/api/me");
   const { data: trainData, loading: loadingTrain } = useApi<TrainingResponse>("/api/training");
   const { data: badgeData } = useApi<BadgesResponse>("/api/employee/badges");
@@ -131,10 +131,13 @@ export default function EmployeeDashboardPage() {
     { month: "M-3", score: Math.min(100, currentScore + 15) },
     { month: "M-2", score: Math.min(100, currentScore + 10) },
     { month: "M-1", score: Math.min(100, currentScore + 5) },
-    { month: "Actuel", score: currentScore },
+    { month: locale === "en" ? "Now" : "Actuel", score: currentScore },
   ];
 
-  const difficultyLabel = (d: string) => d === "BEGINNER" ? "Débutant" : d === "INTERMEDIATE" ? "Intermédiaire" : "Avancé";
+  const difficultyLabel = (d: string) => {
+    if (locale === "en") return d === "BEGINNER" ? "Beginner" : d === "INTERMEDIATE" ? "Intermediate" : "Advanced";
+    return d === "BEGINNER" ? "Débutant" : d === "INTERMEDIATE" ? "Intermédiaire" : "Avancé";
+  };
   const durationLabel = (m: number) => m >= 60 ? `${Math.floor(m / 60)}h${m % 60 > 0 ? m % 60 + "min" : ""}` : `${m} min`;
 
   return (
@@ -347,7 +350,7 @@ export default function EmployeeDashboardPage() {
                         fontSize: "12px",
                         color: "var(--foreground)",
                       }}
-                      formatter={(value) => [`${value}%`, "Score de risque"]}
+                      formatter={(value) => [`${value}%`, locale === "en" ? "Risk score" : "Score de risque"]}
                     />
                     <Area type="monotone" dataKey="score" stroke="#25d366" fill="url(#empGrad)" strokeWidth={2} />
                   </AreaChart>
