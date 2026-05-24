@@ -7,9 +7,12 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { Combobox } from "@/components/ui/combobox";
+import { PhoneInput } from "@/components/ui/phone-input";
 import { motion } from "framer-motion";
 import { useTranslation } from "@/lib/i18n";
 import { Footer } from "@/components/footer";
+import { COUNTRIES, SECTORS } from "@/lib/constants";
 import {
   Shield,
   Send,
@@ -31,11 +34,63 @@ const demoFeatures = [
   { icon: Users, title: "Gestion d'équipe", desc: "Multi-départements, import bulk, rôles" },
 ];
 
+const countryOptions = COUNTRIES.map((c) => ({
+  value: c.name,
+  label: c.name,
+  icon: c.flag,
+  sub: c.dial,
+}));
+
+const sectorOptions = SECTORS.map((s) => ({
+  value: s,
+  label: s,
+}));
+
 export default function DemoPage() {
   const { locale } = useTranslation();
   const [sent, setSent] = useState(false);
   const [sending, setSending] = useState(false);
   const [error, setError] = useState("");
+
+  // Form state
+  const [formName, setFormName] = useState("");
+  const [formEmail, setFormEmail] = useState("");
+  const [formCompany, setFormCompany] = useState("");
+  const [formPhone, setFormPhone] = useState("");
+  const [formSize, setFormSize] = useState("");
+  const [formCountry, setFormCountry] = useState("");
+  const [formSector, setFormSector] = useState("");
+  const [formNeeds, setFormNeeds] = useState("");
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!formName || !formEmail || !formCompany || !formPhone || !formSize || !formCountry) return;
+
+    setSending(true);
+    setError("");
+    try {
+      const res = await fetch("/api/demo", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          name: formName,
+          email: formEmail,
+          organization: formCompany,
+          phone: formPhone,
+          teamSize: formSize,
+          country: formCountry,
+          sector: formSector,
+          message: formNeeds,
+        }),
+      });
+      if (!res.ok) throw new Error();
+      setSent(true);
+    } catch {
+      setError(locale === "en" ? "Failed to send. Please try again." : "Erreur d'envoi. Veuillez réessayer.");
+    } finally {
+      setSending(false);
+    }
+  };
 
   return (
     <div className="min-h-screen bg-background">
@@ -152,65 +207,39 @@ export default function DemoPage() {
                     </Link>
                   </div>
                 ) : (
-                  <form onSubmit={async (e) => {
-                    e.preventDefault();
-                    setSending(true);
-                    setError("");
-                    const form = e.currentTarget;
-                    const data = {
-                      name: (form.querySelector("#demo-name") as HTMLInputElement).value,
-                      email: (form.querySelector("#demo-email") as HTMLInputElement).value,
-                      organization: (form.querySelector("#demo-company") as HTMLInputElement).value,
-                      phone: (form.querySelector("#demo-phone") as HTMLInputElement).value,
-                      teamSize: (form.querySelector("#demo-size") as HTMLSelectElement).value,
-                      country: (form.querySelector("#demo-country") as HTMLInputElement).value,
-                      message: (form.querySelector("#demo-needs") as HTMLTextAreaElement).value,
-                    };
-                    try {
-                      const res = await fetch("/api/demo", {
-                        method: "POST",
-                        headers: { "Content-Type": "application/json" },
-                        body: JSON.stringify(data),
-                      });
-                      if (!res.ok) throw new Error();
-                      setSent(true);
-                    } catch {
-                      setError(locale === "en" ? "Failed to send. Please try again." : "Erreur d'envoi. Veuillez réessayer.");
-                    } finally {
-                      setSending(false);
-                    }
-                  }} className="space-y-5">
+                  <form onSubmit={handleSubmit} className="space-y-5">
                     <h3 className="text-lg font-semibold">
                       {locale === "en" ? "Book your demo" : "Réservez votre démo"}
                     </h3>
 
                     <div className="grid gap-4 sm:grid-cols-2">
                       <div className="space-y-2">
-                        <Label htmlFor="demo-name">{locale === "en" ? "Full name" : "Nom complet"} *</Label>
-                        <Input id="demo-name" placeholder="Fatou Sow" required />
+                        <Label>{locale === "en" ? "Full name" : "Nom complet"} *</Label>
+                        <Input value={formName} onChange={(e) => setFormName(e.target.value)} placeholder="Fatou Sow" required />
                       </div>
                       <div className="space-y-2">
-                        <Label htmlFor="demo-email">Email * </Label>
-                        <Input id="demo-email" type="email" placeholder="fatou@entreprise.com" required />
-                      </div>
-                    </div>
-                    <div className="grid gap-4 sm:grid-cols-2">
-                      <div className="space-y-2">
-                        <Label htmlFor="demo-company">{locale === "en" ? "Company" : "Entreprise"} *</Label>
-                        <Input id="demo-company" placeholder="Safi Sénégal SARL" required />
-                      </div>
-                      <div className="space-y-2">
-                        <Label htmlFor="demo-phone">{locale === "en" ? "Phone / WhatsApp" : "Tél / WhatsApp"} *</Label>
-                        <Input id="demo-phone" type="tel" placeholder="+221 77 000 00 00" required />
+                        <Label>Email *</Label>
+                        <Input value={formEmail} onChange={(e) => setFormEmail(e.target.value)} type="email" placeholder="fatou@entreprise.com" required />
                       </div>
                     </div>
                     <div className="grid gap-4 sm:grid-cols-2">
                       <div className="space-y-2">
-                        <Label htmlFor="demo-size">{locale === "en" ? "Team size" : "Taille d'équipe"} *</Label>
+                        <Label>{locale === "en" ? "Company" : "Entreprise"} *</Label>
+                        <Input value={formCompany} onChange={(e) => setFormCompany(e.target.value)} placeholder="Safi Sénégal SARL" required />
+                      </div>
+                      <div className="space-y-2">
+                        <Label>{locale === "en" ? "Phone / WhatsApp" : "Tél / WhatsApp"} *</Label>
+                        <PhoneInput value={formPhone} onChange={setFormPhone} placeholder="77 000 00 00" />
+                      </div>
+                    </div>
+                    <div className="grid gap-4 sm:grid-cols-2">
+                      <div className="space-y-2">
+                        <Label>{locale === "en" ? "Team size" : "Taille d'équipe"} *</Label>
                         <select
-                          id="demo-size"
+                          value={formSize}
+                          onChange={(e) => setFormSize(e.target.value)}
                           required
-                          className="h-10 w-full rounded-lg border border-border bg-background px-3 text-sm"
+                          className="h-9 w-full rounded-md border border-input bg-transparent px-3 text-sm shadow-xs"
                         >
                           <option value="">—</option>
                           <option value="1-20">1 – 20</option>
@@ -221,14 +250,32 @@ export default function DemoPage() {
                         </select>
                       </div>
                       <div className="space-y-2">
-                        <Label htmlFor="demo-country">{locale === "en" ? "Country" : "Pays"} *</Label>
-                        <Input id="demo-country" placeholder="Sénégal" required />
+                        <Label>{locale === "en" ? "Country" : "Pays"} *</Label>
+                        <Combobox
+                          options={countryOptions}
+                          value={formCountry}
+                          onChange={setFormCountry}
+                          placeholder={locale === "en" ? "Select..." : "Sélectionner..."}
+                          searchPlaceholder={locale === "en" ? "Search country..." : "Rechercher un pays..."}
+                        />
                       </div>
                     </div>
                     <div className="space-y-2">
-                      <Label htmlFor="demo-needs">{locale === "en" ? "Main challenge" : "Défi principal"}</Label>
+                      <Label>{locale === "en" ? "Sector" : "Secteur d'activité"}</Label>
+                      <Combobox
+                        options={sectorOptions}
+                        value={formSector}
+                        onChange={setFormSector}
+                        placeholder={locale === "en" ? "Select a sector..." : "Sélectionner un secteur..."}
+                        searchPlaceholder={locale === "en" ? "Search..." : "Rechercher..."}
+                        allowCustom
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label>{locale === "en" ? "Main challenge" : "Défi principal"}</Label>
                       <textarea
-                        id="demo-needs"
+                        value={formNeeds}
+                        onChange={(e) => setFormNeeds(e.target.value)}
                         rows={3}
                         className="w-full rounded-lg border border-border bg-background px-3 py-2 text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring"
                         placeholder={locale === "en"

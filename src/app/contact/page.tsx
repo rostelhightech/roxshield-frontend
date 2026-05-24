@@ -9,6 +9,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { motion } from "framer-motion";
 import { useTranslation } from "@/lib/i18n";
 import { Footer } from "@/components/footer";
+import { PhoneInput } from "@/components/ui/phone-input";
 import {
   Shield,
   Send,
@@ -27,6 +28,7 @@ export default function ContactPage() {
   const [sent, setSent] = useState(false);
   const [sending, setSending] = useState(false);
   const [error, setError] = useState("");
+  const [contactPhone, setContactPhone] = useState("");
 
   const contactInfo = [
     {
@@ -218,11 +220,11 @@ export default function ContactPage() {
                         <Input id="contact-company" placeholder="Nom de votre entreprise" required />
                       </div>
                       <div className="space-y-2">
-                        <Label htmlFor="contact-phone">
+                        <Label>
                           <Phone className="mr-1 inline h-3 w-3" />
                           {locale === "en" ? "Phone / WhatsApp" : "Téléphone / WhatsApp"}
                         </Label>
-                        <Input id="contact-phone" type="tel" placeholder="+221 77 000 00 00" />
+                        <PhoneInput value={contactPhone} onChange={setContactPhone} placeholder="77 000 00 00" />
                       </div>
                     </div>
                     <div className="space-y-2">

@@ -48,6 +48,7 @@ export default function EmployeeLayout({ children }: { children: React.ReactNode
     { label: t("nav.results"), href: "/employee/results", icon: BarChart3 },
     { label: t("nav.badges"), href: "/employee/badges", icon: Award },
     { label: t("nav.leaderboard"), href: "/employee/leaderboard", icon: Trophy },
+    { label: "Mon profil", href: "/employee/profile", icon: UserCircle },
   ];
 
   useEffect(() => {

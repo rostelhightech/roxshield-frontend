@@ -1,0 +1,107 @@
+/** Countries with dial codes, sorted for African priority */
+export const COUNTRIES = [
+  // ── Afrique de l'Ouest ──
+  { code: "SN", name: "Sénégal", dial: "+221", flag: "🇸🇳" },
+  { code: "CI", name: "Côte d'Ivoire", dial: "+225", flag: "🇨🇮" },
+  { code: "ML", name: "Mali", dial: "+223", flag: "🇲🇱" },
+  { code: "BF", name: "Burkina Faso", dial: "+226", flag: "🇧🇫" },
+  { code: "GN", name: "Guinée", dial: "+224", flag: "🇬🇳" },
+  { code: "NE", name: "Niger", dial: "+227", flag: "🇳🇪" },
+  { code: "TG", name: "Togo", dial: "+228", flag: "🇹🇬" },
+  { code: "BJ", name: "Bénin", dial: "+229", flag: "🇧🇯" },
+  { code: "MR", name: "Mauritanie", dial: "+222", flag: "🇲🇷" },
+  { code: "GW", name: "Guinée-Bissau", dial: "+245", flag: "🇬🇼" },
+  { code: "CV", name: "Cap-Vert", dial: "+238", flag: "🇨🇻" },
+  { code: "GM", name: "Gambie", dial: "+220", flag: "🇬🇲" },
+  { code: "SL", name: "Sierra Leone", dial: "+232", flag: "🇸🇱" },
+  { code: "LR", name: "Libéria", dial: "+231", flag: "🇱🇷" },
+  { code: "GH", name: "Ghana", dial: "+233", flag: "🇬🇭" },
+  { code: "NG", name: "Nigéria", dial: "+234", flag: "🇳🇬" },
+  // ── Afrique centrale ──
+  { code: "CM", name: "Cameroun", dial: "+237", flag: "🇨🇲" },
+  { code: "GA", name: "Gabon", dial: "+241", flag: "🇬🇦" },
+  { code: "CG", name: "Congo", dial: "+242", flag: "🇨🇬" },
+  { code: "CD", name: "RD Congo", dial: "+243", flag: "🇨🇩" },
+  { code: "TD", name: "Tchad", dial: "+235", flag: "🇹🇩" },
+  { code: "CF", name: "Centrafrique", dial: "+236", flag: "🇨🇫" },
+  { code: "GQ", name: "Guinée équatoriale", dial: "+240", flag: "🇬🇶" },
+  // ── Afrique du Nord ──
+  { code: "MA", name: "Maroc", dial: "+212", flag: "🇲🇦" },
+  { code: "DZ", name: "Algérie", dial: "+213", flag: "🇩🇿" },
+  { code: "TN", name: "Tunisie", dial: "+216", flag: "🇹🇳" },
+  { code: "EG", name: "Égypte", dial: "+20", flag: "🇪🇬" },
+  { code: "LY", name: "Libye", dial: "+218", flag: "🇱🇾" },
+  // ── Afrique de l'Est ──
+  { code: "KE", name: "Kenya", dial: "+254", flag: "🇰🇪" },
+  { code: "TZ", name: "Tanzanie", dial: "+255", flag: "🇹🇿" },
+  { code: "UG", name: "Ouganda", dial: "+256", flag: "🇺🇬" },
+  { code: "RW", name: "Rwanda", dial: "+250", flag: "🇷🇼" },
+  { code: "BI", name: "Burundi", dial: "+257", flag: "🇧🇮" },
+  { code: "ET", name: "Éthiopie", dial: "+251", flag: "🇪🇹" },
+  { code: "DJ", name: "Djibouti", dial: "+253", flag: "🇩🇯" },
+  { code: "SO", name: "Somalie", dial: "+252", flag: "🇸🇴" },
+  { code: "MG", name: "Madagascar", dial: "+261", flag: "🇲🇬" },
+  { code: "MU", name: "Maurice", dial: "+230", flag: "🇲🇺" },
+  // ── Afrique australe ──
+  { code: "ZA", name: "Afrique du Sud", dial: "+27", flag: "🇿🇦" },
+  { code: "MZ", name: "Mozambique", dial: "+258", flag: "🇲🇿" },
+  { code: "AO", name: "Angola", dial: "+244", flag: "🇦🇴" },
+  { code: "ZW", name: "Zimbabwe", dial: "+263", flag: "🇿🇼" },
+  { code: "BW", name: "Botswana", dial: "+267", flag: "🇧🇼" },
+  { code: "NA", name: "Namibie", dial: "+264", flag: "🇳🇦" },
+  // ── Europe ──
+  { code: "FR", name: "France", dial: "+33", flag: "🇫🇷" },
+  { code: "BE", name: "Belgique", dial: "+32", flag: "🇧🇪" },
+  { code: "CH", name: "Suisse", dial: "+41", flag: "🇨🇭" },
+  { code: "LU", name: "Luxembourg", dial: "+352", flag: "🇱🇺" },
+  { code: "DE", name: "Allemagne", dial: "+49", flag: "🇩🇪" },
+  { code: "GB", name: "Royaume-Uni", dial: "+44", flag: "🇬🇧" },
+  { code: "ES", name: "Espagne", dial: "+34", flag: "🇪🇸" },
+  { code: "PT", name: "Portugal", dial: "+351", flag: "🇵🇹" },
+  { code: "IT", name: "Italie", dial: "+39", flag: "🇮🇹" },
+  // ── Amériques ──
+  { code: "US", name: "États-Unis", dial: "+1", flag: "🇺🇸" },
+  { code: "CA", name: "Canada", dial: "+1", flag: "🇨🇦" },
+  { code: "HT", name: "Haïti", dial: "+509", flag: "🇭🇹" },
+  // ── Moyen-Orient ──
+  { code: "AE", name: "Émirats arabes unis", dial: "+971", flag: "🇦🇪" },
+  { code: "SA", name: "Arabie saoudite", dial: "+966", flag: "🇸🇦" },
+  { code: "QA", name: "Qatar", dial: "+974", flag: "🇶🇦" },
+  // ── Asie ──
+  { code: "CN", name: "Chine", dial: "+86", flag: "🇨🇳" },
+  { code: "IN", name: "Inde", dial: "+91", flag: "🇮🇳" },
+  { code: "JP", name: "Japon", dial: "+81", flag: "🇯🇵" },
+] as const;
+
+/** Business sectors */
+export const SECTORS = [
+  "Technologie / IT",
+  "Finance / Banque",
+  "Assurance",
+  "Télécommunications",
+  "Énergie / Mines",
+  "Santé / Pharmacie",
+  "Éducation / Formation",
+  "Administration publique",
+  "Commerce / Distribution",
+  "Transport / Logistique",
+  "Agriculture / Agroalimentaire",
+  "Immobilier / BTP",
+  "Industrie / Manufacture",
+  "Média / Communication",
+  "ONG / Organisation internationale",
+  "Conseil / Audit",
+  "Juridique / Droit",
+  "Tourisme / Hôtellerie",
+  "Autre",
+] as const;
+
+/** Session timeout options (in minutes, 0 = never) */
+export const SESSION_TIMEOUT_OPTIONS = [
+  { value: 5, label: "5 minutes" },
+  { value: 10, label: "10 minutes" },
+  { value: 15, label: "15 minutes" },
+  { value: 30, label: "30 minutes" },
+  { value: 60, label: "1 heure" },
+  { value: 0, label: "Jamais" },
+] as const;

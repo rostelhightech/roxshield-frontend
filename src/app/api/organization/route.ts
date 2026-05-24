@@ -33,6 +33,7 @@ export async function GET() {
     city: org.city,
     size: org.size,
     logo: org.logo,
+    sessionTimeoutMinutes: org.sessionTimeoutMinutes,
     employeeCount: org._count.users,
     campaignCount: org._count.phishingCampaigns,
     createdAt: org.createdAt.toISOString(),
@@ -56,6 +57,10 @@ export async function PATCH(request: NextRequest) {
   const country = body.country !== undefined ? sanitize(body.country) : undefined;
   const city = body.city !== undefined ? sanitize(body.city) : undefined;
   const size = body.size !== undefined ? (Number(body.size) > 0 && Number(body.size) <= 100000 ? Number(body.size) : null) : undefined;
+  const VALID_TIMEOUTS = [0, 5, 10, 15, 30, 60];
+  const sessionTimeoutMinutes = body.sessionTimeoutMinutes !== undefined && VALID_TIMEOUTS.includes(Number(body.sessionTimeoutMinutes))
+    ? Number(body.sessionTimeoutMinutes)
+    : undefined;
 
   const updated = await db.organization.update({
     where: { id: orgId },
@@ -65,6 +70,7 @@ export async function PATCH(request: NextRequest) {
       ...(country !== undefined && { country }),
       ...(city !== undefined && { city }),
       ...(size !== undefined && { size }),
+      ...(sessionTimeoutMinutes !== undefined && { sessionTimeoutMinutes }),
     },
     select: {
       id: true,
@@ -74,6 +80,7 @@ export async function PATCH(request: NextRequest) {
       country: true,
       city: true,
       size: true,
+      sessionTimeoutMinutes: true,
     },
   });
 

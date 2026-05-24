@@ -23,6 +23,7 @@ export async function GET() {
     id: user.id,
     name: user.name,
     email: user.email,
+    image: user.image,
     phone: user.phone,
     department: user.department,
     position: user.position,
@@ -37,6 +38,7 @@ export async function GET() {
       country: user.organization.country,
       city: user.organization.city,
       size: user.organization.size,
+      sessionTimeoutMinutes: user.organization.sessionTimeoutMinutes,
     } : null,
   });
 }

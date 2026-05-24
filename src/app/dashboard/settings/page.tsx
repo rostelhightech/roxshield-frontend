@@ -10,23 +10,24 @@ import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Combobox } from "@/components/ui/combobox";
 import {
   Building2,
   Users,
   Bell,
   Shield,
   Globe,
-  Mail,
   Lock,
   CheckCircle,
   Plus,
-  Trash2,
+  Clock,
 } from "lucide-react";
 import { FadeIn } from "@/components/motion";
 import { motion } from "framer-motion";
 import { toast } from "sonner";
 import { useTranslation } from "@/lib/i18n";
 import { useApi } from "@/hooks/use-api";
+import { COUNTRIES, SECTORS, SESSION_TIMEOUT_OPTIONS } from "@/lib/constants";
 
 interface UserProfile {
   id: string;
@@ -41,6 +42,7 @@ interface UserProfile {
     country: string | null;
     city: string | null;
     size: number | null;
+    sessionTimeoutMinutes: number;
   } | null;
 }
 
@@ -50,11 +52,28 @@ interface EmployeesData {
 }
 
 const notifSettings = [
-  { id: "email-report", label: "Rapport mensuel par email", description: "Recevez un resume chaque fin de mois", enabled: true },
-  { id: "phishing-alert", label: "Alerte taux de clic eleve", description: "Notification si le taux de clic depasse 40%", enabled: true },
-  { id: "training-reminder", label: "Rappels de formation", description: "Rappeler aux employes de completer leurs modules", enabled: false },
-  { id: "new-employee", label: "Nouvel employe ajoute", description: "Notification quand un employe rejoint la plateforme", enabled: true },
+  { id: "email-report", label: "Rapport mensuel par email", description: "Recevez un résumé chaque fin de mois", enabled: true },
+  { id: "phishing-alert", label: "Alerte taux de clic élevé", description: "Notification si le taux de clic dépasse 40%", enabled: true },
+  { id: "training-reminder", label: "Rappels de formation", description: "Rappeler aux employés de compléter leurs modules", enabled: false },
+  { id: "new-employee", label: "Nouvel employé ajouté", description: "Notification quand un employé rejoint la plateforme", enabled: true },
 ];
+
+const countryOptions = COUNTRIES.map((c) => ({
+  value: c.name,
+  label: c.name,
+  icon: c.flag,
+  sub: c.dial,
+}));
+
+const sectorOptions = SECTORS.map((s) => ({
+  value: s,
+  label: s,
+}));
+
+const timeoutOptions = SESSION_TIMEOUT_OPTIONS.map((o) => ({
+  value: String(o.value),
+  label: o.label,
+}));
 
 export default function SettingsPage() {
   const { t } = useTranslation();
@@ -68,7 +87,7 @@ export default function SettingsPage() {
 
   // Form state for org info
   const [orgForm, setOrgForm] = useState<{
-    name: string; sector: string; country: string; city: string; size: string; contactEmail: string;
+    name: string; sector: string; country: string; city: string; size: string; contactEmail: string; sessionTimeoutMinutes: string;
   } | null>(null);
 
   // Initialize form when data loads
@@ -80,6 +99,7 @@ export default function SettingsPage() {
       city: user.organization.city || "",
       size: String(user.organization.size || ""),
       contactEmail: user.email || "",
+      sessionTimeoutMinutes: String(user.organization.sessionTimeoutMinutes ?? 15),
     });
   }
 
@@ -96,6 +116,7 @@ export default function SettingsPage() {
           country: orgForm.country,
           city: orgForm.city,
           size: orgForm.size ? Number(orgForm.size) : null,
+          sessionTimeoutMinutes: Number(orgForm.sessionTimeoutMinutes),
         }),
       });
       if (res.ok) {
@@ -138,7 +159,7 @@ export default function SettingsPage() {
   const admins = (empData?.employees || []).filter((e: any) => e.role === "ADMIN" || e.role === "SUPER_ADMIN");
 
   const planLabel = org?.plan === "ENTERPRISE" ? "Enterprise" : org?.plan === "BUSINESS" ? "Business" : org?.plan === "CAMPUS" ? "Campus" : "Starter";
-  const planLimit = org?.plan === "ENTERPRISE" ? "Illimite" : org?.plan === "BUSINESS" ? "200" : "50";
+  const planLimit = org?.plan === "ENTERPRISE" ? "Illimité" : org?.plan === "BUSINESS" ? "200" : "50";
 
   return (
     <div>
@@ -169,11 +190,24 @@ export default function SettingsPage() {
                     </div>
                     <div className="space-y-2">
                       <Label>{t("settings.sector")}</Label>
-                      <Input value={orgForm?.sector || ""} onChange={(e) => setOrgForm((f) => f ? { ...f, sector: e.target.value } : f)} />
+                      <Combobox
+                        options={sectorOptions}
+                        value={orgForm?.sector || ""}
+                        onChange={(v) => setOrgForm((f) => f ? { ...f, sector: v } : f)}
+                        placeholder="Sélectionner un secteur..."
+                        searchPlaceholder="Rechercher un secteur..."
+                        allowCustom
+                      />
                     </div>
                     <div className="space-y-2">
                       <Label>{t("settings.country")}</Label>
-                      <Input value={orgForm?.country || ""} onChange={(e) => setOrgForm((f) => f ? { ...f, country: e.target.value } : f)} />
+                      <Combobox
+                        options={countryOptions}
+                        value={orgForm?.country || ""}
+                        onChange={(v) => setOrgForm((f) => f ? { ...f, country: v } : f)}
+                        placeholder="Sélectionner un pays..."
+                        searchPlaceholder="Rechercher un pays..."
+                      />
                     </div>
                     <div className="space-y-2">
                       <Label>{t("settings.city")}</Label>
@@ -319,6 +353,36 @@ export default function SettingsPage() {
                   </div>
                 </CardHeader>
                 <CardContent className="space-y-4">
+                  {/* Session Timeout */}
+                  <div className="flex items-center justify-between rounded-xl border p-4">
+                    <div>
+                      <div className="flex items-center gap-2">
+                        <Clock className="h-4 w-4 text-rht-violet-light" />
+                        <p className="text-sm font-medium">Expiration de session</p>
+                      </div>
+                      <p className="mt-1 text-xs text-muted-foreground">
+                        Déconnexion automatique après une période d&apos;inactivité
+                      </p>
+                    </div>
+                    <Combobox
+                      options={timeoutOptions}
+                      value={orgForm?.sessionTimeoutMinutes || "15"}
+                      onChange={(v) => {
+                        setOrgForm((f) => f ? { ...f, sessionTimeoutMinutes: v } : f);
+                        // Auto-save timeout
+                        fetch("/api/organization", {
+                          method: "PATCH",
+                          headers: { "Content-Type": "application/json" },
+                          body: JSON.stringify({ sessionTimeoutMinutes: Number(v) }),
+                        }).then((r) => {
+                          if (r.ok) toast.success("Timeout mis à jour");
+                          else toast.error("Erreur");
+                        });
+                      }}
+                      className="w-[160px]"
+                    />
+                  </div>
+
                   <div className="flex items-center justify-between rounded-xl border p-4">
                     <div>
                       <p className="text-sm font-medium">{t("profile.2fa")}</p>
@@ -392,7 +456,7 @@ export default function SettingsPage() {
                   <div className="space-y-3">
                     {[
                       { role: "Admin", perms: t("settings.adminPerms"), count: admins.length },
-                      { role: "Employe", perms: t("settings.employeePerms"), count: Math.max(0, totalEmployees - admins.length) },
+                      { role: "Employé", perms: t("settings.employeePerms"), count: Math.max(0, totalEmployees - admins.length) },
                     ].map((r) => (
                       <div key={r.role} className="flex items-center justify-between rounded-xl border p-4">
                         <div>

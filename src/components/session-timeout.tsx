@@ -7,13 +7,13 @@ import { useTranslation } from "@/lib/i18n";
 import { usePathname } from "next/navigation";
 import { signOut } from "next-auth/react";
 
-const TIMEOUT_MS = 15 * 60 * 1000; // 15 minutes
-const WARNING_MS = 2 * 60 * 1000;  // 2 minutes warning
+const WARNING_MS = 2 * 60 * 1000; // 2 minutes warning before logout
 
 export function SessionTimeout() {
   const [showWarning, setShowWarning] = useState(false);
   const [countdown, setCountdown] = useState(120);
   const [loggingOut, setLoggingOut] = useState(false);
+  const [timeoutMinutes, setTimeoutMinutes] = useState<number | null>(null);
   const { locale } = useTranslation();
   const pathname = usePathname();
   const timeoutRef = useRef<ReturnType<typeof setTimeout>>(null);
@@ -21,6 +21,27 @@ export function SessionTimeout() {
   const countdownRef = useRef<ReturnType<typeof setInterval>>(null);
 
   const isAuthArea = pathname.startsWith("/dashboard") || pathname.startsWith("/employee") || pathname.startsWith("/admin");
+
+  // Fetch org timeout setting
+  useEffect(() => {
+    if (!isAuthArea) return;
+    let cancelled = false;
+    fetch("/api/me")
+      .then((r) => r.ok ? r.json() : null)
+      .then((data) => {
+        if (cancelled) return;
+        const mins = data?.organization?.sessionTimeoutMinutes;
+        setTimeoutMinutes(typeof mins === "number" ? mins : 15);
+      })
+      .catch(() => {
+        if (!cancelled) setTimeoutMinutes(15);
+      });
+    return () => { cancelled = true; };
+  }, [isAuthArea]);
+
+  // 0 = never timeout
+  const isDisabled = timeoutMinutes === 0;
+  const TIMEOUT_MS = (timeoutMinutes || 15) * 60 * 1000;
 
   const clearAllTimers = useCallback(() => {
     if (timeoutRef.current) clearTimeout(timeoutRef.current);
@@ -35,15 +56,18 @@ export function SessionTimeout() {
   }, [clearAllTimers]);
 
   const resetTimers = useCallback(() => {
-    if (!isAuthArea) return;
+    if (!isAuthArea || isDisabled || timeoutMinutes === null) return;
 
     setShowWarning(false);
     setCountdown(120);
     clearAllTimers();
 
+    const warningDelay = Math.max(TIMEOUT_MS - WARNING_MS, 0);
+
     warningRef.current = setTimeout(() => {
       setShowWarning(true);
-      setCountdown(120);
+      const warningSeconds = Math.min(Math.floor(WARNING_MS / 1000), Math.floor(TIMEOUT_MS / 1000));
+      setCountdown(warningSeconds);
       countdownRef.current = setInterval(() => {
         setCountdown((prev) => {
           if (prev <= 1) {
@@ -53,18 +77,17 @@ export function SessionTimeout() {
           return prev - 1;
         });
       }, 1000);
-    }, TIMEOUT_MS - WARNING_MS);
+    }, warningDelay);
 
     timeoutRef.current = setTimeout(() => {
       doLogout();
     }, TIMEOUT_MS);
-  }, [isAuthArea, clearAllTimers, doLogout]);
+  }, [isAuthArea, isDisabled, timeoutMinutes, TIMEOUT_MS, clearAllTimers, doLogout]);
 
   const handleStayConnected = useCallback(() => {
     setShowWarning(false);
     setCountdown(120);
     clearAllTimers();
-    // Small delay to ensure state is clean before resetting
     setTimeout(() => resetTimers(), 50);
   }, [clearAllTimers, resetTimers]);
 
@@ -75,7 +98,7 @@ export function SessionTimeout() {
   }, [clearAllTimers]);
 
   useEffect(() => {
-    if (!isAuthArea) return;
+    if (!isAuthArea || isDisabled || timeoutMinutes === null) return;
 
     const events = ["mousedown", "keydown", "scroll", "touchstart"];
     const resetOnActivity = () => {
@@ -89,7 +112,7 @@ export function SessionTimeout() {
       events.forEach((event) => document.removeEventListener(event, resetOnActivity));
       clearAllTimers();
     };
-  }, [isAuthArea, resetTimers, showWarning, clearAllTimers]);
+  }, [isAuthArea, isDisabled, timeoutMinutes, resetTimers, showWarning, clearAllTimers]);
 
   if (!isAuthArea || !showWarning) return null;
 
