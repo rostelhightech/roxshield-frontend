@@ -50,7 +50,7 @@ const zoneIcons: Record<string, LucideIcon> = {
   transit: Wifi,
 };
 
-const zoneLabels: Record<string, string> = {
+const zoneLabelsFr: Record<string, string> = {
   email: "Emails",
   storage: "Stockage",
   endpoints: "Endpoints",
@@ -58,8 +58,17 @@ const zoneLabels: Record<string, string> = {
   transit: "Transit",
 };
 
+const zoneLabelsEn: Record<string, string> = {
+  email: "Emails",
+  storage: "Storage",
+  endpoints: "Endpoints",
+  cloud: "Cloud",
+  transit: "Transit",
+};
+
 export default function EncryptionPage() {
-  const { t } = useTranslation();
+  const { t, locale } = useTranslation();
+  const zoneLabels = locale === "en" ? zoneLabelsEn : zoneLabelsFr;
   const { data, loading } = useApi<EncryptionResponse>("/api/encryption");
 
   if (loading) {

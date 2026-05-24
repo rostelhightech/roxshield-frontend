@@ -55,15 +55,23 @@ const riskLevelStyle: Record<string, string> = {
   LOW: "bg-cyber-green/10 text-cyber-green",
 };
 
-const riskLabels: Record<string, string> = {
+const riskLabelsFr: Record<string, string> = {
   CRITICAL: "Critique",
-  HIGH: "Eleve",
+  HIGH: "Élevé",
   MEDIUM: "Moyen",
   LOW: "Faible",
 };
 
+const riskLabelsEn: Record<string, string> = {
+  CRITICAL: "Critical",
+  HIGH: "High",
+  MEDIUM: "Medium",
+  LOW: "Low",
+};
+
 export default function ShadowITPage() {
-  const { t } = useTranslation();
+  const { t, locale } = useTranslation();
+  const riskLabels = locale === "en" ? riskLabelsEn : riskLabelsFr;
   const { data, loading } = useApi<ShadowItResponse>("/api/shadow-it");
 
   if (loading) {

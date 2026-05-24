@@ -61,15 +61,23 @@ interface GrcResponse {
   };
 }
 
-const statusLabels: Record<string, string> = {
+const statusLabelsFr: Record<string, string> = {
   open: "Ouvert",
   mitigating: "En cours",
-  accepted: "Accepte",
-  closed: "Ferme",
+  accepted: "Accepté",
+  closed: "Fermé",
+};
+
+const statusLabelsEn: Record<string, string> = {
+  open: "Open",
+  mitigating: "Mitigating",
+  accepted: "Accepted",
+  closed: "Closed",
 };
 
 export default function GRCPage() {
-  const { t } = useTranslation();
+  const { t, locale } = useTranslation();
+  const statusLabels = locale === "en" ? statusLabelsEn : statusLabelsFr;
   const { data, loading } = useApi<GrcResponse>("/api/grc");
 
   if (loading) {
