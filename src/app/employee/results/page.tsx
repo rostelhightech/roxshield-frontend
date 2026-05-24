@@ -63,16 +63,22 @@ interface ResultsResponse {
   }[];
 }
 
-const actionStyle = {
-  REPORTED: { label: "Signalé", style: "bg-cyber-green/10 text-cyber-green", icon: CheckCircle },
-  CLICKED: { label: "Cliqué", style: "bg-cyber-red/10 text-cyber-red", icon: XCircle },
-  SENT: { label: "Envoyé", style: "bg-muted text-muted-foreground", icon: AlertTriangle },
-  OPENED: { label: "Ouvert", style: "bg-rht-orange/10 text-rht-orange", icon: AlertTriangle },
-  IGNORED: { label: "Ignoré", style: "bg-rht-orange/10 text-rht-orange", icon: AlertTriangle },
+const actionStyleBase = {
+  REPORTED: { style: "bg-cyber-green/10 text-cyber-green", icon: CheckCircle },
+  CLICKED: { style: "bg-cyber-red/10 text-cyber-red", icon: XCircle },
+  SENT: { style: "bg-muted text-muted-foreground", icon: AlertTriangle },
+  OPENED: { style: "bg-rht-orange/10 text-rht-orange", icon: AlertTriangle },
+  IGNORED: { style: "bg-rht-orange/10 text-rht-orange", icon: AlertTriangle },
 } as const;
 
+const actionLabels: Record<string, Record<string, string>> = {
+  fr: { REPORTED: "Signalé", CLICKED: "Cliqué", SENT: "Envoyé", OPENED: "Ouvert", IGNORED: "Ignoré" },
+  en: { REPORTED: "Reported", CLICKED: "Clicked", SENT: "Sent", OPENED: "Opened", IGNORED: "Ignored" },
+};
+
 export default function EmployeeResultsPage() {
-  const { t } = useTranslation();
+  const { t, locale } = useTranslation();
+  const dateLocale = locale === "en" ? "en-US" : "fr-FR";
   const { data, loading, refetch } = useApi<ResultsResponse>("/api/employee/results");
   const [reporting, setReporting] = useState<string | null>(null);
 
@@ -81,14 +87,14 @@ export default function EmployeeResultsPage() {
     try {
       const res = await fetch(`/api/campaigns/${campaignId}/report`, { method: "POST" });
       if (res.ok) {
-        toast.success("Email signale ! Votre score de risque a ete ameliore.");
+        toast.success(locale === "en" ? "Email reported! Your risk score has improved." : "Email signalé ! Votre score de risque a été amélioré.");
         await refetch();
       } else {
         const body = await res.json().catch(() => ({}));
-        toast.error(body.error || "Erreur lors du signalement");
+        toast.error(body.error || t("common.error"));
       }
     } catch {
-      toast.error("Erreur reseau");
+      toast.error(t("profile.networkError"));
     } finally {
       setReporting(null);
     }
@@ -124,25 +130,25 @@ export default function EmployeeResultsPage() {
           {[
             {
               icon: Shield,
-              label: "Score de risque actuel",
+              label: locale === "en" ? "Current risk score" : "Score de risque actuel",
               value: `${stats.riskScore}%`,
-              sub: stats.riskScore <= 30 ? "Zone sûre" : stats.riskScore <= 60 ? "Modéré" : "À risque",
+              sub: stats.riskScore <= 30 ? (locale === "en" ? "Safe zone" : "Zone sûre") : stats.riskScore <= 60 ? (locale === "en" ? "Moderate" : "Modéré") : (locale === "en" ? "At risk" : "À risque"),
               bg: "bg-rht-orange/10",
               text: stats.riskScore <= 30 ? "text-cyber-green" : stats.riskScore <= 60 ? "text-rht-orange" : "text-cyber-red",
             },
             {
               icon: Target,
-              label: "Simulations détectées",
+              label: locale === "en" ? "Simulations detected" : "Simulations détectées",
               value: `${stats.phishingReported}/${stats.phishingTotal}`,
-              sub: `${phishingDetectRate}% de réussite`,
+              sub: `${phishingDetectRate}% ${locale === "en" ? "success rate" : "de réussite"}`,
               bg: "bg-cyber-green/10",
               text: "text-cyber-green",
             },
             {
               icon: BarChart3,
-              label: "Score quiz moyen",
+              label: locale === "en" ? "Average quiz score" : "Score quiz moyen",
               value: `${stats.avgQuizScore}%`,
-              sub: `Sur ${stats.trainingsCompleted} module${stats.trainingsCompleted > 1 ? "s" : ""}`,
+              sub: locale === "en" ? `Over ${stats.trainingsCompleted} module${stats.trainingsCompleted > 1 ? "s" : ""}` : `Sur ${stats.trainingsCompleted} module${stats.trainingsCompleted > 1 ? "s" : ""}`,
               bg: "bg-rht-violet-light/10",
               text: "text-rht-violet-light",
             },
@@ -175,15 +181,16 @@ export default function EmployeeResultsPage() {
           <FadeIn delay={0.1}>
             <Card>
               <CardHeader className="pb-3">
-                <CardTitle className="text-sm font-semibold">Historique des simulations</CardTitle>
+                <CardTitle className="text-sm font-semibold">{locale === "en" ? "Simulation history" : "Historique des simulations"}</CardTitle>
               </CardHeader>
               <CardContent>
                 {phishing.length === 0 ? (
-                  <p className="py-8 text-center text-sm text-muted-foreground">Aucune simulation reçue</p>
+                  <p className="py-8 text-center text-sm text-muted-foreground">{locale === "en" ? "No simulations received" : "Aucune simulation reçue"}</p>
                 ) : (
                   <div className="space-y-3">
                     {phishing.map((sim, i) => {
-                      const res = actionStyle[sim.action as keyof typeof actionStyle] || actionStyle.SENT;
+                      const res = actionStyleBase[sim.action as keyof typeof actionStyleBase] || actionStyleBase.SENT;
+                      const actionLabel = (actionLabels[locale] || actionLabels.fr)[sim.action] || sim.action;
                       const ResIcon = res.icon;
                       return (
                         <motion.div
@@ -201,7 +208,7 @@ export default function EmployeeResultsPage() {
                               <div>
                                 <p className="text-sm font-medium">{sim.campaignName}</p>
                                 <p className="text-xs text-muted-foreground">
-                                  {sim.templateType} — {new Date(sim.createdAt).toLocaleDateString("fr-FR")}
+                                  {sim.templateType} — {new Date(sim.createdAt).toLocaleDateString(dateLocale)}
                                 </p>
                               </div>
                             </div>
@@ -215,10 +222,10 @@ export default function EmployeeResultsPage() {
                                   onClick={() => handleReport(sim.campaignId)}
                                 >
                                   <Flag className="mr-1 h-3 w-3" />
-                                  {reporting === sim.campaignId ? "..." : "Signaler"}
+                                  {reporting === sim.campaignId ? "..." : (locale === "en" ? "Report" : "Signaler")}
                                 </Button>
                               )}
-                              <Badge className={`shrink-0 border-0 text-[10px] ${res.style}`}>{res.label}</Badge>
+                              <Badge className={`shrink-0 border-0 text-[10px] ${res.style}`}>{actionLabel}</Badge>
                             </div>
                           </div>
                         </motion.div>
@@ -233,11 +240,11 @@ export default function EmployeeResultsPage() {
           <FadeIn delay={0.15}>
             <Card>
               <CardHeader className="pb-3">
-                <CardTitle className="text-sm font-semibold">Scores des quiz</CardTitle>
+                <CardTitle className="text-sm font-semibold">{locale === "en" ? "Quiz scores" : "Scores des quiz"}</CardTitle>
               </CardHeader>
               <CardContent>
                 {completedTrainings.length === 0 ? (
-                  <p className="py-8 text-center text-sm text-muted-foreground">Aucun quiz complété</p>
+                  <p className="py-8 text-center text-sm text-muted-foreground">{locale === "en" ? "No quiz completed" : "Aucun quiz complété"}</p>
                 ) : (
                   <div className="space-y-3">
                     {completedTrainings.map((quiz, i) => (
@@ -257,7 +264,7 @@ export default function EmployeeResultsPage() {
                         <Progress value={quiz.quizScore || 0} className="mt-2 h-2" />
                         {quiz.completedAt && (
                           <p className="mt-1 text-[10px] text-muted-foreground">
-                            {new Date(quiz.completedAt).toLocaleDateString("fr-FR")}
+                            {new Date(quiz.completedAt).toLocaleDateString(dateLocale)}
                           </p>
                         )}
                       </motion.div>
