@@ -109,9 +109,16 @@ function getActivityIcon(action: string) {
   }
 }
 
-function timeAgo(dateStr: string) {
+function timeAgo(dateStr: string, locale: string = "fr") {
   const diff = Date.now() - new Date(dateStr).getTime();
   const mins = Math.floor(diff / 60000);
+  if (locale === "en") {
+    if (mins < 60) return `${mins} min ago`;
+    const hours = Math.floor(mins / 60);
+    if (hours < 24) return `${hours}h ago`;
+    const days = Math.floor(hours / 24);
+    return `${days}d ago`;
+  }
   if (mins < 60) return `Il y a ${mins} min`;
   const hours = Math.floor(mins / 60);
   if (hours < 24) return `Il y a ${hours}h`;
@@ -136,7 +143,7 @@ function LoadingSkeleton() {
 }
 
 export default function DashboardPage() {
-  const { t } = useTranslation();
+  const { t, locale } = useTranslation();
   const { data, loading } = useApi<DashboardData>("/api/dashboard");
   const { data: empData } = useApi<EmployeesData>("/api/employees");
   const { data: campData } = useApi<CampaignsData>("/api/campaigns");
@@ -292,7 +299,7 @@ export default function DashboardPage() {
                         <XAxis type="number" tick={{ fill: "var(--muted-foreground)", fontSize: 12 }} />
                         <YAxis dataKey="name" type="category" width={85} tick={{ fill: "var(--muted-foreground)", fontSize: 11 }} />
                         <Tooltip contentStyle={{ backgroundColor: "var(--card)", border: "1px solid var(--border)", borderRadius: "12px", fontSize: "12px", color: "var(--foreground)" }} />
-                        <Bar dataKey="riskScore" radius={[0, 6, 6, 0]} name="Score de risque">
+                        <Bar dataKey="riskScore" radius={[0, 6, 6, 0]} name={locale === "en" ? "Risk score" : "Score de risque"}>
                           {data.deptRisk.map((entry, index) => (
                             <Cell key={`cell-${index}`} fill={getBarColor(entry.avgRisk)} />
                           ))}
@@ -334,7 +341,7 @@ export default function DashboardPage() {
                           <span className="text-muted-foreground">{activity.description}</span>
                         </p>
                       </div>
-                      <span className="shrink-0 text-[11px] text-muted-foreground">{timeAgo(activity.createdAt)}</span>
+                      <span className="shrink-0 text-[11px] text-muted-foreground">{timeAgo(activity.createdAt, locale)}</span>
                     </div>
                   );
                 })}
