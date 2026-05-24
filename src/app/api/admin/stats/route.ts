@@ -29,6 +29,7 @@ export async function GET() {
         _count: { select: { users: true, phishingCampaigns: true } },
       },
       orderBy: { createdAt: "desc" },
+      take: 50,
     }),
   ]);
 

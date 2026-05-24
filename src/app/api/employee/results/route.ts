@@ -21,7 +21,7 @@ export async function GET() {
     orderBy: { updatedAt: "desc" },
   });
 
-  // Phishing results
+  // Phishing results (last 50)
   const phishingResults = await db.phishingResult.findMany({
     where: { userId: user.id },
     include: {
@@ -30,6 +30,7 @@ export async function GET() {
       },
     },
     orderBy: { createdAt: "desc" },
+    take: 50,
   });
 
   // Activity logs

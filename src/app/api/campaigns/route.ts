@@ -18,6 +18,7 @@ export async function GET() {
   const campaigns = await db.phishingCampaign.findMany({
     where: { organizationId: orgId },
     orderBy: { createdAt: "desc" },
+    take: 50,
     include: {
       _count: { select: { results: true } },
     },

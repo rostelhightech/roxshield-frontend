@@ -14,12 +14,13 @@ export async function GET() {
     return NextResponse.json({ leaderboard: [], currentUser: null });
   }
 
-  // Get all employees in the same organization
+  // Get employees in the same organization (top 100 for performance)
   const employees = await db.user.findMany({
     where: {
       organizationId: user.organizationId,
       role: { in: ["EMPLOYEE", "ADMIN"] },
     },
+    take: 100,
     select: {
       id: true,
       name: true,

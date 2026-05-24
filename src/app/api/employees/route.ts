@@ -31,8 +31,8 @@ export async function GET(request: NextRequest) {
   if (!orgId) return NextResponse.json({ error: "Aucune organisation" }, { status: 400 });
 
   const { searchParams } = new URL(request.url);
-  const search = searchParams.get("search") || "";
-  const department = searchParams.get("department") || "";
+  const search = sanitize(searchParams.get("search") || "").slice(0, 100);
+  const department = sanitize(searchParams.get("department") || "").slice(0, 100);
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any -- Prisma dynamic where
   const where: any = { organizationId: orgId };
