@@ -8,8 +8,11 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Combobox } from "@/components/ui/combobox";
+import { PhoneInput } from "@/components/ui/phone-input";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { LanguageSwitcher } from "@/components/language-switcher";
+import { COUNTRIES } from "@/lib/constants";
 import { Footer } from "@/components/footer";
 import { FadeIn, StaggerContainer, StaggerItem, GlowCard } from "@/components/motion";
 import { AnimatedCounter } from "@/components/animated-counter";
@@ -44,6 +47,15 @@ export default function LandingPage() {
   const [selectedPlan, setSelectedPlan] = useState("");
   const [devisSent, setDevisSent] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [devisPhone, setDevisPhone] = useState("");
+  const [devisCountry, setDevisCountry] = useState("");
+
+  const countryOpts = COUNTRIES.map((c) => ({
+    value: c.name,
+    label: c.name,
+    icon: c.flag,
+    sub: c.dial,
+  }));
 
   const features = featureIcons.map((icon, i) => ({
     icon,
@@ -624,9 +636,9 @@ export default function LandingPage() {
                   name: (form.querySelector("#devis-name") as HTMLInputElement).value,
                   email: (form.querySelector("#devis-email") as HTMLInputElement).value,
                   organization: (form.querySelector("#devis-org") as HTMLInputElement).value,
-                  phone: (form.querySelector("#devis-phone") as HTMLInputElement).value,
+                  phone: devisPhone,
                   teamSize: (form.querySelector("#devis-employees") as HTMLInputElement).value + " employees",
-                  country: (form.querySelector("#devis-country") as HTMLInputElement).value,
+                  country: devisCountry,
                   message: `[Plan: ${selectedPlan}] ${(form.querySelector("#devis-message") as HTMLTextAreaElement).value}`,
                 };
                 try {
@@ -656,8 +668,8 @@ export default function LandingPage() {
                   <Input id="devis-org" placeholder="Nom de votre entreprise" required />
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="devis-phone">{locale === "en" ? "Phone (WhatsApp)" : "Téléphone (WhatsApp)"}</Label>
-                  <Input id="devis-phone" type="tel" placeholder="+221 77 000 00 00" />
+                  <Label>{locale === "en" ? "Phone (WhatsApp)" : "Téléphone (WhatsApp)"}</Label>
+                  <PhoneInput value={devisPhone} onChange={setDevisPhone} placeholder="77 000 00 00" />
                 </div>
               </div>
               <div className="grid gap-4 sm:grid-cols-2">
@@ -666,8 +678,14 @@ export default function LandingPage() {
                   <Input id="devis-employees" type="number" placeholder="50" required />
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="devis-country">{locale === "en" ? "Country" : "Pays"}</Label>
-                  <Input id="devis-country" placeholder={locale === "en" ? "Senegal" : "Sénégal"} />
+                  <Label>{locale === "en" ? "Country" : "Pays"}</Label>
+                  <Combobox
+                    options={countryOpts}
+                    value={devisCountry}
+                    onChange={setDevisCountry}
+                    placeholder={locale === "en" ? "Select..." : "Sélectionner..."}
+                    searchPlaceholder={locale === "en" ? "Search..." : "Rechercher..."}
+                  />
                 </div>
               </div>
               <div className="space-y-2">

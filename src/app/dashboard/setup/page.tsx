@@ -23,6 +23,20 @@ import {
   Upload,
 } from "lucide-react";
 import { toast } from "sonner";
+import { Combobox } from "@/components/ui/combobox";
+import { COUNTRIES, SECTORS } from "@/lib/constants";
+
+const countryOptions = COUNTRIES.map((c) => ({
+  value: c.name,
+  label: c.name,
+  icon: c.flag,
+  sub: c.dial,
+}));
+
+const sectorOptions = SECTORS.map((s) => ({
+  value: s,
+  label: s,
+}));
 
 const steps = [
   { id: "org", label: "Organisation", icon: Building2 },
@@ -276,18 +290,23 @@ export default function SetupPage() {
                     <div className="grid gap-4 sm:grid-cols-2">
                       <div className="space-y-2">
                         <Label className="text-xs">Pays</Label>
-                        <Input
-                          placeholder="Ex: Sénégal"
+                        <Combobox
+                          options={countryOptions}
                           value={orgCountry}
-                          onChange={(e) => setOrgCountry(e.target.value)}
+                          onChange={setOrgCountry}
+                          placeholder="Sélectionner un pays..."
+                          searchPlaceholder="Rechercher un pays..."
                         />
                       </div>
                       <div className="space-y-2">
                         <Label className="text-xs">Secteur d&apos;activité</Label>
-                        <Input
-                          placeholder="Ex: Services financiers"
+                        <Combobox
+                          options={sectorOptions}
                           value={orgSector}
-                          onChange={(e) => setOrgSector(e.target.value)}
+                          onChange={setOrgSector}
+                          placeholder="Sélectionner un secteur..."
+                          searchPlaceholder="Rechercher..."
+                          allowCustom
                         />
                       </div>
                     </div>
