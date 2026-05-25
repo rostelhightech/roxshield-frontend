@@ -72,30 +72,24 @@ export default function LandingPage() {
     {
       name: "Starter",
       price: "7 500 FCFA",
-      priceNote: locale === "en" ? "/user/month" : "/utilisateur/mois",
-      description: locale === "en" ? "SMB 10-50 employees" : "PME 10-50 employes",
-      features: locale === "en"
-        ? ["Unlimited phishing simulations", "Admin dashboard + risk score", "Monthly reports", "Email support"]
-        : ["Simulations phishing illimitees", "Dashboard admin + score de risque", "Rapports mensuels", "Support email"],
+      priceNote: t("landing.plan.perUser"),
+      description: t("landing.plan.starter.desc"),
+      features: [t("landing.plan.starter.f1"), t("landing.plan.starter.f2"), t("landing.plan.starter.f3"), t("landing.plan.starter.f4")],
     },
     {
       name: "Business",
       price: "12 000 FCFA",
-      priceNote: locale === "en" ? "/user/month" : "/utilisateur/mois",
-      description: locale === "en" ? "Companies 51-200 employees" : "Entreprises 51-200 employes",
+      priceNote: t("landing.plan.perUser"),
+      description: t("landing.plan.business.desc"),
       popular: true,
-      features: locale === "en"
-        ? ["Everything in Starter +", "AI risk profile detection", "Advanced simulations", "Weekly reports", "Priority support (24h)"]
-        : ["Tout Starter +", "IA detection profils a risque", "Simulations avancees", "Rapports hebdomadaires", "Support prioritaire (24h)"],
+      features: [t("landing.plan.business.f1"), t("landing.plan.business.f2"), t("landing.plan.business.f3"), t("landing.plan.business.f4"), t("landing.plan.business.f5")],
     },
     {
       name: "Enterprise",
-      price: locale === "en" ? "Custom" : "Sur devis",
+      price: t("landing.plan.enterprise.price"),
       priceNote: "",
-      description: locale === "en" ? "Large organizations 200+" : "Grandes structures 200+",
-      features: locale === "en"
-        ? ["Everything in Business +", "Multi-org (holding, subsidiaries)", "Custom API & integrations", "Dedicated account manager", "Guaranteed SLA"]
-        : ["Tout Business +", "Multi-organisations (holding, filiales)", "API & integrations personnalisees", "Account manager dedie", "SLA garanti"],
+      description: t("landing.plan.enterprise.desc"),
+      features: [t("landing.plan.enterprise.f1"), t("landing.plan.enterprise.f2"), t("landing.plan.enterprise.f3"), t("landing.plan.enterprise.f4"), t("landing.plan.enterprise.f5")],
     },
   ];
 
@@ -229,9 +223,9 @@ export default function LandingPage() {
           </FadeIn>
           <FadeIn delay={0.4}>
             <div className="mt-12 flex flex-wrap items-center justify-center gap-8 text-sm text-muted-foreground">
-              <span className="flex items-center gap-2"><Building2 className="h-4 w-4" />{locale === "en" ? "Companies & Schools" : "Entreprises & Écoles"}</span>
-              <span className="flex items-center gap-2"><Shield className="h-4 w-4" />{locale === "en" ? "Human cybersecurity" : "Cybersécurité humaine"}</span>
-              <span className="flex items-center gap-2"><Globe className="h-4 w-4" />{locale === "en" ? "African context" : "Contexte africain"}</span>
+              <span className="flex items-center gap-2"><Building2 className="h-4 w-4" />{t("landing.badge.companies")}</span>
+              <span className="flex items-center gap-2"><Shield className="h-4 w-4" />{t("landing.badge.cyber")}</span>
+              <span className="flex items-center gap-2"><Globe className="h-4 w-4" />{t("landing.badge.africa")}</span>
             </div>
           </FadeIn>
           <FadeIn delay={0.5}>
@@ -239,19 +233,19 @@ export default function LandingPage() {
               <div className="grid grid-cols-2 gap-6 sm:grid-cols-4">
                 <div className="text-center">
                   <p className="text-2xl font-bold text-rht-violet-light">99.9%</p>
-                  <p className="mt-1 text-[11px] text-muted-foreground">{locale === "en" ? "Uptime SLA" : "Disponibilité SLA"}</p>
+                  <p className="mt-1 text-[11px] text-muted-foreground">{t("landing.trust.uptime")}</p>
                 </div>
                 <div className="text-center">
                   <p className="text-2xl font-bold text-cyber-green">AES-256</p>
-                  <p className="mt-1 text-[11px] text-muted-foreground">{locale === "en" ? "Data encryption" : "Chiffrement des données"}</p>
+                  <p className="mt-1 text-[11px] text-muted-foreground">{t("landing.trust.encryption")}</p>
                 </div>
                 <div className="text-center">
                   <p className="text-2xl font-bold text-rht-orange">SOC 2</p>
-                  <p className="mt-1 text-[11px] text-muted-foreground">{locale === "en" ? "Compliant infra" : "Infrastructure conforme"}</p>
+                  <p className="mt-1 text-[11px] text-muted-foreground">{t("landing.trust.compliant")}</p>
                 </div>
                 <div className="text-center">
                   <p className="text-2xl font-bold text-foreground">RGPD</p>
-                  <p className="mt-1 text-[11px] text-muted-foreground">{locale === "en" ? "Privacy compliant" : "Conforme RGPD"}</p>
+                  <p className="mt-1 text-[11px] text-muted-foreground">{t("landing.trust.privacy")}</p>
                 </div>
               </div>
             </div>
@@ -305,7 +299,7 @@ export default function LandingPage() {
                     <item.icon className="h-7 w-7 text-white" />
                   </motion.div>
                   <span className="mb-2 block text-xs font-bold uppercase tracking-widest text-muted-foreground/40">
-                    {locale === "en" ? "Step" : "Étape"} {item.step}
+                    {t("landing.stepLabel")} {item.step}
                   </span>
                   <h3 className="mb-2 text-lg font-semibold">{item.title}</h3>
                   <p className="text-sm leading-relaxed text-muted-foreground">{item.description}</p>
@@ -443,7 +437,7 @@ export default function LandingPage() {
             <div className="mt-8 text-center">
               <Link href="/pricing">
                 <Button variant="ghost" className="text-rht-violet-light hover:text-rht-violet">
-                  {locale === "en" ? "See all plans including Campus" : "Voir tous les plans dont Campus"}
+                  {t("landing.plan.seeAll")}
                   <ArrowRight className="ml-2 h-4 w-4" />
                 </Button>
               </Link>
@@ -472,7 +466,7 @@ export default function LandingPage() {
                 quoteFr: "En 3 mois, notre taux de clic sur les emails de phishing est passé de 45% à 12%. Impressionnant.",
                 quoteEn: "In 3 months, our phishing email click rate dropped from 45% to 12%. Impressive.",
                 name: "Fatou Sow",
-                role: locale === "en" ? "CIO, Banque Atlantique Senegal" : "DSI, Banque Atlantique Sénégal",
+                role: t("landing.testimonial.role1"),
                 initials: "FS",
               },
               {
@@ -486,7 +480,7 @@ export default function LandingPage() {
                 quoteFr: "RoxShield nous a permis d'identifier nos départements les plus vulnérables et de cibler les formations.",
                 quoteEn: "RoxShield helped us identify our most vulnerable departments and target training accordingly.",
                 name: "Amina Diallo",
-                role: locale === "en" ? "HR Director, Port Autonome de Dakar" : "DRH, Port Autonome de Dakar",
+                role: t("landing.testimonial.role3"),
                 initials: "AD",
               },
             ].map((testimonial, i) => (
@@ -518,48 +512,14 @@ export default function LandingPage() {
         <div className="mx-auto max-w-3xl px-4">
           <FadeIn>
             <h2 className="text-center text-2xl font-bold tracking-tight sm:text-3xl">
-              {locale === "en" ? "Frequently Asked Questions" : "Questions fréquentes"}
+              {t("landing.faq.title")}
             </h2>
           </FadeIn>
           <div className="mt-10 space-y-4">
-            {[
-              {
-                q: locale === "en" ? "How long does deployment take?" : "Combien de temps pour le déploiement ?",
-                a: locale === "en"
-                  ? "RoxShield can be operational within 48 hours. No technical work is required on your end — we handle everything."
-                  : "RoxShield peut être opérationnel en 48 heures. Aucun travail technique n'est requis de votre côté — nous gérons tout.",
-              },
-              {
-                q: locale === "en" ? "Do you offer a free trial?" : "Offrez-vous un essai gratuit ?",
-                a: locale === "en"
-                  ? "Yes! We offer a 14-day free pilot with up to 20 employees. No credit card required."
-                  : "Oui ! Nous offrons un pilote gratuit de 14 jours avec jusqu'à 20 employés. Pas de carte bancaire requise.",
-              },
-              {
-                q: locale === "en" ? "Is the content adapted for Africa?" : "Le contenu est-il adapté à l'Afrique ?",
-                a: locale === "en"
-                  ? "Absolutely. Our phishing templates include Mobile Money scams, local banking scenarios, and context-specific social engineering attacks."
-                  : "Absolument. Nos templates de phishing incluent les arnaques Mobile Money, les scénarios bancaires locaux et les attaques d'ingénierie sociale contextualisées.",
-              },
-              {
-                q: locale === "en" ? "Which languages are supported?" : "Quelles langues sont supportées ?",
-                a: locale === "en"
-                  ? "The platform is fully available in French and English. More languages are coming soon."
-                  : "La plateforme est entièrement disponible en français et anglais. D'autres langues arrivent bientôt.",
-              },
-              {
-                q: locale === "en" ? "How do phishing simulations work?" : "Comment fonctionnent les simulations de phishing ?",
-                a: locale === "en"
-                  ? "You choose templates, target departments, and schedule campaigns. Employees receive realistic simulated emails. Those who click are instantly redirected to a training page. You track results in real-time."
-                  : "Vous choisissez les templates, ciblez les départements et planifiez les campagnes. Les employés reçoivent des emails simulés réalistes. Ceux qui cliquent sont redirigés vers une page de formation. Vous suivez les résultats en temps réel.",
-              },
-              {
-                q: locale === "en" ? "Is employee data secure?" : "Les données des employés sont-elles sécurisées ?",
-                a: locale === "en"
-                  ? "Yes. All data is encrypted (TLS 1.3 + AES-256), hosted on SOC 2 compliant infrastructure, with role-based access controls."
-                  : "Oui. Toutes les données sont chiffrées (TLS 1.3 + AES-256), hébergées sur une infrastructure conforme SOC 2, avec des contrôles d'accès basés sur les rôles.",
-              },
-            ].map((faq, i) => (
+            {[1, 2, 3, 4, 5, 6].map((n) => ({
+              q: t(`landing.faq.q${n}` as any),
+              a: t(`landing.faq.a${n}` as any),
+            })).map((faq, i) => (
               <FadeIn key={i} delay={i * 0.05}>
                 <details className="group rounded-xl border p-4 transition-colors hover:bg-accent/30 [&[open]]:bg-accent/30">
                   <summary className="flex cursor-pointer items-center justify-between text-sm font-medium">
@@ -596,7 +556,7 @@ export default function LandingPage() {
               <Link href="/demo">
                 <motion.div whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.98 }} className="inline-block">
                   <Button size="lg" className="h-12 rounded-full bg-gradient-to-r from-rht-orange to-rht-orange-light px-8 text-base font-semibold text-white glow-orange hover:opacity-90">
-                    {locale === "en" ? "Book a demo" : "Réserver une démo"}
+                    {t("landing.cta.bookDemo")}
                     <ArrowRight className="ml-2 h-4 w-4" />
                   </Button>
                 </motion.div>
@@ -671,7 +631,7 @@ export default function LandingPage() {
                   <Input id="devis-org" placeholder="Nom de votre entreprise" required />
                 </div>
                 <div className="space-y-2">
-                  <Label>{locale === "en" ? "Phone (WhatsApp)" : "Téléphone (WhatsApp)"}</Label>
+                  <Label>{t("landing.devis.phone")}</Label>
                   <PhoneInput value={devisPhone} onChange={setDevisPhone} placeholder="77 000 00 00" />
                 </div>
               </div>
@@ -681,23 +641,23 @@ export default function LandingPage() {
                   <Input id="devis-employees" type="number" placeholder="50" required />
                 </div>
                 <div className="space-y-2">
-                  <Label>{locale === "en" ? "Country" : "Pays"}</Label>
+                  <Label>{t("landing.devis.country")}</Label>
                   <Combobox
                     options={countryOpts}
                     value={devisCountry}
                     onChange={setDevisCountry}
-                    placeholder={locale === "en" ? "Select..." : "Sélectionner..."}
-                    searchPlaceholder={locale === "en" ? "Search..." : "Rechercher..."}
+                    placeholder={t("landing.devis.selectPlaceholder")}
+                    searchPlaceholder={t("landing.devis.searchPlaceholder")}
                   />
                 </div>
               </div>
               <div className="space-y-2">
-                <Label htmlFor="devis-message">{locale === "en" ? "Message (optional)" : "Message (optionnel)"}</Label>
+                <Label htmlFor="devis-message">{t("landing.devis.message")}</Label>
                 <textarea
                   id="devis-message"
                   rows={3}
                   className="w-full rounded-lg border border-border bg-background px-3 py-2 text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring"
-                  placeholder={locale === "en" ? "Tell us about your needs..." : "Décrivez-nous vos besoins..."}
+                  placeholder={t("landing.devis.messagePlaceholder")}
                 />
               </div>
               <Button type="submit" className="w-full bg-gradient-to-r from-rht-orange to-rht-orange-light text-white hover:opacity-90">
@@ -705,7 +665,7 @@ export default function LandingPage() {
                 {t("landing.devis.submit")}
               </Button>
               <p className="text-center text-[11px] text-muted-foreground">
-                {locale === "en" ? "We'll get back to you within 24 hours" : "Nous vous recontactons sous 24 heures"}
+                {t("landing.devis.responseTime")}
               </p>
             </form>
           )}

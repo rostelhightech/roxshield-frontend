@@ -16,7 +16,7 @@ export const metadata: Metadata = {
     template: "%s | RoxShield",
   },
   description:
-    "Plateforme SaaS de sensibilisation, d'entraînement et de simulation en cybersécurité humaine pour les entreprises africaines. Par Rostel High-Tech.",
+    "Human cybersecurity awareness, training & phishing simulation platform for African businesses. By Rostel High-Tech.",
   manifest: "/manifest.json",
   icons: {
     icon: "/favicon.svg",
@@ -28,12 +28,12 @@ export const metadata: Metadata = {
     title: "RoxShield",
   },
   keywords: [
-    "cybersécurité",
+    "cybersecurity",
     "phishing",
-    "formation",
+    "training",
     "simulation",
-    "sécurité humaine",
-    "Afrique",
+    "human security",
+    "Africa",
     "SaaS",
     "Rostel High-Tech",
   ],
@@ -46,13 +46,13 @@ export const metadata: Metadata = {
     siteName: "RoxShield",
     title: "RoxShield — Human Security Training Platform",
     description:
-      "Formez vos équipes, simulez des attaques de phishing et suivez le score de risque humain de votre organisation.",
+      "Train your teams, simulate phishing attacks & track your organization's human risk score.",
   },
   twitter: {
     card: "summary_large_image",
     title: "RoxShield",
     description:
-      "Plateforme de cybersécurité humaine pour les entreprises africaines.",
+      "Human cybersecurity platform for African businesses.",
   },
   robots: {
     index: true,
@@ -66,7 +66,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="fr" className={`${montserrat.variable} h-full antialiased`} suppressHydrationWarning>
+    <html lang="en" className={`${montserrat.variable} h-full antialiased`} suppressHydrationWarning>
       <head>
         <meta name="theme-color" content="#9c1e99" />
         <meta name="apple-mobile-web-app-capable" content="yes" />

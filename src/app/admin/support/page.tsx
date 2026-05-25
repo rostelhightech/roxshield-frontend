@@ -17,12 +17,12 @@ import { motion } from "framer-motion";
 import { useTranslation } from "@/lib/i18n";
 
 // Données de support (fonctionnalité à venir — pas de modèle DB)
-const supportTickets = [
-  { id: "TK-001", subject: "Impossible de lancer une campagne", org: "TechDakar SARL", date: "22 mai 2025", priority: "high", status: "open" },
-  { id: "TK-002", subject: "Export PDF ne fonctionne pas", org: "SenFinance SA", date: "21 mai 2025", priority: "medium", status: "in-progress" },
-  { id: "TK-003", subject: "Demande d'ajout de module personnalisé", org: "EduCampus Thiès", date: "20 mai 2025", priority: "low", status: "resolved" },
-  { id: "TK-004", subject: "Erreur lors de l'import CSV employés", org: "TechDakar SARL", date: "19 mai 2025", priority: "medium", status: "open" },
-  { id: "TK-005", subject: "Question sur la facturation Enterprise", org: "SenFinance SA", date: "18 mai 2025", priority: "low", status: "resolved" },
+const supportTicketsMeta = [
+  { id: "TK-001", subjectKey: "support.ticket1" as const, org: "TechDakar SARL", date: "2025-05-22", priority: "high", status: "open" },
+  { id: "TK-002", subjectKey: "support.ticket2" as const, org: "SenFinance SA", date: "2025-05-21", priority: "medium", status: "in-progress" },
+  { id: "TK-003", subjectKey: "support.ticket3" as const, org: "EduCampus Thiès", date: "2025-05-20", priority: "low", status: "resolved" },
+  { id: "TK-004", subjectKey: "support.ticket4" as const, org: "TechDakar SARL", date: "2025-05-19", priority: "medium", status: "open" },
+  { id: "TK-005", subjectKey: "support.ticket5" as const, org: "SenFinance SA", date: "2025-05-18", priority: "low", status: "resolved" },
 ];
 
 const priorityKeys = {
@@ -50,7 +50,14 @@ const statusStyleMap = {
 };
 
 export default function SupportPage() {
-  const { t } = useTranslation();
+  const { t, locale } = useTranslation();
+
+  const supportTickets = supportTicketsMeta.map((tk) => ({
+    ...tk,
+    subject: t(tk.subjectKey),
+    dateDisplay: new Date(tk.date).toLocaleDateString(locale === "en" ? "en-US" : "fr-FR", { day: "numeric", month: "short", year: "numeric" }),
+  }));
+
   const open = supportTickets.filter((tk) => tk.status === "open").length;
   const inProgress = supportTickets.filter((tk) => tk.status === "in-progress").length;
   const resolved = supportTickets.filter((tk) => tk.status === "resolved").length;
@@ -136,7 +143,7 @@ export default function SupportPage() {
                               <Building2 className="h-3 w-3" />
                               <span>{ticket.org}</span>
                               <span>·</span>
-                              <span>{ticket.date}</span>
+                              <span>{ticket.dateDisplay}</span>
                             </div>
                           </div>
                         </div>

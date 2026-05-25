@@ -1076,6 +1076,94 @@ const dictionaries = {
     "tour.back": "Retour",
     "tour.next": "Suivant",
     "tour.done": "Terminé !",
+
+    // 404 Not Found
+    "notFound.message": "Cette page n'existe pas ou a été déplacée.",
+    "notFound.hint": "Vérifiez l'URL ou retournez à l'accueil.",
+    "notFound.backHome": "Retour à l'accueil",
+    "notFound.login": "Se connecter",
+    "notFound.tagline": "Plateforme de sensibilisation cyber",
+
+    // Error page
+    "errorPage.title": "Une erreur est survenue",
+    "errorPage.message": "Quelque chose ne s'est pas passé comme prévu. Réessayez ou revenez à l'accueil.",
+    "errorPage.retry": "Réessayer",
+    "errorPage.home": "Accueil",
+    "errorPage.tagline": "Plateforme de sensibilisation cyber",
+
+    // Support tickets (mock data)
+    "support.ticket1": "Impossible de lancer une campagne",
+    "support.ticket2": "Export PDF ne fonctionne pas",
+    "support.ticket3": "Demande d'ajout de module personnalisé",
+    "support.ticket4": "Erreur lors de l'import CSV employés",
+    "support.ticket5": "Question sur la facturation Enterprise",
+
+    // Landing page — hero badges
+    "landing.badge.companies": "Entreprises & Écoles",
+    "landing.badge.cyber": "Cybersécurité humaine",
+    "landing.badge.africa": "Contexte africain",
+
+    // Landing page — trust bar
+    "landing.trust.uptime": "Disponibilité SLA",
+    "landing.trust.encryption": "Chiffrement des données",
+    "landing.trust.compliant": "Infrastructure conforme",
+    "landing.trust.privacy": "Conforme RGPD",
+
+    // Landing page — step label
+    "landing.stepLabel": "Étape",
+
+    // Landing page — plans
+    "landing.plan.perUser": "/utilisateur/mois",
+    "landing.plan.starter.desc": "PME 10-50 employés",
+    "landing.plan.starter.f1": "Simulations phishing illimitées",
+    "landing.plan.starter.f2": "Dashboard admin + score de risque",
+    "landing.plan.starter.f3": "Rapports mensuels",
+    "landing.plan.starter.f4": "Support email",
+    "landing.plan.business.desc": "Entreprises 51-200 employés",
+    "landing.plan.business.f1": "Tout Starter +",
+    "landing.plan.business.f2": "IA détection profils à risque",
+    "landing.plan.business.f3": "Simulations avancées",
+    "landing.plan.business.f4": "Rapports hebdomadaires",
+    "landing.plan.business.f5": "Support prioritaire (24h)",
+    "landing.plan.enterprise.price": "Sur devis",
+    "landing.plan.enterprise.desc": "Grandes structures 200+",
+    "landing.plan.enterprise.f1": "Tout Business +",
+    "landing.plan.enterprise.f2": "Multi-organisations (holding, filiales)",
+    "landing.plan.enterprise.f3": "API & intégrations personnalisées",
+    "landing.plan.enterprise.f4": "Account manager dédié",
+    "landing.plan.enterprise.f5": "SLA garanti",
+    "landing.plan.seeAll": "Voir tous les plans dont Campus",
+
+    // Landing page — FAQ
+    "landing.faq.title": "Questions fréquentes",
+    "landing.faq.q1": "Combien de temps pour le déploiement ?",
+    "landing.faq.a1": "RoxShield peut être opérationnel en 48 heures. Aucun travail technique n'est requis de votre côté — nous gérons tout.",
+    "landing.faq.q2": "Offrez-vous un essai gratuit ?",
+    "landing.faq.a2": "Oui ! Nous offrons un pilote gratuit de 14 jours avec jusqu'à 20 employés. Pas de carte bancaire requise.",
+    "landing.faq.q3": "Le contenu est-il adapté à l'Afrique ?",
+    "landing.faq.a3": "Absolument. Nos templates de phishing incluent les arnaques Mobile Money, les scénarios bancaires locaux et les attaques d'ingénierie sociale contextualisées.",
+    "landing.faq.q4": "Quelles langues sont supportées ?",
+    "landing.faq.a4": "La plateforme est entièrement disponible en français et anglais. D'autres langues arrivent bientôt.",
+    "landing.faq.q5": "Comment fonctionnent les simulations de phishing ?",
+    "landing.faq.a5": "Vous choisissez les templates, ciblez les départements et planifiez les campagnes. Les employés reçoivent des emails simulés réalistes. Ceux qui cliquent sont redirigés vers une page de formation. Vous suivez les résultats en temps réel.",
+    "landing.faq.q6": "Les données des employés sont-elles sécurisées ?",
+    "landing.faq.a6": "Oui. Toutes les données sont chiffrées (TLS 1.3 + AES-256), hébergées sur une infrastructure conforme SOC 2, avec des contrôles d'accès basés sur les rôles.",
+
+    // Landing page — CTA
+    "landing.cta.bookDemo": "Réserver une démo",
+
+    // Landing page — testimonials roles
+    "landing.testimonial.role1": "DSI, Banque Atlantique Sénégal",
+    "landing.testimonial.role3": "DRH, Port Autonome de Dakar",
+
+    // Landing page — devis form
+    "landing.devis.phone": "Téléphone (WhatsApp)",
+    "landing.devis.country": "Pays",
+    "landing.devis.selectPlaceholder": "Sélectionner...",
+    "landing.devis.searchPlaceholder": "Rechercher...",
+    "landing.devis.message": "Message (optionnel)",
+    "landing.devis.messagePlaceholder": "Décrivez-nous vos besoins...",
+    "landing.devis.responseTime": "Nous vous recontactons sous 24 heures",
   },
   en: {
     // Common
@@ -2148,6 +2236,94 @@ const dictionaries = {
     "tour.back": "Back",
     "tour.next": "Next",
     "tour.done": "Done!",
+
+    // 404 Not Found
+    "notFound.message": "This page doesn't exist or has been moved.",
+    "notFound.hint": "Check the URL or go back to the home page.",
+    "notFound.backHome": "Back to home",
+    "notFound.login": "Sign in",
+    "notFound.tagline": "Human security awareness platform",
+
+    // Error page
+    "errorPage.title": "Something went wrong",
+    "errorPage.message": "Something didn't go as expected. Try again or go back to the home page.",
+    "errorPage.retry": "Try again",
+    "errorPage.home": "Home",
+    "errorPage.tagline": "Human security awareness platform",
+
+    // Support tickets (mock data)
+    "support.ticket1": "Unable to launch a campaign",
+    "support.ticket2": "PDF export not working",
+    "support.ticket3": "Request to add custom module",
+    "support.ticket4": "Error during CSV employee import",
+    "support.ticket5": "Question about Enterprise billing",
+
+    // Landing page — hero badges
+    "landing.badge.companies": "Companies & Schools",
+    "landing.badge.cyber": "Human cybersecurity",
+    "landing.badge.africa": "African context",
+
+    // Landing page — trust bar
+    "landing.trust.uptime": "Uptime SLA",
+    "landing.trust.encryption": "Data encryption",
+    "landing.trust.compliant": "Compliant infra",
+    "landing.trust.privacy": "Privacy compliant",
+
+    // Landing page — step label
+    "landing.stepLabel": "Step",
+
+    // Landing page — plans
+    "landing.plan.perUser": "/user/month",
+    "landing.plan.starter.desc": "SMB 10-50 employees",
+    "landing.plan.starter.f1": "Unlimited phishing simulations",
+    "landing.plan.starter.f2": "Admin dashboard + risk score",
+    "landing.plan.starter.f3": "Monthly reports",
+    "landing.plan.starter.f4": "Email support",
+    "landing.plan.business.desc": "Companies 51-200 employees",
+    "landing.plan.business.f1": "Everything in Starter +",
+    "landing.plan.business.f2": "AI risk profile detection",
+    "landing.plan.business.f3": "Advanced simulations",
+    "landing.plan.business.f4": "Weekly reports",
+    "landing.plan.business.f5": "Priority support (24h)",
+    "landing.plan.enterprise.price": "Custom",
+    "landing.plan.enterprise.desc": "Large organizations 200+",
+    "landing.plan.enterprise.f1": "Everything in Business +",
+    "landing.plan.enterprise.f2": "Multi-org (holding, subsidiaries)",
+    "landing.plan.enterprise.f3": "Custom API & integrations",
+    "landing.plan.enterprise.f4": "Dedicated account manager",
+    "landing.plan.enterprise.f5": "Guaranteed SLA",
+    "landing.plan.seeAll": "See all plans including Campus",
+
+    // Landing page — FAQ
+    "landing.faq.title": "Frequently Asked Questions",
+    "landing.faq.q1": "How long does deployment take?",
+    "landing.faq.a1": "RoxShield can be operational within 48 hours. No technical work is required on your end — we handle everything.",
+    "landing.faq.q2": "Do you offer a free trial?",
+    "landing.faq.a2": "Yes! We offer a 14-day free pilot with up to 20 employees. No credit card required.",
+    "landing.faq.q3": "Is the content adapted for Africa?",
+    "landing.faq.a3": "Absolutely. Our phishing templates include Mobile Money scams, local banking scenarios, and context-specific social engineering attacks.",
+    "landing.faq.q4": "Which languages are supported?",
+    "landing.faq.a4": "The platform is fully available in French and English. More languages are coming soon.",
+    "landing.faq.q5": "How do phishing simulations work?",
+    "landing.faq.a5": "You choose templates, target departments, and schedule campaigns. Employees receive realistic simulated emails. Those who click are instantly redirected to a training page. You track results in real-time.",
+    "landing.faq.q6": "Is employee data secure?",
+    "landing.faq.a6": "Yes. All data is encrypted (TLS 1.3 + AES-256), hosted on SOC 2 compliant infrastructure, with role-based access controls.",
+
+    // Landing page — CTA
+    "landing.cta.bookDemo": "Book a demo",
+
+    // Landing page — testimonials roles
+    "landing.testimonial.role1": "CIO, Banque Atlantique Senegal",
+    "landing.testimonial.role3": "HR Director, Port Autonome de Dakar",
+
+    // Landing page — devis form
+    "landing.devis.phone": "Phone (WhatsApp)",
+    "landing.devis.country": "Country",
+    "landing.devis.selectPlaceholder": "Select...",
+    "landing.devis.searchPlaceholder": "Search...",
+    "landing.devis.message": "Message (optional)",
+    "landing.devis.messagePlaceholder": "Tell us about your needs...",
+    "landing.devis.responseTime": "We'll get back to you within 24 hours",
   },
 } as const;
 
