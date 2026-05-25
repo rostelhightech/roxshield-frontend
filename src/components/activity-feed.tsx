@@ -14,12 +14,14 @@ import {
 } from "lucide-react";
 import { useTranslation } from "@/lib/i18n";
 
-interface Activity {
+type ActivityType = "phishing_detected" | "training_completed" | "badge_earned" | "risk_alert" | "user_joined" | "simulation_sent";
+
+interface ActivityMeta {
   id: number;
-  type: "phishing_detected" | "training_completed" | "badge_earned" | "risk_alert" | "user_joined" | "simulation_sent";
+  type: ActivityType;
   user: string;
-  description: string;
-  time: string;
+  descKey: string;
+  timeKey: string;
 }
 
 const iconMap = {
@@ -31,19 +33,21 @@ const iconMap = {
   simulation_sent: { icon: Mail, color: "text-rht-violet-light", bg: "bg-rht-violet/10" },
 };
 
-const activities: Activity[] = [
-  { id: 1, type: "phishing_detected", user: "Fatou Sow", description: "A signalé un email suspect", time: "Il y a 2 min" },
-  { id: 2, type: "training_completed", user: "Amadou Diallo", description: "Module « Phishing avancé » terminé", time: "Il y a 8 min" },
-  { id: 3, type: "badge_earned", user: "Marie Ndiaye", description: "Badge « Œil de lynx » obtenu", time: "Il y a 15 min" },
-  { id: 4, type: "simulation_sent", user: "Système", description: "Campagne « Faux virement » lancée (23 cibles)", time: "Il y a 25 min" },
-  { id: 5, type: "risk_alert", user: "Ibrahima Ba", description: "Score de risque passé au-dessus de 70%", time: "Il y a 32 min" },
-  { id: 6, type: "training_completed", user: "Aïssatou Fall", description: "Module « Mots de passe » terminé", time: "Il y a 45 min" },
-  { id: 7, type: "user_joined", user: "Ousmane Gueye", description: "A rejoint la plateforme", time: "Il y a 1h" },
-  { id: 8, type: "phishing_detected", user: "Khady Diop", description: "A signalé un SMS frauduleux", time: "Il y a 1h30" },
+const activitiesMeta: ActivityMeta[] = [
+  { id: 1, type: "phishing_detected", user: "Fatou Sow", descKey: "activity.reportedSuspicious", timeKey: "activity.ago2min" },
+  { id: 2, type: "training_completed", user: "Amadou Diallo", descKey: "activity.completedModule", timeKey: "activity.ago8min" },
+  { id: 3, type: "badge_earned", user: "Marie Ndiaye", descKey: "activity.badgeEarned", timeKey: "activity.ago15min" },
+  { id: 4, type: "simulation_sent", user: "Système", descKey: "activity.campaignLaunched", timeKey: "activity.ago25min" },
+  { id: 5, type: "risk_alert", user: "Ibrahima Ba", descKey: "activity.riskAbove70", timeKey: "activity.ago32min" },
+  { id: 6, type: "training_completed", user: "Aïssatou Fall", descKey: "activity.completedPasswords", timeKey: "activity.ago45min" },
+  { id: 7, type: "user_joined", user: "Ousmane Gueye", descKey: "activity.joinedPlatform", timeKey: "activity.ago1h" },
+  { id: 8, type: "phishing_detected", user: "Khady Diop", descKey: "activity.reportedSMS", timeKey: "activity.ago1h30" },
 ];
 
+type DK = Parameters<ReturnType<typeof useTranslation>["t"]>[0];
+
 export function ActivityFeed() {
-  const { locale } = useTranslation();
+  const { t } = useTranslation();
 
   return (
     <Card>
@@ -51,16 +55,16 @@ export function ActivityFeed() {
         <div className="flex items-center justify-between">
           <CardTitle className="flex items-center gap-2 text-sm font-semibold">
             <PulseDot color="green" size="md" />
-            {locale === "en" ? "Recent Activity" : "Activité récente"}
+            {t("activity.title")}
           </CardTitle>
           <Badge variant="outline" className="text-[10px]">
-            {locale === "en" ? "Live" : "En direct"}
+            {t("activity.live")}
           </Badge>
         </div>
       </CardHeader>
       <CardContent>
         <div className="space-y-1">
-          {activities.map((activity, i) => {
+          {activitiesMeta.map((activity, i) => {
             const config = iconMap[activity.type];
             const Icon = config.icon;
             return (
@@ -77,9 +81,9 @@ export function ActivityFeed() {
                 <div className="flex-1 min-w-0">
                   <p className="text-sm">
                     <span className="font-medium">{activity.user}</span>
-                    <span className="text-muted-foreground"> — {activity.description}</span>
+                    <span className="text-muted-foreground"> — {t(activity.descKey as DK)}</span>
                   </p>
-                  <p className="text-[11px] text-muted-foreground mt-0.5">{activity.time}</p>
+                  <p className="text-[11px] text-muted-foreground mt-0.5">{t(activity.timeKey as DK)}</p>
                 </div>
               </motion.div>
             );

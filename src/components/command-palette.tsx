@@ -41,19 +41,19 @@ export function CommandPalette() {
   const items: CommandItem[] = useMemo(
     () => [
       // Admin Client
-      { id: "dashboard", label: t("nav.dashboard"), href: "/dashboard", icon: LayoutDashboard, section: "Admin Client", keywords: ["accueil", "home", "vue"] },
-      { id: "employees", label: t("nav.employees"), href: "/dashboard/employees", icon: Users, section: "Admin Client", keywords: ["team", "equipe", "utilisateurs"] },
-      { id: "training", label: t("nav.training"), href: "/dashboard/training", icon: GraduationCap, section: "Admin Client", keywords: ["modules", "cours", "apprendre"] },
-      { id: "simulations", label: t("nav.simulations"), href: "/dashboard/simulations", icon: Crosshair, section: "Admin Client", keywords: ["phishing", "campagne", "test"] },
-      { id: "reports", label: t("nav.reports"), href: "/dashboard/reports", icon: FileBarChart, section: "Admin Client", keywords: ["analytics", "statistiques", "données"] },
-      { id: "settings", label: t("nav.settings"), href: "/dashboard/settings", icon: Settings, section: "Admin Client", keywords: ["config", "organisation", "paramètres"] },
-      { id: "profile", label: t("nav.profile"), href: "/dashboard/profile", icon: UserCircle, section: "Admin Client", keywords: ["compte", "account", "mon profil"] },
+      { id: "dashboard", label: t("nav.dashboard"), href: "/dashboard", icon: LayoutDashboard, section: t("command.sectionAdmin"), keywords: ["accueil", "home", "vue"] },
+      { id: "employees", label: t("nav.employees"), href: "/dashboard/employees", icon: Users, section: t("command.sectionAdmin"), keywords: ["team", "equipe", "utilisateurs"] },
+      { id: "training", label: t("nav.training"), href: "/dashboard/training", icon: GraduationCap, section: t("command.sectionAdmin"), keywords: ["modules", "cours", "apprendre"] },
+      { id: "simulations", label: t("nav.simulations"), href: "/dashboard/simulations", icon: Crosshair, section: t("command.sectionAdmin"), keywords: ["phishing", "campagne", "test"] },
+      { id: "reports", label: t("nav.reports"), href: "/dashboard/reports", icon: FileBarChart, section: t("command.sectionAdmin"), keywords: ["analytics", "statistiques", "données"] },
+      { id: "settings", label: t("nav.settings"), href: "/dashboard/settings", icon: Settings, section: t("command.sectionAdmin"), keywords: ["config", "organisation", "paramètres"] },
+      { id: "profile", label: t("nav.profile"), href: "/dashboard/profile", icon: UserCircle, section: t("command.sectionAdmin"), keywords: ["compte", "account", "mon profil"] },
       // Employee
-      { id: "emp-space", label: t("nav.mySpace"), href: "/employee", icon: Shield, section: "Employé", keywords: ["espace", "tableau de bord"] },
-      { id: "emp-training", label: t("nav.training"), href: "/employee/training", icon: GraduationCap, section: "Employé", keywords: ["cours", "modules"] },
-      { id: "emp-results", label: t("nav.results"), href: "/employee/results", icon: BarChart3, section: "Employé", keywords: ["scores", "performances"] },
-      { id: "emp-badges", label: t("nav.badges"), href: "/employee/badges", icon: Award, section: "Employé", keywords: ["récompenses", "rewards"] },
-      { id: "emp-leaderboard", label: t("nav.leaderboard"), href: "/employee/leaderboard", icon: Trophy, section: "Employé", keywords: ["classement", "ranking", "position"] },
+      { id: "emp-space", label: t("nav.mySpace"), href: "/employee", icon: Shield, section: t("command.sectionEmployee"), keywords: ["espace", "tableau de bord"] },
+      { id: "emp-training", label: t("nav.training"), href: "/employee/training", icon: GraduationCap, section: t("command.sectionEmployee"), keywords: ["cours", "modules"] },
+      { id: "emp-results", label: t("nav.results"), href: "/employee/results", icon: BarChart3, section: t("command.sectionEmployee"), keywords: ["scores", "performances"] },
+      { id: "emp-badges", label: t("nav.badges"), href: "/employee/badges", icon: Award, section: t("command.sectionEmployee"), keywords: ["récompenses", "rewards"] },
+      { id: "emp-leaderboard", label: t("nav.leaderboard"), href: "/employee/leaderboard", icon: Trophy, section: t("command.sectionEmployee"), keywords: ["classement", "ranking", "position"] },
     ],
     [t]
   );
@@ -148,7 +148,7 @@ export function CommandPalette() {
         <div className="max-h-[320px] overflow-y-auto p-2">
           {filtered.length === 0 ? (
             <div className="py-8 text-center text-sm text-muted-foreground">
-              Aucun résultat
+              {t("command.noResults")}
             </div>
           ) : (
             Array.from(grouped.entries()).map(([section, sectionItems]) => (
@@ -185,9 +185,9 @@ export function CommandPalette() {
         </div>
 
         <div className="flex items-center justify-between border-t px-4 py-2 text-[10px] text-muted-foreground">
-          <span>↑↓ naviguer</span>
-          <span>↵ ouvrir</span>
-          <span>esc fermer</span>
+          <span>↑↓ {t("command.navigate")}</span>
+          <span>↵ {t("command.open")}</span>
+          <span>esc {t("command.close")}</span>
         </div>
       </DialogContent>
     </Dialog>

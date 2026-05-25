@@ -157,7 +157,7 @@ export function Header({ title }: { title: string }) {
                   {notifications.length === 0 ? (
                     <div className="py-8 text-center">
                       <Bell className="mx-auto mb-2 h-6 w-6 text-muted-foreground/30" />
-                      <p className="text-sm text-muted-foreground">Aucune notification</p>
+                      <p className="text-sm text-muted-foreground">{t("notifications.none")}</p>
                     </div>
                   ) : (
                     notifications.map((notif, i) => {

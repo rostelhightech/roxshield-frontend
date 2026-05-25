@@ -14,7 +14,7 @@ export function SessionTimeout() {
   const [countdown, setCountdown] = useState(120);
   const [loggingOut, setLoggingOut] = useState(false);
   const [timeoutMinutes, setTimeoutMinutes] = useState<number | null>(null);
-  const { locale } = useTranslation();
+  const { t } = useTranslation();
   const pathname = usePathname();
   const timeoutRef = useRef<ReturnType<typeof setTimeout>>(null);
   const warningRef = useRef<ReturnType<typeof setTimeout>>(null);
@@ -129,15 +129,13 @@ export function SessionTimeout() {
         <div className="flex items-center gap-2 text-destructive">
           <Clock className="h-5 w-5" />
           <h2 className="text-lg font-semibold">
-            {locale === "en" ? "Session Expiring" : "Session expirante"}
+            {t("session.expiring")}
           </h2>
         </div>
 
         <div className="mt-4 space-y-4">
           <p className="text-sm text-muted-foreground">
-            {locale === "en"
-              ? "Your session will expire due to inactivity."
-              : "Votre session va expirer pour cause d'inactivité."}
+            {t("session.inactivityMsg")}
           </p>
 
           <div className="flex items-center justify-center rounded-xl bg-destructive/10 py-4">
@@ -154,14 +152,14 @@ export function SessionTimeout() {
               disabled={loggingOut}
             >
               <LogOut className="h-4 w-4" />
-              {locale === "en" ? "Log out" : "Déconnexion"}
+              {t("session.logout")}
             </Button>
             <Button
               className="flex-1 bg-gradient-to-r from-rht-violet to-rht-violet-light text-white hover:opacity-90"
               onClick={handleStayConnected}
               disabled={loggingOut}
             >
-              {locale === "en" ? "Stay connected" : "Rester connecté"}
+              {t("session.stayConnected")}
             </Button>
           </div>
         </div>

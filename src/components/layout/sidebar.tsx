@@ -57,10 +57,10 @@ export function Sidebar() {
     { label: t("nav.training"), href: "/dashboard/training", icon: GraduationCap },
     { label: t("nav.simulations"), href: "/dashboard/simulations", icon: Crosshair },
     { label: "GRC", href: "/dashboard/grc", icon: ShieldCheck },
-    { label: locale === "en" ? "Email Security" : "Securite Email", href: "/dashboard/email-security", icon: Mail },
-    { label: locale === "en" ? "Passwords" : "Mots de passe", href: "/dashboard/passwords", icon: KeyRound },
+    { label: t("nav.emailSecurity"), href: "/dashboard/email-security", icon: Mail },
+    { label: t("nav.passwords"), href: "/dashboard/passwords", icon: KeyRound },
     { label: "Shadow IT", href: "/dashboard/shadow-it", icon: MessageSquareLock },
-    { label: locale === "en" ? "Encryption" : "Chiffrement", href: "/dashboard/encryption", icon: Lock },
+    { label: t("nav.encryption"), href: "/dashboard/encryption", icon: Lock },
     { label: t("nav.reports"), href: "/dashboard/reports", icon: FileBarChart },
     { label: t("nav.settings"), href: "/dashboard/settings", icon: Settings },
   ];
@@ -128,7 +128,7 @@ export function Sidebar() {
 
         {!collapsed && (
           <div className="px-4 py-3">
-            <p className="text-[10px] font-medium uppercase tracking-widest opacity-30">Organisation</p>
+            <p className="text-[10px] font-medium uppercase tracking-widest opacity-30">{t("nav.organization")}</p>
             <p className="mt-0.5 text-sm font-medium">{orgName}</p>
           </div>
         )}

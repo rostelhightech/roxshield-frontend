@@ -22,65 +22,52 @@ import {
   UserCircle,
   Award,
 } from "lucide-react";
+import { useTranslation } from "@/lib/i18n";
 
 type OnboardingRole = "super-admin" | "admin-client" | "employee";
 
-interface OnboardingStep {
+interface StepMeta {
   icon: React.ElementType;
-  title: string;
-  description: string;
-  features: string[];
+  titleKey: string;
+  descKey: string;
+  featureKeys: string[];
   color: string;
   bgColor: string;
 }
 
-const stepsByRole: Record<OnboardingRole, OnboardingStep[]> = {
+type DK = Parameters<ReturnType<typeof useTranslation>["t"]>[0];
+
+const stepsByRole: Record<OnboardingRole, StepMeta[]> = {
   "super-admin": [
     {
       icon: Crown,
-      title: "Bienvenue sur RoxShield",
-      description: "En tant que Super Admin Rostel High-Tech, vous avez une vue complète sur toutes les organisations clientes de la plateforme.",
-      features: [
-        "Tableau de bord global de la plateforme",
-        "Suivi du MRR et des abonnements",
-        "Métriques de performance en temps réel",
-      ],
+      titleKey: "onboarding.sa.step1.title",
+      descKey: "onboarding.sa.step1.desc",
+      featureKeys: ["onboarding.sa.step1.f1", "onboarding.sa.step1.f2", "onboarding.sa.step1.f3"],
       color: "text-rht-orange",
       bgColor: "bg-rht-orange/10",
     },
     {
       icon: Building2,
-      title: "Gestion des organisations",
-      description: "Gérez toutes vos organisations clientes depuis un seul endroit. Ajoutez, modifiez et suivez chaque organisation.",
-      features: [
-        "Vue détaillée par organisation",
-        "Filtrage par plan (Starter, Business, Enterprise)",
-        "Score de risque et progression par org",
-      ],
+      titleKey: "onboarding.sa.step2.title",
+      descKey: "onboarding.sa.step2.desc",
+      featureKeys: ["onboarding.sa.step2.f1", "onboarding.sa.step2.f2", "onboarding.sa.step2.f3"],
       color: "text-rht-orange",
       bgColor: "bg-rht-orange/10",
     },
     {
       icon: HeadphonesIcon,
-      title: "Support centralisé",
-      description: "Suivez et gérez les demandes de support de toutes les organisations depuis l'interface de ticketing.",
-      features: [
-        "Tickets classés par priorité",
-        "Temps de réponse moyen",
-        "Satisfaction client",
-      ],
+      titleKey: "onboarding.sa.step3.title",
+      descKey: "onboarding.sa.step3.desc",
+      featureKeys: ["onboarding.sa.step3.f1", "onboarding.sa.step3.f2", "onboarding.sa.step3.f3"],
       color: "text-rht-orange",
       bgColor: "bg-rht-orange/10",
     },
     {
       icon: Rocket,
-      title: "Vous êtes prêt !",
-      description: "Votre tableau de bord Super Admin est configuré. Explorez la plateforme et commencez à piloter RoxShield.",
-      features: [
-        "Consultez le MRR et les tendances",
-        "Vérifiez les organisations actives",
-        "Traitez les tickets de support en attente",
-      ],
+      titleKey: "onboarding.sa.step4.title",
+      descKey: "onboarding.sa.step4.desc",
+      featureKeys: ["onboarding.sa.step4.f1", "onboarding.sa.step4.f2", "onboarding.sa.step4.f3"],
       color: "text-rht-orange",
       bgColor: "bg-rht-orange/10",
     },
@@ -88,61 +75,41 @@ const stepsByRole: Record<OnboardingRole, OnboardingStep[]> = {
   "admin-client": [
     {
       icon: Shield,
-      title: "Bienvenue sur RoxShield",
-      description: "Votre plateforme de sensibilisation à la cybersécurité. Protégez votre organisation contre les cybermenaces humaines.",
-      features: [
-        "Dashboard avec score de risque global",
-        "Vue en temps réel de la sécurité",
-        "Indicateurs clés de performance",
-      ],
+      titleKey: "onboarding.ac.step1.title",
+      descKey: "onboarding.ac.step1.desc",
+      featureKeys: ["onboarding.ac.step1.f1", "onboarding.ac.step1.f2", "onboarding.ac.step1.f3"],
       color: "text-rht-violet-light",
       bgColor: "bg-rht-violet/10",
     },
     {
       icon: Users,
-      title: "Gérez vos employés",
-      description: "Ajoutez vos collaborateurs et suivez leur progression individuelle en matière de cybersécurité.",
-      features: [
-        "Profils avec score de risque individuel",
-        "Statut de formation par employé",
-        "Identification des profils à risque",
-      ],
+      titleKey: "onboarding.ac.step2.title",
+      descKey: "onboarding.ac.step2.desc",
+      featureKeys: ["onboarding.ac.step2.f1", "onboarding.ac.step2.f2", "onboarding.ac.step2.f3"],
       color: "text-rht-violet-light",
       bgColor: "bg-rht-violet/10",
     },
     {
       icon: GraduationCap,
-      title: "Formations interactives",
-      description: "Des modules de formation adaptés au contexte africain pour sensibiliser vos équipes aux menaces cyber.",
-      features: [
-        "Modules phishing, ingénierie sociale, MFA...",
-        "Quiz interactifs avec scores",
-        "Certificat de sensibilisation",
-      ],
+      titleKey: "onboarding.ac.step3.title",
+      descKey: "onboarding.ac.step3.desc",
+      featureKeys: ["onboarding.ac.step3.f1", "onboarding.ac.step3.f2", "onboarding.ac.step3.f3"],
       color: "text-rht-violet-light",
       bgColor: "bg-rht-violet/10",
     },
     {
       icon: Target,
-      title: "Simulations de phishing",
-      description: "Lancez des campagnes de simulation réalistes pour tester la vigilance de vos équipes.",
-      features: [
-        "Faux emails personnalisés",
-        "Résultats détaillés par campagne",
-        "Taux de clic et de signalement",
-      ],
+      titleKey: "onboarding.ac.step4.title",
+      descKey: "onboarding.ac.step4.desc",
+      featureKeys: ["onboarding.ac.step4.f1", "onboarding.ac.step4.f2", "onboarding.ac.step4.f3"],
       color: "text-rht-violet-light",
       bgColor: "bg-rht-violet/10",
     },
     {
       icon: Rocket,
-      title: "Vous êtes prêt !",
-      description: "Votre espace administrateur est configuré. Commencez à sécuriser votre organisation dès maintenant.",
-      features: [
-        "Consultez votre score de risque",
-        "Inscrivez vos premiers employés",
-        "Lancez une première campagne de simulation",
-      ],
+      titleKey: "onboarding.ac.step5.title",
+      descKey: "onboarding.ac.step5.desc",
+      featureKeys: ["onboarding.ac.step5.f1", "onboarding.ac.step5.f2", "onboarding.ac.step5.f3"],
       color: "text-rht-violet-light",
       bgColor: "bg-rht-violet/10",
     },
@@ -150,49 +117,33 @@ const stepsByRole: Record<OnboardingRole, OnboardingStep[]> = {
   employee: [
     {
       icon: UserCircle,
-      title: "Bienvenue sur RoxShield",
-      description: "Votre organisation utilise RoxShield pour renforcer la vigilance de ses équipes face aux cybermenaces.",
-      features: [
-        "Espace personnel dédié",
-        "Score de risque individuel",
-        "Classement parmi vos collègues",
-      ],
+      titleKey: "onboarding.emp.step1.title",
+      descKey: "onboarding.emp.step1.desc",
+      featureKeys: ["onboarding.emp.step1.f1", "onboarding.emp.step1.f2", "onboarding.emp.step1.f3"],
       color: "text-cyber-green",
       bgColor: "bg-cyber-green/10",
     },
     {
       icon: GraduationCap,
-      title: "Vos formations",
-      description: "Suivez des modules courts et interactifs pour apprendre à détecter les menaces cyber du quotidien.",
-      features: [
-        "Modules de 5 à 10 minutes",
-        "Cas pratiques adaptés à l'Afrique",
-        "Quiz pour valider vos connaissances",
-      ],
+      titleKey: "onboarding.emp.step2.title",
+      descKey: "onboarding.emp.step2.desc",
+      featureKeys: ["onboarding.emp.step2.f1", "onboarding.emp.step2.f2", "onboarding.emp.step2.f3"],
       color: "text-cyber-green",
       bgColor: "bg-cyber-green/10",
     },
     {
       icon: Award,
-      title: "Badges et certificat",
-      description: "Gagnez des badges en progressant et obtenez votre certificat de sensibilisation RoxShield.",
-      features: [
-        "Badges pour chaque étape franchie",
-        "Certificat après tous les modules",
-        "Classement pour se challenger",
-      ],
+      titleKey: "onboarding.emp.step3.title",
+      descKey: "onboarding.emp.step3.desc",
+      featureKeys: ["onboarding.emp.step3.f1", "onboarding.emp.step3.f2", "onboarding.emp.step3.f3"],
       color: "text-cyber-green",
       bgColor: "bg-cyber-green/10",
     },
     {
       icon: Sparkles,
-      title: "C'est parti !",
-      description: "Votre espace est prêt. Commencez votre première formation et protégez-vous contre les cybermenaces.",
-      features: [
-        "Démarrez le premier module",
-        "Consultez votre score de risque",
-        "Gagnez vos premiers badges",
-      ],
+      titleKey: "onboarding.emp.step4.title",
+      descKey: "onboarding.emp.step4.desc",
+      featureKeys: ["onboarding.emp.step4.f1", "onboarding.emp.step4.f2", "onboarding.emp.step4.f3"],
       color: "text-cyber-green",
       bgColor: "bg-cyber-green/10",
     },
@@ -224,6 +175,7 @@ export function Onboarding({
   role: OnboardingRole;
   onComplete: () => void;
 }) {
+  const { t } = useTranslation();
   const [step, setStep] = useState(0);
   const steps = stepsByRole[role];
   const theme = roleTheme[role];
@@ -269,7 +221,7 @@ export function Onboarding({
             onClick={onComplete}
             className="text-xs text-muted-foreground transition-colors hover:text-foreground"
           >
-            Passer l'introduction
+            {t("onboarding.skip")}
           </button>
         </div>
 
@@ -298,22 +250,22 @@ export function Onboarding({
                 <Icon className={`h-10 w-10 ${current.color}`} />
               </motion.div>
 
-              <h2 className="text-center text-xl font-bold">{current.title}</h2>
+              <h2 className="text-center text-xl font-bold">{t(current.titleKey as DK)}</h2>
               <p className="mt-2 text-center text-sm text-muted-foreground leading-relaxed">
-                {current.description}
+                {t(current.descKey as DK)}
               </p>
 
               <div className="mt-6 space-y-3">
-                {current.features.map((feature, i) => (
+                {current.featureKeys.map((fKey, i) => (
                   <motion.div
-                    key={feature}
+                    key={fKey}
                     initial={{ opacity: 0, x: 20 }}
                     animate={{ opacity: 1, x: 0 }}
                     transition={{ delay: 0.2 + i * 0.1 }}
                     className="flex items-center gap-3 rounded-xl border p-3"
                   >
                     <CheckCircle className={`h-4 w-4 shrink-0 ${current.color}`} />
-                    <span className="text-sm">{feature}</span>
+                    <span className="text-sm">{t(fKey as DK)}</span>
                   </motion.div>
                 ))}
               </div>
@@ -326,7 +278,7 @@ export function Onboarding({
                     className="gap-2"
                   >
                     <ArrowLeft className="h-4 w-4" />
-                    Précédent
+                    {t("onboarding.previous")}
                   </Button>
                 ) : (
                   <div />
@@ -339,12 +291,12 @@ export function Onboarding({
                   >
                     {isLast ? (
                       <>
-                        Commencer
+                        {t("onboarding.start")}
                         <Rocket className="h-4 w-4" />
                       </>
                     ) : (
                       <>
-                        Suivant
+                        {t("onboarding.next")}
                         <ArrowRight className="h-4 w-4" />
                       </>
                     )}

@@ -5,7 +5,7 @@ import { Shield } from "lucide-react";
 import { useTranslation } from "@/lib/i18n";
 
 export function Footer() {
-  const { locale } = useTranslation();
+  const { t } = useTranslation();
 
   return (
     <footer className="border-t bg-secondary/50 py-8">
@@ -21,19 +21,19 @@ export function Footer() {
             href="/about"
             className="text-xs text-muted-foreground transition-colors hover:text-foreground"
           >
-            {locale === "en" ? "About" : "A propos"}
+            {t("footer.about")}
           </Link>
           <Link
             href="/pricing"
             className="text-xs text-muted-foreground transition-colors hover:text-foreground"
           >
-            {locale === "en" ? "Pricing" : "Tarifs"}
+            {t("footer.pricing")}
           </Link>
           <Link
             href="/demo"
             className="text-xs text-muted-foreground transition-colors hover:text-foreground"
           >
-            {locale === "en" ? "Demo" : "Demo"}
+            {t("footer.demo")}
           </Link>
           <Link
             href="/contact"
@@ -45,7 +45,7 @@ export function Footer() {
             href="/legal"
             className="text-xs text-muted-foreground transition-colors hover:text-foreground"
           >
-            {locale === "en" ? "Legal" : "Mentions legales"}
+            {t("footer.legal")}
           </Link>
         </div>
         <div className="flex flex-col items-center gap-1 sm:items-end">
@@ -58,8 +58,7 @@ export function Footer() {
             www.rostelhightech.com
           </a>
           <p className="text-[11px] text-muted-foreground">
-            &copy; 2026 Rostel High-Tech.{" "}
-            {locale === "en" ? "All rights reserved." : "Tous droits reserves."}
+            &copy; 2026 Rostel High-Tech. {t("footer.rights")}
           </p>
         </div>
       </div>

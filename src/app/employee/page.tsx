@@ -131,7 +131,7 @@ export default function EmployeeDashboardPage() {
     { month: "M-3", score: Math.min(100, currentScore + 15) },
     { month: "M-2", score: Math.min(100, currentScore + 10) },
     { month: "M-1", score: Math.min(100, currentScore + 5) },
-    { month: locale === "en" ? "Now" : "Actuel", score: currentScore },
+    { month: t("chart.now"), score: currentScore },
   ];
 
   const difficultyLabel = (d: string) => {
@@ -349,7 +349,7 @@ export default function EmployeeDashboardPage() {
                         fontSize: "12px",
                         color: "var(--foreground)",
                       }}
-                      formatter={(value) => [`${value}%`, locale === "en" ? "Risk score" : "Score de risque"]}
+                      formatter={(value) => [`${value}%`, t("dashboard.riskScoreLabel")]}
                     />
                     <Area type="monotone" dataKey="score" stroke="#25d366" fill="url(#empGrad)" strokeWidth={2} />
                   </AreaChart>

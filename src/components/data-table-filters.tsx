@@ -34,7 +34,7 @@ export function DataTableFilters({
   totalResults,
 }: DataTableFiltersProps) {
   const [showFilters, setShowFilters] = useState(false);
-  const { locale } = useTranslation();
+  const { t } = useTranslation();
 
   const activeCount = Object.values(activeFilters).reduce((acc, v) => acc + v.length, 0);
 
@@ -57,7 +57,7 @@ export function DataTableFilters({
         <div className="relative flex-1">
           <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
           <Input
-            placeholder={searchPlaceholder ?? (locale === "en" ? "Search..." : "Rechercher...")}
+            placeholder={searchPlaceholder ?? t("filters.search")}
             value={searchValue}
             onChange={(e) => onSearchChange(e.target.value)}
             className="pl-9"
@@ -70,7 +70,7 @@ export function DataTableFilters({
           className="gap-2"
         >
           <SlidersHorizontal className="h-4 w-4" />
-          <span className="hidden sm:inline">{locale === "en" ? "Filters" : "Filtres"}</span>
+          <span className="hidden sm:inline">{t("filters.filters")}</span>
           {activeCount > 0 && (
             <Badge className="ml-1 h-5 w-5 rounded-full p-0 text-[10px]">{activeCount}</Badge>
           )}
@@ -78,7 +78,7 @@ export function DataTableFilters({
         {(activeCount > 0 || searchValue) && (
           <Button variant="ghost" size="sm" onClick={clearAll} className="gap-1 text-muted-foreground">
             <X className="h-3 w-3" />
-            {locale === "en" ? "Clear" : "Effacer"}
+            {t("filters.clear")}
           </Button>
         )}
       </div>
@@ -126,7 +126,7 @@ export function DataTableFilters({
 
       {totalResults !== undefined && (
         <p className="text-xs text-muted-foreground">
-          {totalResults} {locale === "en" ? "result(s)" : "résultat(s)"}
+          {totalResults} {t("filters.results")}
         </p>
       )}
     </div>

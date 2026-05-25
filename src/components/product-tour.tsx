@@ -22,7 +22,7 @@ interface ProductTourProps {
 export function ProductTour({ steps, storageKey, onComplete }: ProductTourProps) {
   const [currentStep, setCurrentStep] = useState(0);
   const [visible, setVisible] = useState(false);
-  const { locale } = useTranslation();
+  const { t } = useTranslation();
 
   useEffect(() => {
     const dismissed = localStorage.getItem(`tour_${storageKey}`);
@@ -128,10 +128,10 @@ export function ProductTour({ steps, storageKey, onComplete }: ProductTourProps)
                     className="gap-1"
                   >
                     <ArrowLeft className="h-3 w-3" />
-                    {locale === "en" ? "Back" : "Retour"}
+                    {t("tour.back")}
                   </Button>
                   <Button size="sm" onClick={handleNext} className="gap-1">
-                    {isLast ? (locale === "en" ? "Done!" : "Terminé !") : (locale === "en" ? "Next" : "Suivant")}
+                    {isLast ? t("tour.done") : t("tour.next")}
                     {!isLast && <ArrowRight className="h-3 w-3" />}
                   </Button>
                 </div>

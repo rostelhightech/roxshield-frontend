@@ -120,9 +120,7 @@ export default function SimulationsPage() {
         if (launchRes.ok) {
           const result = await launchRes.json();
           setLaunched(true);
-          toast.success(locale === "en"
-            ? `Campaign launched — ${result.sentCount} emails sent`
-            : `Campagne lancée — ${result.sentCount} emails envoyés`);
+          toast.success(`${t("simulations.campaignLaunched")} — ${result.sentCount} ${t("simulations.emailsSent")}`);
         } else {
           const err = await launchRes.json();
           toast.error(err.error || t("common.error"));
