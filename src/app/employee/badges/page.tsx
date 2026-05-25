@@ -91,7 +91,7 @@ export default function BadgesPage() {
                   {stats.earned} / {stats.total} {t("badges.earned")}
                 </h2>
                 <p className="text-sm text-muted-foreground">
-                  {locale === "en" ? "Continue your training and detect threats to unlock new badges" : "Continuez vos formations et détectez les menaces pour débloquer de nouveaux badges"}
+                  {t("badges.continueTraining")}
                 </p>
                 <Progress value={stats.completion} className="mt-3 h-2" />
               </div>
@@ -130,7 +130,7 @@ export default function BadgesPage() {
                           <p className="mt-1 text-xs text-muted-foreground">{badge.description}</p>
                           {badge.earnedAt && (
                             <Badge className="mt-3 border-0 bg-cyber-green/10 text-cyber-green text-[10px]">
-                              {locale === "en" ? "Earned " : "Obtenu le "}{new Date(badge.earnedAt).toLocaleDateString(locale === "en" ? "en-US" : "fr-FR", { day: "numeric", month: "short" })}
+                              {t("badges.earnedOn")} {new Date(badge.earnedAt).toLocaleDateString(locale === "en" ? "en-US" : "fr-FR", { day: "numeric", month: "short" })}
                             </Badge>
                           )}
                         </CardContent>
@@ -163,7 +163,7 @@ export default function BadgesPage() {
                         <h4 className="mt-3 font-semibold text-sm">{badge.name}</h4>
                         <p className="mt-1 text-xs text-muted-foreground">{badge.description}</p>
                         <Badge className="mt-3 border-0 bg-muted text-muted-foreground text-[10px]">
-                          🔒 {locale === "en" ? "Locked" : "Verrouillé"}
+                          🔒 {t("badges.locked")}
                         </Badge>
                       </CardContent>
                     </Card>

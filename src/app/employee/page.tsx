@@ -135,8 +135,7 @@ export default function EmployeeDashboardPage() {
   ];
 
   const difficultyLabel = (d: string) => {
-    if (locale === "en") return d === "BEGINNER" ? "Beginner" : d === "INTERMEDIATE" ? "Intermediate" : "Advanced";
-    return d === "BEGINNER" ? "Débutant" : d === "INTERMEDIATE" ? "Intermédiaire" : "Avancé";
+    return d === "BEGINNER" ? t("status.beginner") : d === "INTERMEDIATE" ? t("status.intermediate") : t("status.advanced");
   };
   const durationLabel = (m: number) => m >= 60 ? `${Math.floor(m / 60)}h${m % 60 > 0 ? m % 60 + "min" : ""}` : `${m} min`;
 

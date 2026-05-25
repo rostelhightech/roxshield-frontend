@@ -17,77 +17,80 @@ import {
   MapPin,
   Mail,
 } from "lucide-react";
+import { useTranslation } from "@/lib/i18n";
 
-const values = [
+const valuesMeta = [
   {
     icon: Shield,
-    title: "Sécurité d'abord",
-    description: "Nous croyons que la première ligne de défense d'une organisation, ce sont ses collaborateurs.",
+    titleKey: "about.value1Title" as const,
+    descKey: "about.value1Desc" as const,
     color: "text-rht-violet-light",
     bg: "bg-rht-violet/10",
   },
   {
     icon: Globe,
-    title: "Pensé pour l'Afrique",
-    description: "Nos scénarios, nos langues et nos cas pratiques sont adaptés aux réalités du continent africain.",
+    titleKey: "about.value2Title" as const,
+    descKey: "about.value2Desc" as const,
     color: "text-rht-orange",
     bg: "bg-rht-orange/10",
   },
   {
     icon: Lightbulb,
-    title: "Innovation continue",
-    description: "IA, gamification, micro-learning — nous utilisons les meilleures technologies pour protéger vos équipes.",
+    titleKey: "about.value3Title" as const,
+    descKey: "about.value3Desc" as const,
     color: "text-cyber-green",
     bg: "bg-cyber-green/10",
   },
   {
     icon: Heart,
-    title: "Impact humain",
-    description: "Nous mesurons notre succès au nombre d'attaques évitées et de collaborateurs formés.",
+    titleKey: "about.value4Title" as const,
+    descKey: "about.value4Desc" as const,
     color: "text-cyber-red",
     bg: "bg-cyber-red/10",
   },
 ];
 
-const team = [
+const teamMeta = [
   {
     name: "Herdy Rostel Youlou",
-    role: "CEO & Fondateur",
+    roleKey: "about.role.ceo" as const,
     initials: "HY",
-    bio: "Fondateur de Rostel High-Tech, passionné par la tech et la protection des entreprises africaines.",
+    bioKey: "about.bio.herdy" as const,
     gradient: "from-rht-orange to-rht-orange-light",
   },
   {
     name: "Aminata Diallo",
-    role: "Head of Product",
+    roleKey: "about.role.product" as const,
     initials: "AD",
-    bio: "Experte en UX et produits SaaS, elle conçoit l'expérience RoxShield.",
+    bioKey: "about.bio.aminata" as const,
     gradient: "from-rht-violet to-rht-violet-light",
   },
   {
-    name: "Kouamé Assi",
-    role: "Lead Engineer",
+    name: "Kouame Assi",
+    roleKey: "about.role.engineer" as const,
     initials: "KA",
-    bio: "Architecte logiciel full-stack, il construit la plateforme de A à Z.",
+    bioKey: "about.bio.kouame" as const,
     gradient: "from-cyber-green/80 to-cyber-green",
   },
   {
     name: "Fatou Sow",
-    role: "Head of Security",
+    roleKey: "about.role.security" as const,
     initials: "FS",
-    bio: "Analyste en sécurité, elle conçoit les scénarios de simulation réalistes.",
+    bioKey: "about.bio.fatou" as const,
     gradient: "from-rht-violet-light to-rht-orange",
   },
 ];
 
-const milestones = [
-  { year: "2021", text: "Fondation de Rostel High-Tech à Dakar, Sénégal" },
-  { year: "2024", text: "Enregistrement officiel et structuration de l'entreprise" },
-  { year: "2025", text: "Lancement de la R&D sur RoxShield" },
-  { year: "2026", text: "Lancement commercial — premiers clients en Afrique francophone" },
+const milestonesMeta = [
+  { year: "2021", textKey: "about.milestone1" as const },
+  { year: "2024", textKey: "about.milestone2" as const },
+  { year: "2025", textKey: "about.milestone3" as const },
+  { year: "2026", textKey: "about.milestone4" as const },
 ];
 
 export default function AboutPage() {
+  const { t } = useTranslation();
+
   return (
     <div className="min-h-screen bg-background">
       {/* Header */}
@@ -104,7 +107,7 @@ export default function AboutPage() {
             <Link href="/">
               <Button variant="ghost" size="sm">
                 <ArrowLeft className="mr-2 h-4 w-4" />
-                Accueil
+                {t("about.home")}
               </Button>
             </Link>
           </div>
@@ -117,17 +120,16 @@ export default function AboutPage() {
         <div className="relative mx-auto max-w-3xl px-4 text-center">
           <FadeIn>
             <Badge variant="outline" className="mb-4 border-rht-violet/30 text-rht-violet-light">
-              À propos
+              {t("about.badge")}
             </Badge>
             <h1 className="text-4xl font-bold tracking-tight">
-              Protéger les entreprises africaines,<br />
+              {t("about.heroTitle1")}<br />
               <span className="bg-gradient-to-r from-rht-violet to-rht-orange bg-clip-text text-transparent">
-                une personne à la fois
+                {t("about.heroTitle2")}
               </span>
             </h1>
             <p className="mx-auto mt-4 max-w-xl text-muted-foreground">
-              RoxShield est né d&apos;un constat : en Afrique, 95% des cyberattaques réussies
-              exploitent le facteur humain. Nous transformons vos employés en bouclier.
+              {t("about.heroDesc")}
             </p>
           </FadeIn>
         </div>
@@ -137,22 +139,21 @@ export default function AboutPage() {
       <section className="border-y bg-secondary/30 py-16">
         <div className="mx-auto max-w-6xl px-4">
           <FadeIn className="mb-10 text-center">
-            <h2 className="text-2xl font-bold">Notre mission</h2>
+            <h2 className="text-2xl font-bold">{t("about.missionTitle")}</h2>
             <p className="mx-auto mt-2 max-w-xl text-muted-foreground">
-              Rendre la cybersécurité humaine accessible, engageante et mesurable
-              pour chaque organisation en Afrique.
+              {t("about.missionDesc")}
             </p>
           </FadeIn>
           <StaggerContainer className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
-            {values.map((v) => (
-              <StaggerItem key={v.title}>
+            {valuesMeta.map((v) => (
+              <StaggerItem key={v.titleKey}>
                 <Card className="h-full transition-all duration-300 hover:border-rht-violet/20">
                   <CardContent className="p-6 text-center">
                     <div className={`mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-xl ${v.bg}`}>
                       <v.icon className={`h-6 w-6 ${v.color}`} />
                     </div>
-                    <h3 className="font-semibold">{v.title}</h3>
-                    <p className="mt-2 text-sm text-muted-foreground">{v.description}</p>
+                    <h3 className="font-semibold">{t(v.titleKey)}</h3>
+                    <p className="mt-2 text-sm text-muted-foreground">{t(v.descKey)}</p>
                   </CardContent>
                 </Card>
               </StaggerItem>
@@ -166,15 +167,15 @@ export default function AboutPage() {
         <div className="mx-auto max-w-6xl px-4">
           <FadeIn className="mb-10 text-center">
             <Badge variant="outline" className="mb-4 border-rht-orange/30 text-rht-orange">
-              Équipe
+              {t("about.teamBadge")}
             </Badge>
-            <h2 className="text-2xl font-bold">Les personnes derrière RoxShield</h2>
+            <h2 className="text-2xl font-bold">{t("about.teamTitle")}</h2>
             <p className="mx-auto mt-2 max-w-xl text-muted-foreground">
-              Une équipe passionnée par la cybersécurité et l&apos;impact technologique en Afrique.
+              {t("about.teamDesc")}
             </p>
           </FadeIn>
           <StaggerContainer className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
-            {team.map((member) => (
+            {teamMeta.map((member) => (
               <StaggerItem key={member.name}>
                 <motion.div whileHover={{ y: -4 }} transition={{ duration: 0.2 }}>
                   <Card className="h-full transition-all duration-300 hover:border-rht-violet/20">
@@ -183,8 +184,8 @@ export default function AboutPage() {
                         {member.initials}
                       </div>
                       <h3 className="font-semibold">{member.name}</h3>
-                      <p className="text-xs text-rht-violet-light">{member.role}</p>
-                      <p className="mt-2 text-sm text-muted-foreground">{member.bio}</p>
+                      <p className="text-xs text-rht-violet-light">{t(member.roleKey)}</p>
+                      <p className="mt-2 text-sm text-muted-foreground">{t(member.bioKey)}</p>
                     </CardContent>
                   </Card>
                 </motion.div>
@@ -198,22 +199,22 @@ export default function AboutPage() {
       <section className="border-y bg-secondary/30 py-16">
         <div className="mx-auto max-w-2xl px-4">
           <FadeIn className="mb-10 text-center">
-            <h2 className="text-2xl font-bold">Notre parcours</h2>
+            <h2 className="text-2xl font-bold">{t("about.timelineTitle")}</h2>
           </FadeIn>
           <div className="space-y-6">
-            {milestones.map((m, i) => (
+            {milestonesMeta.map((m, i) => (
               <FadeIn key={m.year} delay={i * 0.1}>
                 <div className="flex gap-4">
                   <div className="flex flex-col items-center">
                     <div className="flex h-10 w-10 items-center justify-center rounded-full bg-gradient-to-br from-rht-violet to-rht-violet-light text-xs font-bold text-white">
                       {m.year}
                     </div>
-                    {i < milestones.length - 1 && (
+                    {i < milestonesMeta.length - 1 && (
                       <div className="mt-2 h-full w-px bg-border" />
                     )}
                   </div>
                   <div className="flex-1 rounded-xl border p-4">
-                    <p className="text-sm">{m.text}</p>
+                    <p className="text-sm">{t(m.textKey)}</p>
                   </div>
                 </div>
               </FadeIn>
@@ -233,9 +234,9 @@ export default function AboutPage() {
             >
               <Mail className="h-8 w-8 text-white" />
             </motion.div>
-            <h2 className="text-2xl font-bold">Contactez-nous</h2>
+            <h2 className="text-2xl font-bold">{t("about.contactTitle")}</h2>
             <p className="mt-2 text-muted-foreground">
-              Une question, un partenariat, ou simplement envie d&apos;en savoir plus ?
+              {t("about.contactDesc")}
             </p>
             <div className="mt-6 flex flex-col items-center gap-3 sm:flex-row sm:justify-center">
               <div className="flex items-center gap-2 text-sm text-muted-foreground">
@@ -244,14 +245,14 @@ export default function AboutPage() {
               </div>
               <div className="flex items-center gap-2 text-sm text-muted-foreground">
                 <MapPin className="h-4 w-4" />
-                Dakar, Sénégal
+                Dakar, Senegal
               </div>
             </div>
             <div className="mt-6">
               <Link href="/">
                 <motion.div whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.98 }} className="inline-block">
                   <Button size="lg" className="rounded-full bg-gradient-to-r from-rht-orange to-rht-orange-light px-8 text-white hover:opacity-90">
-                    Retour à l&apos;accueil
+                    {t("about.backHome")}
                   </Button>
                 </motion.div>
               </Link>

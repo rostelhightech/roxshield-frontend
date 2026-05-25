@@ -110,7 +110,7 @@ export default function OrganizationsPage() {
 
   return (
     <div>
-      <Header title="Organisations" />
+      <Header title={t("admin.organizations")} />
       <div className="space-y-6 p-6">
         <FadeIn>
           <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">

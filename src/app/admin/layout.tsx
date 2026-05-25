@@ -25,14 +25,16 @@ import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { Badge } from "@/components/ui/badge";
 import { useApi } from "@/hooks/use-api";
+import { useTranslation } from "@/lib/i18n";
 
-const navItems = [
-  { label: "Vue d'ensemble", href: "/admin", icon: LayoutDashboard },
-  { label: "Organisations", href: "/admin/organizations", icon: Building2 },
-  { label: "Support", href: "/admin/support", icon: HeadphonesIcon },
+const navMeta = [
+  { labelKey: "admin.overview" as const, href: "/admin", icon: LayoutDashboard },
+  { labelKey: "admin.organizations" as const, href: "/admin/organizations", icon: Building2 },
+  { labelKey: "admin.supportNav" as const, href: "/admin/support", icon: HeadphonesIcon },
 ];
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
+  const { t } = useTranslation();
   const pathname = usePathname();
   const { data: me } = useApi<{ name: string | null; email: string; organization: { name: string } | null }>("/api/me");
   const [collapsed, setCollapsed] = useState(false);
@@ -126,13 +128,13 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
               <p className="text-[10px] font-medium uppercase tracking-widest opacity-30">Rostel High-Tech</p>
             </div>
             <Badge className="mt-1 border-0 bg-rht-orange/10 text-rht-orange text-[10px]">
-              Plateforme RoxShield
+              {t("admin.platform")}
             </Badge>
           </div>
         )}
 
         <nav className="flex-1 space-y-1 overflow-y-auto px-3 py-2">
-          {navItems.map((item) => {
+          {navMeta.map((item) => {
             const isActive =
               pathname === item.href ||
               (item.href !== "/admin" && pathname.startsWith(item.href));
@@ -147,7 +149,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                 } ${collapsed ? "justify-center" : ""}`}
               >
                 <item.icon className="h-[18px] w-[18px] shrink-0" />
-                {!collapsed && <span>{item.label}</span>}
+                {!collapsed && <span>{t(item.labelKey)}</span>}
               </Link>
             );
           })}
@@ -162,7 +164,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
               className="flex items-center gap-2 rounded-lg px-2 py-1.5 text-xs text-sidebar-foreground/40 transition-colors hover:bg-sidebar-accent hover:text-sidebar-foreground/70"
             >
               <Building2 className="h-3.5 w-3.5" />
-              Vue client{orgName ? ` (${orgName})` : ""}
+              {t("admin.clientView")}{orgName ? ` (${orgName})` : ""}
             </Link>
           </div>
         )}

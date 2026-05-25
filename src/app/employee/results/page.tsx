@@ -87,7 +87,7 @@ export default function EmployeeResultsPage() {
     try {
       const res = await fetch(`/api/campaigns/${campaignId}/report`, { method: "POST" });
       if (res.ok) {
-        toast.success(locale === "en" ? "Email reported! Your risk score has improved." : "Email signalé ! Votre score de risque a été amélioré.");
+        toast.success(t("results.emailReported"));
         await refetch();
       } else {
         const body = await res.json().catch(() => ({}));
@@ -130,25 +130,25 @@ export default function EmployeeResultsPage() {
           {[
             {
               icon: Shield,
-              label: locale === "en" ? "Current risk score" : "Score de risque actuel",
+              label: t("results.currentRiskScore"),
               value: `${stats.riskScore}%`,
-              sub: stats.riskScore <= 30 ? (locale === "en" ? "Safe zone" : "Zone sûre") : stats.riskScore <= 60 ? (locale === "en" ? "Moderate" : "Modéré") : (locale === "en" ? "At risk" : "À risque"),
+              sub: stats.riskScore <= 30 ? t("results.safeZone") : stats.riskScore <= 60 ? t("results.moderate") : t("results.atRisk"),
               bg: "bg-rht-orange/10",
               text: stats.riskScore <= 30 ? "text-cyber-green" : stats.riskScore <= 60 ? "text-rht-orange" : "text-cyber-red",
             },
             {
               icon: Target,
-              label: locale === "en" ? "Simulations detected" : "Simulations détectées",
+              label: t("results.simulationsDetected"),
               value: `${stats.phishingReported}/${stats.phishingTotal}`,
-              sub: `${phishingDetectRate}% ${locale === "en" ? "success rate" : "de réussite"}`,
+              sub: `${phishingDetectRate}% ${t("results.successRate")}`,
               bg: "bg-cyber-green/10",
               text: "text-cyber-green",
             },
             {
               icon: BarChart3,
-              label: locale === "en" ? "Average quiz score" : "Score quiz moyen",
+              label: t("results.avgQuizScore"),
               value: `${stats.avgQuizScore}%`,
-              sub: locale === "en" ? `Over ${stats.trainingsCompleted} module${stats.trainingsCompleted > 1 ? "s" : ""}` : `Sur ${stats.trainingsCompleted} module${stats.trainingsCompleted > 1 ? "s" : ""}`,
+              sub: `${t("results.over")} ${stats.trainingsCompleted} module${stats.trainingsCompleted > 1 ? "s" : ""}`,
               bg: "bg-rht-violet-light/10",
               text: "text-rht-violet-light",
             },
@@ -181,11 +181,11 @@ export default function EmployeeResultsPage() {
           <FadeIn delay={0.1}>
             <Card>
               <CardHeader className="pb-3">
-                <CardTitle className="text-sm font-semibold">{locale === "en" ? "Simulation history" : "Historique des simulations"}</CardTitle>
+                <CardTitle className="text-sm font-semibold">{t("results.simulationHistory")}</CardTitle>
               </CardHeader>
               <CardContent>
                 {phishing.length === 0 ? (
-                  <p className="py-8 text-center text-sm text-muted-foreground">{locale === "en" ? "No simulations received" : "Aucune simulation reçue"}</p>
+                  <p className="py-8 text-center text-sm text-muted-foreground">{t("results.noSimulations")}</p>
                 ) : (
                   <div className="space-y-3">
                     {phishing.map((sim, i) => {
@@ -222,7 +222,7 @@ export default function EmployeeResultsPage() {
                                   onClick={() => handleReport(sim.campaignId)}
                                 >
                                   <Flag className="mr-1 h-3 w-3" />
-                                  {reporting === sim.campaignId ? "..." : (locale === "en" ? "Report" : "Signaler")}
+                                  {reporting === sim.campaignId ? "..." : t("results.report")}
                                 </Button>
                               )}
                               <Badge className={`shrink-0 border-0 text-[10px] ${res.style}`}>{actionLabel}</Badge>
@@ -240,11 +240,11 @@ export default function EmployeeResultsPage() {
           <FadeIn delay={0.15}>
             <Card>
               <CardHeader className="pb-3">
-                <CardTitle className="text-sm font-semibold">{locale === "en" ? "Quiz scores" : "Scores des quiz"}</CardTitle>
+                <CardTitle className="text-sm font-semibold">{t("results.quizScores")}</CardTitle>
               </CardHeader>
               <CardContent>
                 {completedTrainings.length === 0 ? (
-                  <p className="py-8 text-center text-sm text-muted-foreground">{locale === "en" ? "No quiz completed" : "Aucun quiz complété"}</p>
+                  <p className="py-8 text-center text-sm text-muted-foreground">{t("results.noQuiz")}</p>
                 ) : (
                   <div className="space-y-3">
                     {completedTrainings.map((quiz, i) => (

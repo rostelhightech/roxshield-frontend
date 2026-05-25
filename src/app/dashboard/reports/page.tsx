@@ -132,7 +132,7 @@ export default function ReportsPage() {
         }));
 
       generatePdfReport({
-        organizationName: orgData?.name || "Mon Organisation",
+        organizationName: orgData?.name || t("reports.myOrg"),
         date: new Date().toLocaleDateString("fr-FR", { day: "numeric", month: "long", year: "numeric" }),
         avgRiskScore: dashData.avgRiskScore,
         totalEmployees: dashData.totalEmployees,
@@ -146,9 +146,7 @@ export default function ReportsPage() {
         trainingModules: modules.map((m) => ({ title: m.title, progressPercent: m.progress.progressPercent })),
       });
 
-      toast.success(locale === "en"
-        ? "PDF report generated — use 'Save as PDF' in the print dialog"
-        : "Rapport PDF généré — utilisez 'Enregistrer en PDF' dans la boîte d'impression");
+      toast.success(t("reports.pdfGenerated"));
       setExported(true);
       setTimeout(() => setExported(false), 3000);
     } catch {
@@ -159,9 +157,10 @@ export default function ReportsPage() {
   };
 
   const handleCSV = () => {
-    const headers = locale === "en"
-      ? ["Name", "Email", "Department", "Role", "Risk score", "Trainings completed"]
-      : ["Nom", "Email", "Département", "Rôle", "Score de risque", "Formations complétées"];
+    const headers = [
+      t("employees.name"), "Email", t("employees.department"),
+      t("employees.role"), t("employees.riskScore"), t("employees.trainings"),
+    ];
     const rows = employees.map((e) => [
       e.name || "",
       e.email,
@@ -178,7 +177,7 @@ export default function ReportsPage() {
     a.download = `roxshield-employes-${new Date().toISOString().slice(0, 10)}.csv`;
     a.click();
     URL.revokeObjectURL(url);
-    toast.success(locale === "en" ? "CSV export downloaded" : "Export CSV téléchargé");
+    toast.success(t("employees.csvExported"));
   };
 
   return (

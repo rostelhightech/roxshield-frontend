@@ -104,7 +104,7 @@ export default function EmployeesPage() {
   const [assigning, setAssigning] = useState(false);
 
   const handleAddEmployee = async () => {
-    if (!addForm.email) { toast.error("L'email est requis"); return; }
+    if (!addForm.email) { toast.error(t("employees.emailMissing")); return; }
     setAdding(true);
     try {
       const res = await fetch("/api/employees", {
@@ -116,8 +116,8 @@ export default function EmployeesPage() {
         const data = await res.json();
         toast.success(
           data.emailSent
-            ? (locale === "en" ? "Employee added — invitation sent by email" : "Employé ajouté — invitation envoyée par email")
-            : (locale === "en" ? "Employee added successfully" : "Employé ajouté avec succès")
+            ? t("employees.addedWithEmail")
+            : t("employees.addedSuccess")
         );
         setShowAddDialog(false);
         setAddForm({ name: "", email: "", department: "", position: "" });
@@ -135,7 +135,7 @@ export default function EmployeesPage() {
     try {
       const res = await fetch(`/api/employees?id=${emp.id}`, { method: "DELETE" });
       if (res.ok) {
-        toast.success(locale === "en" ? "Employee deleted" : "Employé supprimé");
+        toast.success(t("employees.deleted"));
         setSelectedEmployee(null);
         await refetch();
       } else {
@@ -147,9 +147,10 @@ export default function EmployeesPage() {
   };
 
   const handleExportCSV = () => {
-    const headers = locale === "en"
-      ? ["Name", "Email", "Department", "Position", "Role", "Risk score", "Trainings"]
-      : ["Nom", "Email", "Département", "Poste", "Rôle", "Score de risque", "Formations"];
+    const headers = [
+      t("employees.name"), "Email", t("employees.department"), t("employees.position"),
+      t("employees.role"), t("employees.riskScore"), t("employees.trainings"),
+    ];
     const rows = (data?.employees || []).map((e) => [
       e.name || "", e.email, e.department || "", e.position || "", e.role, String(e.riskScore), String(e.trainingsCompleted),
     ]);
@@ -161,7 +162,7 @@ export default function EmployeesPage() {
     a.download = `roxshield-employes-${new Date().toISOString().slice(0, 10)}.csv`;
     a.click();
     URL.revokeObjectURL(url);
-    toast.success(locale === "en" ? "CSV export downloaded" : "Export CSV téléchargé");
+    toast.success(t("employees.csvExported"));
   };
 
   const handleImportCSV = () => {
@@ -178,9 +179,7 @@ export default function EmployeesPage() {
         const res = await fetch("/api/employees/import", { method: "POST", body: formData });
         const result = await res.json();
         if (res.ok) {
-          toast.success(locale === "en"
-            ? `Import done: ${result.created} created, ${result.skipped} skipped`
-            : `Import terminé : ${result.created} créé(s), ${result.skipped} ignoré(s)`);
+          toast.success(`${t("employees.importDone")} : ${result.created} ${t("employees.importCreated")}, ${result.skipped} ${t("employees.importSkipped")}`);
           if (result.errors?.length > 0) {
             toast.info(result.errors.slice(0, 3).join(", ") + (result.errors.length > 3 ? "..." : ""));
           }
@@ -219,9 +218,7 @@ export default function EmployeesPage() {
         body: JSON.stringify({ userId: assignTarget.id, moduleId }),
       });
       if (res.ok) {
-        toast.success(locale === "en"
-          ? `Training assigned to ${assignTarget.name || assignTarget.email}`
-          : `Formation assignée à ${assignTarget.name || assignTarget.email}`);
+        toast.success(`${t("employees.trainingAssigned")} ${assignTarget.name || assignTarget.email}`);
         setShowAssignDialog(false);
         setAssignTarget(null);
       } else {
@@ -254,9 +251,7 @@ export default function EmployeesPage() {
         body: JSON.stringify({ userId: assignTarget.id, campaignId }),
       });
       if (res.ok) {
-        toast.success(locale === "en"
-          ? `${assignTarget.name || assignTarget.email} included in campaign`
-          : `${assignTarget.name || assignTarget.email} inclus dans la campagne`);
+        toast.success(`${assignTarget.name || assignTarget.email} ${t("employees.includedInCampaign")}`);
         setShowCampaignDialog(false);
         setAssignTarget(null);
       } else {
@@ -374,7 +369,7 @@ export default function EmployeesPage() {
               </select>
               <Button variant="outline" size="sm" className="h-10" onClick={handleImportCSV} disabled={importing}>
                 <Upload className="mr-2 h-4 w-4" />
-                {importing ? "Import..." : "Importer CSV"}
+                {importing ? t("employees.importing") : t("employees.importCSV")}
               </Button>
               <Button variant="outline" size="sm" className="h-10" onClick={handleExportCSV}>
                 <Download className="mr-2 h-4 w-4" />
@@ -582,7 +577,7 @@ export default function EmployeesPage() {
                   disabled={deleting}
                   onClick={() => handleDeleteEmployee(selectedEmployee)}
                 >
-                  {deleting ? "Suppression..." : "Supprimer cet employé"}
+                  {deleting ? t("employees.deleting") : t("employees.deleteEmployee")}
                 </Button>
               )}
             </div>
@@ -596,13 +591,13 @@ export default function EmployeesPage() {
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2">
               <UserPlus className="h-5 w-5 text-rht-violet-light" />
-              Ajouter un employé
+              {t("employees.addEmployee")}
             </DialogTitle>
-            <DialogDescription>Renseignez les informations du nouvel employé</DialogDescription>
+            <DialogDescription>{t("employees.addDesc")}</DialogDescription>
           </DialogHeader>
           <div className="space-y-4">
             <div className="space-y-2">
-              <Label>Nom complet</Label>
+              <Label>{t("employees.fullName")}</Label>
               <Input
                 placeholder="Amadou Diallo"
                 value={addForm.name}
@@ -610,7 +605,7 @@ export default function EmployeesPage() {
               />
             </div>
             <div className="space-y-2">
-              <Label>Email *</Label>
+              <Label>{t("employees.emailRequired")}</Label>
               <Input
                 type="email"
                 placeholder="amadou@entreprise.sn"
@@ -620,7 +615,7 @@ export default function EmployeesPage() {
             </div>
             <div className="grid grid-cols-2 gap-3">
               <div className="space-y-2">
-                <Label>Département</Label>
+                <Label>{t("employees.department")}</Label>
                 <Input
                   placeholder="Finance"
                   value={addForm.department}
@@ -628,7 +623,7 @@ export default function EmployeesPage() {
                 />
               </div>
               <div className="space-y-2">
-                <Label>Poste</Label>
+                <Label>{t("employees.position")}</Label>
                 <Input
                   placeholder="Comptable"
                   value={addForm.position}
@@ -638,14 +633,14 @@ export default function EmployeesPage() {
             </div>
             <div className="flex gap-2 pt-2">
               <Button variant="outline" className="flex-1" onClick={() => setShowAddDialog(false)}>
-                Annuler
+                {t("common.cancel")}
               </Button>
               <Button
                 className="flex-1 bg-gradient-to-r from-rht-violet to-rht-violet-light text-white hover:opacity-90"
                 onClick={handleAddEmployee}
                 disabled={adding}
               >
-                {adding ? "Ajout..." : "Ajouter"}
+                {adding ? t("employees.adding") : t("common.add")}
               </Button>
             </div>
           </div>
@@ -656,14 +651,14 @@ export default function EmployeesPage() {
       <Dialog open={showAssignDialog} onOpenChange={setShowAssignDialog}>
         <DialogContent className="bg-card border-border">
           <DialogHeader>
-            <DialogTitle>Assigner une formation</DialogTitle>
+            <DialogTitle>{t("employees.assignTrainingTitle")}</DialogTitle>
             <DialogDescription>
-              Choisissez un module pour {assignTarget?.name || assignTarget?.email}
+              {t("employees.chooseModule")} {assignTarget?.name || assignTarget?.email}
             </DialogDescription>
           </DialogHeader>
           <div className="space-y-2 max-h-[300px] overflow-y-auto">
             {trainingModules.length === 0 ? (
-              <p className="text-sm text-muted-foreground py-4 text-center">Aucun module disponible</p>
+              <p className="text-sm text-muted-foreground py-4 text-center">{t("employees.noModules")}</p>
             ) : (
               trainingModules.map((m) => (
                 <button
@@ -687,17 +682,17 @@ export default function EmployeesPage() {
       <Dialog open={showCampaignDialog} onOpenChange={setShowCampaignDialog}>
         <DialogContent className="bg-card border-border">
           <DialogHeader>
-            <DialogTitle>Inclure dans une campagne</DialogTitle>
+            <DialogTitle>{t("employees.includeCampaignTitle")}</DialogTitle>
             <DialogDescription>
-              Choisissez une campagne pour {assignTarget?.name || assignTarget?.email}
+              {t("employees.chooseCampaign")} {assignTarget?.name || assignTarget?.email}
             </DialogDescription>
           </DialogHeader>
           <div className="space-y-2 max-h-[300px] overflow-y-auto">
             {campaigns.length === 0 ? (
               <p className="text-sm text-muted-foreground py-4 text-center">
-                Aucune campagne disponible.{" "}
+                {t("employees.noCampaigns")}{" "}
                 <a href="/dashboard/simulations" className="text-rht-violet-light underline">
-                  Créer une campagne
+                  {t("employees.createCampaign")}
                 </a>
               </p>
             ) : (

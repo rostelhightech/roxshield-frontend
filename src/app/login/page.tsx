@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { motion, AnimatePresence } from "framer-motion";
+import { useTranslation } from "@/lib/i18n";
 
 interface Particle {
   x: number;
@@ -233,8 +234,15 @@ export default function LoginPage() {
 }
 
 function LoginContent() {
+  const { t } = useTranslation();
   const router = useRouter();
   const searchParams = useSearchParams();
+
+  const roleLabels: Record<string, { label: string; sub: string }> = {
+    "super-admin": { label: t("login.superAdmin"), sub: "Rostel High-Tech" },
+    "admin-client": { label: t("login.adminClient"), sub: "Safi Sénégal SARL" },
+    "employee": { label: t("login.employee"), sub: t("login.mySpace") },
+  };
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
@@ -242,7 +250,7 @@ function LoginContent() {
 
   useEffect(() => {
     if (searchParams.get("reason") === "timeout") {
-      setTimeoutMessage("Votre session a expiré pour cause d'inactivité. Veuillez vous reconnecter.");
+      setTimeoutMessage(t("login.sessionExpired"));
     }
   }, [searchParams]);
   const [selectedRole, setSelectedRole] = useState("");
@@ -293,8 +301,8 @@ function LoginContent() {
     if (result?.error) {
       setError(
         result.error.includes("Trop de tentatives")
-          ? "Trop de tentatives. Reessayez dans une minute."
-          : "Email ou mot de passe incorrect"
+          ? t("login.tooManyAttempts")
+          : t("login.invalidCredentials")
       );
       setIsLoading(false);
       return;
@@ -361,19 +369,19 @@ function LoginContent() {
               <HexagonIcon />
               <Shield className="absolute left-1/2 top-1/2 h-6 w-6 -translate-x-1/2 -translate-y-1/2 text-rht-violet-light" />
             </motion.div>
-            <h1 className="text-xl font-bold tracking-tight text-white">Bon retour</h1>
-            <p className="mt-1 text-sm text-white/40">Accédez à votre espace RoxShield</p>
+            <h1 className="text-xl font-bold tracking-tight text-white">{t("login.welcomeBack")}</h1>
+            <p className="mt-1 text-sm text-white/40">{t("login.accessSpace")}</p>
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-4">
             <div className="space-y-2">
-              <Label htmlFor="email" className="text-xs font-medium text-white/50">Adresse email</Label>
+              <Label htmlFor="email" className="text-xs font-medium text-white/50">{t("login.emailLabel")}</Label>
               <div className="relative">
                 <Mail className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-white/20" />
                 <Input
                   id="email"
                   type="email"
-                  placeholder="votre@email.com"
+                  placeholder={t("login.emailPlaceholder")}
                   value={email}
                   onChange={(e) => { setEmail(e.target.value); setError(""); }}
                   className="h-11 border-white/[0.08] bg-white/[0.04] pl-10 text-white placeholder:text-white/20 focus:border-rht-violet/40 focus:ring-rht-violet/20"
@@ -383,8 +391,8 @@ function LoginContent() {
 
             <div className="space-y-2">
               <div className="flex items-center justify-between">
-                <Label htmlFor="password" className="text-xs font-medium text-white/50">Mot de passe</Label>
-                <button type="button" onClick={() => { setShowForgot(true); setForgotEmail(email); setForgotSent(false); }} className="text-[11px] text-rht-violet-light/70 hover:text-rht-violet-light">Mot de passe oublié ?</button>
+                <Label htmlFor="password" className="text-xs font-medium text-white/50">{t("login.passwordLabel")}</Label>
+                <button type="button" onClick={() => { setShowForgot(true); setForgotEmail(email); setForgotSent(false); }} className="text-[11px] text-rht-violet-light/70 hover:text-rht-violet-light">{t("login.forgotPassword")}</button>
               </div>
               <div className="relative">
                 <Lock className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-white/20" />
@@ -440,10 +448,10 @@ function LoginContent() {
                       <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
                       <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
                     </svg>
-                    Connexion...
+                    {t("login.connecting")}
                   </span>
                 ) : (
-                  "Se connecter"
+                  t("login.signIn")
                 )}
               </Button>
             </motion.div>
@@ -464,7 +472,7 @@ function LoginContent() {
                     className="flex items-center gap-1 text-xs text-white/40 hover:text-white/70"
                   >
                     <ArrowLeft className="h-3 w-3" />
-                    Retour
+                    {t("login.back")}
                   </button>
 
                   {forgotSent ? (
@@ -472,9 +480,9 @@ function LoginContent() {
                       <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-cyber-green/20">
                         <CheckCircle className="h-6 w-6 text-cyber-green" />
                       </div>
-                      <h3 className="text-sm font-semibold text-white">Email envoyé</h3>
+                      <h3 className="text-sm font-semibold text-white">{t("login.emailSent")}</h3>
                       <p className="text-xs text-white/50">
-                        Si un compte existe avec <span className="text-white/70">{forgotEmail}</span>, un nouveau mot de passe temporaire a été envoyé.
+                        {t("login.emailSentDesc")} <span className="text-white/70">{forgotEmail}</span>, {t("login.emailSentDesc2")}
                       </p>
                       <Button
                         onClick={() => setShowForgot(false)}
@@ -482,15 +490,15 @@ function LoginContent() {
                         size="sm"
                         className="mt-2 border-white/10 text-white/60 hover:text-white"
                       >
-                        Retour à la connexion
+                        {t("login.backToLogin")}
                       </Button>
                     </div>
                   ) : (
                     <>
                       <div className="text-center">
-                        <h3 className="text-sm font-semibold text-white">Mot de passe oublié</h3>
+                        <h3 className="text-sm font-semibold text-white">{t("login.forgotTitle")}</h3>
                         <p className="mt-1 text-xs text-white/40">
-                          Entrez votre email pour recevoir un nouveau mot de passe
+                          {t("login.forgotDesc")}
                         </p>
                       </div>
                       <div className="space-y-2">
@@ -498,7 +506,7 @@ function LoginContent() {
                           <Mail className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-white/20" />
                           <Input
                             type="email"
-                            placeholder="votre@email.com"
+                            placeholder={t("login.emailPlaceholder")}
                             value={forgotEmail}
                             onChange={(e) => setForgotEmail(e.target.value)}
                             className="h-11 border-white/[0.08] bg-white/[0.04] pl-10 text-white placeholder:text-white/20"
@@ -510,7 +518,7 @@ function LoginContent() {
                           disabled={forgotLoading || !forgotEmail.trim()}
                           className="h-10 w-full bg-gradient-to-r from-rht-violet to-rht-violet-light text-white hover:opacity-90"
                         >
-                          {forgotLoading ? "Envoi..." : "Réinitialiser"}
+                          {forgotLoading ? t("login.sending") : t("login.reset")}
                         </Button>
                       </div>
                     </>
@@ -522,7 +530,7 @@ function LoginContent() {
 
           <div className="my-5 flex items-center gap-3">
             <div className="h-px flex-1 bg-white/[0.06]" />
-            <span className="text-[10px] uppercase tracking-widest text-white/20">accès démo</span>
+            <span className="text-[10px] uppercase tracking-widest text-white/20">{t("login.demoAccess")}</span>
             <div className="h-px flex-1 bg-white/[0.06]" />
           </div>
 
@@ -552,10 +560,10 @@ function LoginContent() {
                   </div>
                   <div className="flex-1">
                     <p className={`text-sm font-medium ${isActive ? "text-white" : "text-white/50"}`}>
-                      {role.label}
+                      {roleLabels[role.id]?.label ?? role.label}
                     </p>
                     <p className={`text-[11px] ${isActive ? "text-white/40" : "text-white/20"}`}>
-                      {role.sub}
+                      {roleLabels[role.id]?.sub ?? role.sub}
                     </p>
                   </div>
                   <div
@@ -581,9 +589,9 @@ function LoginContent() {
           </div>
 
           <p className="mt-5 text-center text-[11px] text-white/25">
-            Pas encore client ?{" "}
+            {t("login.notClient")}{" "}
             <a href="/pricing" className="font-medium text-rht-violet-light/70 hover:text-rht-violet-light">
-              Voir les tarifs &rarr;
+              {t("login.viewPricing")} &rarr;
             </a>
           </p>
         </div>

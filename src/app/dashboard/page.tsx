@@ -222,7 +222,7 @@ export default function DashboardPage() {
                     </div>
                   </div>
                   <div className="mt-3 text-xs text-muted-foreground">
-                    {data.trainingsCompleted}/{data.totalTrainings} formations
+                    {data.trainingsCompleted}/{data.totalTrainings} {t("dashboard.trainingsLabel")}
                   </div>
                 </CardContent>
               </Card>
@@ -274,11 +274,11 @@ export default function DashboardPage() {
                         <XAxis dataKey="name" tick={{ fill: "var(--muted-foreground)", fontSize: 12 }} />
                         <YAxis tick={{ fill: "var(--muted-foreground)", fontSize: 12 }} />
                         <Tooltip contentStyle={{ backgroundColor: "var(--card)", border: "1px solid var(--border)", borderRadius: "12px", fontSize: "12px", color: "var(--foreground)" }} />
-                        <Area type="monotone" dataKey="riskScore" stroke="#c428c0" strokeWidth={2.5} fillOpacity={1} fill="url(#riskGradient)" name="Score de risque" />
+                        <Area type="monotone" dataKey="riskScore" stroke="#c428c0" strokeWidth={2.5} fillOpacity={1} fill="url(#riskGradient)" name={t("dashboard.riskScoreLabel")} />
                       </AreaChart>
                     </ResponsiveContainer>
                   ) : (
-                    <div className="flex h-full items-center justify-center text-sm text-muted-foreground">Aucune donnée disponible</div>
+                    <div className="flex h-full items-center justify-center text-sm text-muted-foreground">{t("dashboard.noData")}</div>
                   )}
                 </div>
               </CardContent>
@@ -299,7 +299,7 @@ export default function DashboardPage() {
                         <XAxis type="number" tick={{ fill: "var(--muted-foreground)", fontSize: 12 }} />
                         <YAxis dataKey="name" type="category" width={85} tick={{ fill: "var(--muted-foreground)", fontSize: 11 }} />
                         <Tooltip contentStyle={{ backgroundColor: "var(--card)", border: "1px solid var(--border)", borderRadius: "12px", fontSize: "12px", color: "var(--foreground)" }} />
-                        <Bar dataKey="riskScore" radius={[0, 6, 6, 0]} name={locale === "en" ? "Risk score" : "Score de risque"}>
+                        <Bar dataKey="riskScore" radius={[0, 6, 6, 0]} name={t("dashboard.riskScoreLabel")}>
                           {data.deptRisk.map((entry, index) => (
                             <Cell key={`cell-${index}`} fill={getBarColor(entry.avgRisk)} />
                           ))}
@@ -307,7 +307,7 @@ export default function DashboardPage() {
                       </BarChart>
                     </ResponsiveContainer>
                   ) : (
-                    <div className="flex h-full items-center justify-center text-sm text-muted-foreground">Aucune donnée</div>
+                    <div className="flex h-full items-center justify-center text-sm text-muted-foreground">{t("dashboard.noData")}</div>
                   )}
                 </div>
               </CardContent>
@@ -321,9 +321,9 @@ export default function DashboardPage() {
             <CardHeader className="flex flex-row items-center justify-between pb-3">
               <CardTitle className="flex items-center gap-2 text-sm font-semibold">
                 <span className="relative flex h-2 w-2"><span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-cyber-green opacity-75" /><span className="relative inline-flex h-2 w-2 rounded-full bg-cyber-green" /></span>
-                Activité récente
+                {t("dashboard.recentActivity")}
               </CardTitle>
-              <Badge variant="outline" className="text-[10px]">{data.recentActivity.length} items</Badge>
+              <Badge variant="outline" className="text-[10px]">{data.recentActivity.length} {t("dashboard.items")}</Badge>
             </CardHeader>
             <CardContent>
               <div className="space-y-3">
@@ -336,7 +336,7 @@ export default function DashboardPage() {
                       </div>
                       <div className="flex-1 min-w-0">
                         <p className="text-sm">
-                          <span className="font-medium">{activity.user?.name || "Système"}</span>
+                          <span className="font-medium">{activity.user?.name || t("dashboard.system")}</span>
                           {" — "}
                           <span className="text-muted-foreground">{activity.description}</span>
                         </p>
@@ -346,7 +346,7 @@ export default function DashboardPage() {
                   );
                 })}
                 {data.recentActivity.length === 0 && (
-                  <p className="py-4 text-center text-sm text-muted-foreground">Aucune activité récente</p>
+                  <p className="py-4 text-center text-sm text-muted-foreground">{t("dashboard.noActivity")}</p>
                 )}
               </div>
             </CardContent>
@@ -374,13 +374,13 @@ export default function DashboardPage() {
                         <p className="text-xs text-muted-foreground">{emp.department} — {emp.position}</p>
                       </div>
                       <div className="text-right">
-                        <Badge variant="destructive" className="mb-1 text-[10px]">{emp.riskScore}% risque</Badge>
-                        <p className="text-[10px] text-muted-foreground">{emp.trainingsCompleted} formations</p>
+                        <Badge variant="destructive" className="mb-1 text-[10px]">{emp.riskScore}% {t("dashboard.risk")}</Badge>
+                        <p className="text-[10px] text-muted-foreground">{emp.trainingsCompleted} {t("dashboard.trainingsLabel")}</p>
                       </div>
                     </div>
                   ))}
                   {atRiskEmployees.length === 0 && (
-                    <p className="py-4 text-center text-sm text-muted-foreground">Aucun employé à risque</p>
+                    <p className="py-4 text-center text-sm text-muted-foreground">{t("dashboard.noRiskEmployees")}</p>
                   )}
                 </div>
               </CardContent>
@@ -390,7 +390,7 @@ export default function DashboardPage() {
           <FadeIn delay={0.1}>
             <Card>
               <CardHeader className="pb-3">
-                <CardTitle className="text-sm font-semibold">Dernières simulations de phishing</CardTitle>
+                <CardTitle className="text-sm font-semibold">{t("dashboard.latestSimulations")}</CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="space-y-4">
@@ -404,13 +404,13 @@ export default function DashboardPage() {
                           <Badge variant={camp.status === "ACTIVE" ? "default" : "outline"} className="text-[10px]">{camp.templateType}</Badge>
                         </div>
                         <div className="flex items-center gap-4 text-xs text-muted-foreground">
-                          <span>{camp.status === "ACTIVE" ? "En cours" : "Terminée"}</span>
-                          <span>{camp.totalTargets} cibles</span>
+                          <span>{camp.status === "ACTIVE" ? t("dashboard.inProgress") : t("dashboard.completed")}</span>
+                          <span>{camp.totalTargets} {t("dashboard.targets")}</span>
                         </div>
                         <div className="space-y-1">
                           <div className="flex justify-between text-xs">
-                            <span className="text-cyber-red">{clickRate}% ont cliqué</span>
-                            <span className="text-cyber-green">{reportRate}% ont signalé</span>
+                            <span className="text-cyber-red">{clickRate}% {t("dashboard.clicked")}</span>
+                            <span className="text-cyber-green">{reportRate}% {t("dashboard.reported")}</span>
                           </div>
                           <Progress value={clickRate} className="h-2" />
                         </div>
@@ -418,7 +418,7 @@ export default function DashboardPage() {
                     );
                   })}
                   {completedCampaigns.length === 0 && (
-                    <p className="py-4 text-center text-sm text-muted-foreground">Aucune campagne</p>
+                    <p className="py-4 text-center text-sm text-muted-foreground">{t("dashboard.noCampaigns")}</p>
                   )}
                 </div>
               </CardContent>

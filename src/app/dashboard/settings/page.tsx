@@ -51,11 +51,11 @@ interface EmployeesData {
   departments: string[];
 }
 
-const notifSettings = [
-  { id: "email-report", label: "Rapport mensuel par email", description: "Recevez un résumé chaque fin de mois", enabled: true },
-  { id: "phishing-alert", label: "Alerte taux de clic élevé", description: "Notification si le taux de clic dépasse 40%", enabled: true },
-  { id: "training-reminder", label: "Rappels de formation", description: "Rappeler aux employés de compléter leurs modules", enabled: false },
-  { id: "new-employee", label: "Nouvel employé ajouté", description: "Notification quand un employé rejoint la plateforme", enabled: true },
+const notifMeta = [
+  { id: "email-report", labelKey: "settings.notif.emailReport" as const, descKey: "settings.notif.emailReportDesc" as const, enabled: true },
+  { id: "phishing-alert", labelKey: "settings.notif.phishingAlert" as const, descKey: "settings.notif.phishingAlertDesc" as const, enabled: true },
+  { id: "training-reminder", labelKey: "settings.notif.trainingReminder" as const, descKey: "settings.notif.trainingReminderDesc" as const, enabled: false },
+  { id: "new-employee", labelKey: "settings.notif.newEmployee" as const, descKey: "settings.notif.newEmployeeDesc" as const, enabled: true },
 ];
 
 const countryOptions = COUNTRIES.map((c) => ({
@@ -80,7 +80,7 @@ export default function SettingsPage() {
   const { data: user, loading: loadingUser, refetch: refetchUser } = useApi<UserProfile>("/api/me");
   const { data: empData } = useApi<EmployeesData>("/api/employees");
   const [notifications, setNotifications] = useState(
-    notifSettings.reduce((acc, n) => ({ ...acc, [n.id]: n.enabled }), {} as Record<string, boolean>)
+    notifMeta.reduce((acc, n) => ({ ...acc, [n.id]: n.enabled }), {} as Record<string, boolean>)
   );
   const [saved, setSaved] = useState(false);
   const [saving, setSaving] = useState(false);
@@ -159,7 +159,7 @@ export default function SettingsPage() {
   const admins = (empData?.employees || []).filter((e: any) => e.role === "ADMIN" || e.role === "SUPER_ADMIN");
 
   const planLabel = org?.plan === "ENTERPRISE" ? "Enterprise" : org?.plan === "BUSINESS" ? "Business" : org?.plan === "CAMPUS" ? "Campus" : "Starter";
-  const planLimit = org?.plan === "ENTERPRISE" ? "Illimité" : org?.plan === "BUSINESS" ? "200" : "50";
+  const planLimit = org?.plan === "ENTERPRISE" ? t("settings.unlimited") : org?.plan === "BUSINESS" ? "200" : "50";
 
   return (
     <div>
@@ -194,8 +194,8 @@ export default function SettingsPage() {
                         options={sectorOptions}
                         value={orgForm?.sector || ""}
                         onChange={(v) => setOrgForm((f) => f ? { ...f, sector: v } : f)}
-                        placeholder="Sélectionner un secteur..."
-                        searchPlaceholder="Rechercher un secteur..."
+                        placeholder={t("settings.selectSector")}
+                        searchPlaceholder={t("settings.searchSector")}
                         allowCustom
                       />
                     </div>
@@ -205,8 +205,8 @@ export default function SettingsPage() {
                         options={countryOptions}
                         value={orgForm?.country || ""}
                         onChange={(v) => setOrgForm((f) => f ? { ...f, country: v } : f)}
-                        placeholder="Sélectionner un pays..."
-                        searchPlaceholder="Rechercher un pays..."
+                        placeholder={t("settings.selectCountry")}
+                        searchPlaceholder={t("settings.searchCountry")}
                       />
                     </div>
                     <div className="space-y-2">
@@ -235,7 +235,7 @@ export default function SettingsPage() {
                             {t("common.saved")}
                           </span>
                         ) : saving ? (
-                          "Enregistrement..."
+                          t("common.saving")
                         ) : (
                           t("common.save")
                         )}
@@ -295,12 +295,12 @@ export default function SettingsPage() {
                 </CardHeader>
                 <CardContent>
                   <div className="space-y-1">
-                    {notifSettings.map((notif, i) => (
+                    {notifMeta.map((notif, i) => (
                       <div key={notif.id}>
                         <div className="flex items-center justify-between py-3">
                           <div>
-                            <p className="text-sm font-medium">{notif.label}</p>
-                            <p className="text-xs text-muted-foreground">{notif.description}</p>
+                            <p className="text-sm font-medium">{t(notif.labelKey)}</p>
+                            <p className="text-xs text-muted-foreground">{t(notif.descKey)}</p>
                           </div>
                           <button
                             onClick={() =>
@@ -317,7 +317,7 @@ export default function SettingsPage() {
                             />
                           </button>
                         </div>
-                        {i < notifSettings.length - 1 && <Separator />}
+                        {i < notifMeta.length - 1 && <Separator />}
                       </div>
                     ))}
                   </div>
@@ -358,10 +358,10 @@ export default function SettingsPage() {
                     <div>
                       <div className="flex items-center gap-2">
                         <Clock className="h-4 w-4 text-rht-violet-light" />
-                        <p className="text-sm font-medium">Expiration de session</p>
+                        <p className="text-sm font-medium">{t("settings.sessionTimeout")}</p>
                       </div>
                       <p className="mt-1 text-xs text-muted-foreground">
-                        Déconnexion automatique après une période d&apos;inactivité
+                        {t("settings.sessionTimeoutDesc")}
                       </p>
                     </div>
                     <Combobox
@@ -437,7 +437,7 @@ export default function SettingsPage() {
                             </div>
                           </div>
                           <Badge className="border-0 bg-rht-violet/10 text-rht-violet-light">
-                            {admin.role === "SUPER_ADMIN" ? "Super Admin" : "Admin"}
+                            {admin.role === "SUPER_ADMIN" ? t("common.role.superAdmin") : t("common.role.admin")}
                           </Badge>
                         </div>
                       ))}
@@ -456,7 +456,7 @@ export default function SettingsPage() {
                   <div className="space-y-3">
                     {[
                       { role: "Admin", perms: t("settings.adminPerms"), count: admins.length },
-                      { role: "Employé", perms: t("settings.employeePerms"), count: Math.max(0, totalEmployees - admins.length) },
+                      { role: t("common.role.employee"), perms: t("settings.employeePerms"), count: Math.max(0, totalEmployees - admins.length) },
                     ].map((r) => (
                       <div key={r.role} className="flex items-center justify-between rounded-xl border p-4">
                         <div>

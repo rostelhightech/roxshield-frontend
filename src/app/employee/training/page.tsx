@@ -94,10 +94,10 @@ export default function EmployeeTrainingPage() {
                   </div>
                   <div>
                     <p className="text-lg font-bold">
-                      {completed}/{total} {locale === "en" ? "modules completed" : "modules complétés"}
+                      {completed}/{total} {t("training.modulesCompleted")}
                     </p>
                     <p className="text-sm text-muted-foreground">
-                      {locale === "en" ? "Keep going to get your certificate!" : "Continuez pour obtenir votre certificat !"}
+                      {t("training.keepGoing")}
                     </p>
                   </div>
                 </div>
@@ -177,7 +177,7 @@ export default function EmployeeTrainingPage() {
                       {isInProgress && (
                         <div className="mt-4">
                           <div className="flex justify-between text-xs text-muted-foreground">
-                            <span>{locale === "en" ? "Module progress" : "Progression du module"}</span>
+                            <span>{t("training.moduleProgress")}</span>
                             <span>{mod.progress.progressPercent}%</span>
                           </div>
                           <Progress value={mod.progress.progressPercent} className="mt-1 h-2" />
