@@ -1,8 +1,6 @@
 "use client";
 
-import Link from "next/link";
-import { usePathname } from "next/navigation";
-import { signOut, useSession } from "next-auth/react";
+
 import {
   LayoutDashboard,
   Users,
@@ -21,6 +19,7 @@ import {
   ChevronRight,
   Menu,
   X,
+  Building2,
 } from "lucide-react";
 import { useState, useEffect } from "react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -28,6 +27,9 @@ import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { useTranslation } from "@/lib/i18n";
 import { useApi } from "@/hooks/use-api";
+import { useAuthStore } from "@/store/auth.store";
+import { useSidebarStore } from "@/store/sidebar.store";
+import { Link } from "@tanstack/react-router";
 
 function getInitials(name?: string | null, email?: string | null): string {
   if (name) {
@@ -38,31 +40,81 @@ function getInitials(name?: string | null, email?: string | null): string {
 }
 
 export function Sidebar() {
-  const pathname = usePathname();
-  const { t, locale } = useTranslation();
-  const { data: session } = useSession();
-  const [collapsed, setCollapsed] = useState(false);
+  const pathname = window.location.pathname;
+  const { t } = useTranslation();
+
+  const { collapsed, setCollapsed } = useSidebarStore();
+
   const [mobileOpen, setMobileOpen] = useState(false);
 
-  const { data: meData } = useApi<{ image: string | null; organization: { name: string } | null }>("/api/me");
-  const user = session?.user;
+  const { user } = useAuthStore();
+
+
   const userName = user?.name || user?.email || "";
   const userEmail = user?.email || "";
-  const orgName = meData?.organization?.name || (user as any)?.organizationName || "Organisation";
-  const userImage = meData?.image;
+  // const userImage = meData?.image;
 
   const navItems = [
-    { label: t("nav.dashboard"), href: "/dashboard", icon: LayoutDashboard },
-    { label: t("nav.employees"), href: "/dashboard/employees", icon: Users },
-    { label: t("nav.training"), href: "/dashboard/training", icon: GraduationCap },
-    { label: t("nav.simulations"), href: "/dashboard/simulations", icon: Crosshair },
-    { label: "GRC", href: "/dashboard/grc", icon: ShieldCheck },
-    { label: t("nav.emailSecurity"), href: "/dashboard/email-security", icon: Mail },
-    { label: t("nav.passwords"), href: "/dashboard/passwords", icon: KeyRound },
-    { label: "Shadow IT", href: "/dashboard/shadow-it", icon: MessageSquareLock },
-    { label: t("nav.encryption"), href: "/dashboard/encryption", icon: Lock },
-    { label: t("nav.reports"), href: "/dashboard/reports", icon: FileBarChart },
-    { label: t("nav.settings"), href: "/dashboard/settings", icon: Settings },
+    {
+      label: t("nav.dashboard"),
+      href: "/dashboard",
+      icon: LayoutDashboard,
+    },
+    {
+      label: t('nav.organization'),
+      href: "/dashboard/organizations",
+      icon: Building2,
+    },
+    {
+      label: t("nav.employees"),
+      href: "/dashboard/employees",
+      icon: Users,
+    },
+    {
+      label: t("nav.training"),
+      href: "/dashboard/training",
+      icon: GraduationCap,
+    },
+    {
+      label: t("nav.simulations"),
+      href: "/dashboard/simulations",
+      icon: Crosshair,
+    },
+    {
+      label: "GRC",
+      href: "/dashboard/grc",
+      icon: ShieldCheck,
+    },
+    {
+      label: t("nav.emailSecurity"),
+      href: "/dashboard/email-security",
+      icon: Mail,
+    },
+    {
+      label: t("nav.passwords"),
+      href: "/dashboard/passwords",
+      icon: KeyRound,
+    },
+    {
+      label: "Shadow IT",
+      href: "/dashboard/shadow-it",
+      icon: MessageSquareLock,
+    },
+    {
+      label: t("nav.encryption"),
+      href: "/dashboard/encryption",
+      icon: Lock,
+    },
+    {
+      label: t("nav.reports"),
+      href: "/dashboard/reports",
+      icon: FileBarChart,
+    },
+    {
+      label: t("nav.settings"),
+      href: "/dashboard/settings",
+      icon: Settings,
+    },
   ];
 
   useEffect(() => {
@@ -71,112 +123,186 @@ export function Sidebar() {
 
   return (
     <>
-      {/* Mobile hamburger */}
-      <div className="fixed left-0 right-0 top-0 z-50 flex h-14 items-center gap-3 border-b border-sidebar-border bg-sidebar px-4 text-sidebar-foreground md:hidden">
-        <Button variant="ghost" size="icon" className="h-9 w-9" onClick={() => setMobileOpen(true)}>
+      {/* MOBILE HEADER */}
+      <div className="fixed left-0 right-0 top-0 z-50 flex h-14 items-center gap-3 border-b border-white/[0.05] bg-[#070b18] px-4 text-white md:hidden">
+        <Button
+          variant="ghost"
+          size="icon"
+          className="h-9 w-9 hover:bg-white/5"
+          onClick={() => setMobileOpen(true)}
+        >
           <Menu className="h-5 w-5" />
         </Button>
+
         <div className="flex items-center gap-2">
-          <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-gradient-to-br from-rht-violet to-rht-violet-light">
-            <Shield className="h-3.5 w-3.5 text-white" />
+          <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-gradient-to-br from-[#5d2595] to-[#7b3fc0]">
+            <Shield className="h-4 w-4 text-white" />
           </div>
-          <span className="text-sm font-bold"><span className="font-normal opacity-60">Rox</span>Shield</span>
+
+          <span className="text-sm font-bold">
+            <span className="font-normal opacity-60">Rox</span>
+            Shield
+          </span>
         </div>
       </div>
 
-      {/* Mobile overlay */}
+      {/* MOBILE OVERLAY */}
       {mobileOpen && (
-        <div className="fixed inset-0 z-50 bg-black/50 md:hidden" onClick={() => setMobileOpen(false)} />
+        <div
+          className="fixed inset-0 z-40 bg-black/60 backdrop-blur-sm md:hidden"
+          onClick={() => setMobileOpen(false)}
+        />
       )}
 
-      {/* Sidebar */}
+      {/* SIDEBAR */}
       <aside
-        className={`fixed left-0 top-0 z-50 flex h-screen flex-col border-r border-sidebar-border bg-sidebar text-sidebar-foreground transition-all duration-300
-          ${collapsed ? "w-[70px]" : "w-[260px]"}
+        className={`
+          fixed left-0 top-0 z-50
+          flex h-screen flex-col
+          border-r border-white/[0.05]
+          text-white
+          backdrop-blur-xl
+          transition-all duration-300
+          ${collapsed ? "w-[72px]" : "w-[260px]"}
           ${mobileOpen ? "translate-x-0" : "-translate-x-full"}
-          md:translate-x-0`}
+          md:translate-x-0
+        `}
+        style={{
+          background:
+            "radial-gradient(circle at top, rgba(93,37,149,.12), transparent 35%), #070b18",
+        }}
       >
+        {/* HEADER */}
         <div className="flex items-center gap-3 px-4 py-5">
-          <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-rht-violet to-rht-violet-light shadow-[0_4px_15px_rgba(156,30,153,0.3)]">
+          <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-[#5d2595] to-[#7b3fc0] shadow-[0_4px_20px_rgba(93,37,149,0.35)]">
             <Shield className="h-5 w-5 text-white" />
           </div>
+
           {!collapsed && (
             <div className="flex flex-col">
-              <span className="text-sm font-bold tracking-tight"><span className="font-normal opacity-60">Rox</span>Shield</span>
-              <span className="text-[11px] opacity-40">by Rostel High-Tech</span>
+              <span className="text-sm font-bold tracking-tight">
+                <span className="font-normal opacity-60">Rox</span>
+                Shield
+              </span>
+
+              <span className="text-[11px] text-white/40">
+                by Rostel High-Tech
+              </span>
             </div>
           )}
+
           <Button
             variant="ghost"
             size="icon"
-            className="ml-auto h-7 w-7 opacity-40 hover:bg-sidebar-accent hover:opacity-100 hidden md:flex"
+            className="ml-auto hidden h-7 w-7 text-white/40 hover:bg-white/5 hover:text-white md:flex"
             onClick={() => setCollapsed(!collapsed)}
           >
-            {collapsed ? <ChevronRight className="h-4 w-4" /> : <ChevronLeft className="h-4 w-4" />}
+            {collapsed ? (
+              <ChevronRight className="h-4 w-4" />
+            ) : (
+              <ChevronLeft className="h-4 w-4" />
+            )}
           </Button>
+
           <Button
             variant="ghost"
             size="icon"
-            className="ml-auto h-7 w-7 opacity-40 hover:bg-sidebar-accent hover:opacity-100 md:hidden"
+            className="ml-auto h-7 w-7 text-white/40 hover:bg-white/5 hover:text-white md:hidden"
             onClick={() => setMobileOpen(false)}
           >
             <X className="h-4 w-4" />
           </Button>
         </div>
 
-        <Separator className="bg-sidebar-border" />
+        <Separator className="bg-white/[0.05]" />
 
-        {!collapsed && (
-          <div className="px-4 py-3">
-            <p className="text-[10px] font-medium uppercase tracking-widest opacity-30">{t("nav.organization")}</p>
-            <p className="mt-0.5 text-sm font-medium">{orgName}</p>
-          </div>
-        )}
-
-        <nav className="flex-1 space-y-1 overflow-y-auto px-3 py-2">
+        {/* NAVIGATION */}
+        <nav className="flex-1 space-y-1 px-3 py-3">
           {navItems.map((item) => {
             const isActive =
               pathname === item.href ||
-              (item.href !== "/dashboard" && pathname.startsWith(item.href));
+              (item.href !== "/dashboard" &&
+                pathname.startsWith(item.href));
+
             return (
               <Link
                 key={item.href}
                 href={item.href}
-                className={`flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition-all duration-200 ${
-                  isActive
-                    ? "bg-rht-violet/15 text-rht-violet-light shadow-[0_2px_8px_rgba(156,30,153,0.1)]"
-                    : "opacity-50 hover:bg-sidebar-accent hover:opacity-80"
-                } ${collapsed ? "justify-center" : ""}`}
+                className={`
+                  flex items-center gap-3
+                  rounded-xl px-3 py-2.5
+                  text-sm font-medium
+                  transition-all duration-200
+                  ${
+                    isActive
+                      ? `
+                        border border-[#5d2595]/30
+                        bg-[#5d2595]/20
+                        text-[#b27cff]
+                        shadow-[0_0_20px_rgba(93,37,149,0.15)]
+                      `
+                      : `
+                        text-white/50
+                        hover:bg-white/[0.04]
+                        hover:text-white/80
+                      `
+                  }
+                  ${collapsed ? "justify-center" : ""}
+                `}
               >
                 <item.icon className="h-[18px] w-[18px] shrink-0" />
-                {!collapsed && <span>{item.label}</span>}
+
+                {!collapsed && (
+                  <span className="truncate">{item.label}</span>
+                )}
               </Link>
             );
           })}
         </nav>
 
-        <Separator className="bg-sidebar-border" />
+        <Separator className="bg-white/[0.05]" />
 
+        {/* USER */}
         <div className="p-3">
-          <div className={`flex items-center gap-3 rounded-xl px-3 py-2.5 ${collapsed ? "justify-center" : ""}`}>
-            <Link href="/dashboard/profile">
-              <Avatar className="h-8 w-8 shrink-0 cursor-pointer transition-opacity hover:opacity-80">
-                {userImage && <AvatarImage src={userImage} alt={userName} />}
-                <AvatarFallback className="bg-gradient-to-br from-rht-violet to-rht-violet-light text-[11px] text-white">
+          <div
+            className={`flex items-center gap-3 rounded-xl px-3 py-2 ${
+              collapsed ? "justify-center" : ""
+            }`}
+          >
+            <Link to={"/dashboard/profile"}>
+              <Avatar className="h-9 w-9 cursor-pointer transition-opacity hover:opacity-80">
+                {/* {userImage && (
+                  <AvatarImage
+                    src={userImage}
+                    alt={userName}
+                  />
+                )} */}
+
+                <AvatarFallback className="bg-gradient-to-br from-[#5d2595] to-[#7b3fc0] text-xs text-white">
                   {getInitials(user?.name, user?.email)}
                 </AvatarFallback>
               </Avatar>
             </Link>
+
             {!collapsed && (
-              <Link href="/dashboard/profile" className="flex-1 overflow-hidden transition-opacity hover:opacity-80">
-                <p className="truncate text-sm font-medium">{userName}</p>
-                <p className="truncate text-[11px] opacity-40">{userEmail}</p>
-              </Link>
-            )}
-            {!collapsed && (
-              <button onClick={() => signOut({ callbackUrl: "/login" })}>
-                <LogOut className="h-4 w-4 shrink-0 opacity-30 transition-opacity hover:opacity-100" />
-              </button>
+              <>
+                <Link
+                  to={"/dashboard/profile"}
+                  className="min-w-0 flex-1"
+                >
+                  <p className="truncate text-sm font-medium">
+                    {userName}
+                  </p>
+
+                  <p className="truncate text-xs text-white/40">
+                    {userEmail}
+                  </p>
+                </Link>
+
+                <button>
+                  <LogOut className="h-4 w-4 text-white/30 transition-all hover:text-red-400" />
+                </button>
+              </>
             )}
           </div>
         </div>

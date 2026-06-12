@@ -2326,6 +2326,9 @@ const dictionaries = {
     "landing.devis.message": "Message (optional)",
     "landing.devis.messagePlaceholder": "Tell us about your needs...",
     "landing.devis.responseTime": "We'll get back to you within 24 hours",
+
+    // Login page
+    "login.error": "Invalid email or password"
   },
 } as const;
 

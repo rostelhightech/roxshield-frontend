@@ -1,0 +1,9 @@
+User-agent: *
+Allow: /
+Disallow: /dashboard
+Disallow: /employee
+Disallow: /admin
+Disallow: /login
+Disallow: /api/
+
+Sitemap: https://roxshield.vercel.app/sitemap.xml

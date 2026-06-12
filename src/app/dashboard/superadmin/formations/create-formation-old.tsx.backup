@@ -1,0 +1,608 @@
+'use client';
+
+import { useState, useEffect } from 'react';
+import { ArrowLeft, Save, Eye, Plus, Trash2, ChevronDown, ChevronUp } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
+import { Label } from '@/components/ui/label';
+import { Switch } from '@/components/ui/switch';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Badge } from '@/components/ui/badge';
+import { useNavigate } from '@tanstack/react-router';
+import { DashboardTopbar } from '@/components/layout/topbar';
+import { motion, AnimatePresence } from 'framer-motion';
+import { useFormationStore } from '@/store/formation.store';
+import { useAuthStore } from '@/store/auth.store';
+import { useOrganizationStore } from '@/store/organization.store';
+import { toast } from 'sonner';
+import { BlockNoteEditor } from '@/components/blocknote-editor';
+import '@/styles/blocknote.css';
+
+interface QuizQuestion {
+  id: string;
+  question: string;
+  options: string[];
+  correctAnswer: number;
+  explanation?: string;
+}
+
+interface FormationData {
+  title: string;
+  description: string;
+  type: 'VIDEO' | 'DOCUMENT' | 'INTERACTIVE' | 'QUIZ' | 'WEBINAR';
+  content: string;
+  estimatedDuration: number;
+  isRequired: boolean;
+  passingScore: number;
+  allowRetries: boolean;
+  maxAttempts: number;
+  organizationId: string;
+  targetAudience: {
+    allUsers: boolean;
+    specificGroups: string[];
+    specificUsers: string[];
+  };
+  quizQuestions: QuizQuestion[];
+  videoUrl?: string;
+  documentUrl?: string;
+}
+
+export function CreateFormationPage() {
+  const navigate = useNavigate();
+  const { createFormation, isLoading:loading } = useFormationStore();
+  const { user } = useAuthStore();
+  const { organizations, isLoading: loadingOrgs, fetchAll: fetchOrganizations } = useOrganizationStore();
+  const [formData, setFormData] = useState<FormationData>({
+    title: '',
+    description: '',
+    type: 'DOCUMENT',
+    content: '',
+    estimatedDuration: 15,
+    isRequired: false,
+    passingScore: 80,
+    allowRetries: true,
+    maxAttempts: 3,
+    organizationId: '',
+    targetAudience: {
+      allUsers: true,
+      specificGroups: [],
+      specificUsers: [],
+    },
+    quizQuestions: [],
+  });
+
+  const [expandedQuestion, setExpandedQuestion] = useState<string | null>(null);
+
+  // Charger la liste des organisations
+  useEffect(() => {
+    if (user?.role === 'superadmin' && organizations.length === 0) {
+      fetchOrganizations();
+    }
+  }, [user, organizations.length, fetchOrganizations]);
+
+  const handleInputChange = (field: keyof FormationData, value: any) => {
+    setFormData(prev => ({
+      ...prev,
+      [field]: value
+    }));
+    
+    if (field === 'type' && value === 'QUIZ') {
+      toast.info('Vous pouvez maintenant ajouter des questions dans la section Quiz');
+    }
+  };
+
+  const handleTargetAudienceChange = (field: keyof FormationData['targetAudience'], value: any) => {
+    setFormData(prev => ({
+      ...prev,
+      targetAudience: {
+        ...prev.targetAudience,
+        [field]: value
+      }
+    }));
+  };
+
+  const addQuizQuestion = () => {
+    const newQuestion: QuizQuestion = {
+      id: Date.now().toString(),
+      question: '',
+      options: ['', '', '', ''],
+      correctAnswer: 0,
+      explanation: '',
+    };
+    
+    setFormData(prev => ({
+      ...prev,
+      quizQuestions: [...prev.quizQuestions, newQuestion]
+    }));
+    setExpandedQuestion(newQuestion.id);
+  };
+
+  const updateQuizQuestion = (questionId: string, field: keyof QuizQuestion, value: any) => {
+    setFormData(prev => ({
+      ...prev,
+      quizQuestions: prev.quizQuestions.map(q => 
+        q.id === questionId ? { ...q, [field]: value } : q
+      )
+    }));
+  };
+
+  const updateQuizOption = (questionId: string, optionIndex: number, value: string) => {
+    setFormData(prev => ({
+      ...prev,
+      quizQuestions: prev.quizQuestions.map(q => 
+        q.id === questionId 
+          ? { 
+              ...q, 
+              options: q.options.map((opt, idx) => idx === optionIndex ? value : opt)
+            } 
+          : q
+      )
+    }));
+  };
+
+  const removeQuizQuestion = (questionId: string) => {
+    setFormData(prev => ({
+      ...prev,
+      quizQuestions: prev.quizQuestions.filter(q => q.id !== questionId)
+    }));
+  };
+
+  const handleSave = async (isDraft: boolean = true) => {
+    try {
+      if (!formData.title || !formData.content) {
+        toast.error('Le titre et le contenu sont requis');
+        return;
+      }
+
+      if (!formData.organizationId) {
+        toast.error('Veuillez sélectionner une organisation');
+        return;
+      }
+
+      const metadata: Record<string, any> = {};
+      
+      if (formData.type === 'VIDEO' && formData.videoUrl) {
+        metadata.videoUrl = formData.videoUrl;
+      }
+      
+      if (formData.type === 'DOCUMENT' && formData.documentUrl) {
+        metadata.documentUrl = formData.documentUrl;
+      }
+      
+      if (formData.type === 'QUIZ' && formData.quizQuestions.length > 0) {
+        metadata.quizQuestions = formData.quizQuestions.map(q => ({
+          question: q.question,
+          options: q.options,
+          correctAnswer: q.correctAnswer,
+          explanation: q.explanation,
+        }));
+      }
+
+      const formationPayload = {
+        title: formData.title,
+        description: formData.description,
+        content: formData.content,
+        type: formData.type,
+        estimatedDuration: formData.estimatedDuration,
+        isRequired: formData.isRequired,
+        passingScore: formData.passingScore,
+        allowRetries: formData.allowRetries,
+        maxAttempts: formData.maxAttempts,
+        targetAudience: formData.targetAudience,
+        metadata: Object.keys(metadata).length > 0 ? metadata : undefined,
+        organizationId: formData.organizationId,
+      };
+
+      await createFormation(formationPayload);
+      toast.success(`Formation ${isDraft ? 'sauvegardée en brouillon' : 'publiée'} avec succès`);
+      navigate({ to: '/dashboard/formations' });
+    } catch (error) {
+      toast.error('Erreur lors de la sauvegarde de la formation');
+      console.error('Erreur:', error);
+    }
+  };
+
+  const toggleQuestionExpansion = (questionId: string) => {
+    setExpandedQuestion(expandedQuestion === questionId ? null : questionId);
+  };
+
+  return (
+    <>
+      <DashboardTopbar
+        title="Créer une formation"
+        description="Créez une nouvelle formation de sensibilisation à la cybersécurité"
+      />
+      
+      <div className="min-h-screen bg-[#050816] px-6 pb-12">
+        {/* Header */}
+        <div className="flex items-center justify-between mb-6">
+          <Button
+            variant="ghost"
+            onClick={() => navigate({ to: '/dashboard/formations' })}
+            className="text-slate-400 hover:text-gray-700"
+          >
+            <ArrowLeft className="w-4 h-4 mr-2" />
+            Retour aux formations
+          </Button>
+          
+          <div className="flex gap-3">
+            <Button 
+              variant="outline" 
+              onClick={() => handleSave(true)}
+              disabled={loading}
+              className="text-gray-600"
+            >
+              <Save className="w-4 h-4 mr-2" />
+              {loading ? 'Sauvegarde...' : 'Sauvegarder en brouillon'}
+            </Button>
+            <Button 
+              onClick={() => handleSave(false)} 
+              disabled={loading}
+            >
+              <Eye className="w-4 h-4 mr-2" />
+              {loading ? 'Publication...' : 'Publier'}
+            </Button>
+          </div>
+        </div>
+
+        <div className="space-y-6">
+          {/* Informations générales */}
+          <Card className="rounded-md border border-white/10 bg-[#0c1023]/90 shadow-xl">
+            <CardHeader>
+              <CardTitle className="text-white">Informations générales</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-6">
+              {user?.role === 'superadmin' && (
+                <div className="space-y-2">
+                  <Label htmlFor="organization" className="text-white">Organisation *</Label>
+                  {loadingOrgs ? (
+                    <div className="bg-slate-800/50 border border-slate-600 rounded-md p-3">
+                      <span className="text-gray-400">Chargement des organisations...</span>
+                    </div>
+                  ) : (
+                    <Select 
+                      value={formData.organizationId} 
+                      onValueChange={(value) => handleInputChange('organizationId', value)}
+                    >
+                      <SelectTrigger className="bg-slate-800/50 border-slate-600 text-white">
+                        <SelectValue placeholder="Sélectionner une organisation">
+                          {formData.organizationId 
+                            ? organizations.find(org => org.id === formData.organizationId)?.name || formData.organizationId
+                            : "Sélectionner une organisation"
+                          }
+                        </SelectValue>
+                      </SelectTrigger>
+                      <SelectContent className="bg-slate-800 border-slate-600">
+                        {organizations.map((org) => (
+                          <SelectItem key={org.id} value={org.id} className="text-white">
+                            {org.name}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  )}
+                </div>
+              )}
+
+              <div className="grid gap-4 md:grid-cols-2">
+                <div className="space-y-2">
+                  <Label htmlFor="title" className="text-white">Titre de la formation *</Label>
+                  <Input
+                    id="title"
+                    value={formData.title}
+                    onChange={(e) => handleInputChange('title', e.target.value)}
+                    placeholder="Ex: Introduction au Phishing"
+                    className="bg-slate-800/50 border-slate-600 text-white"
+                  />
+                </div>
+                
+                <div className="space-y-2">
+                  <Label htmlFor="type" className="text-white">Type de formation *</Label>
+                  <Select value={formData.type} onValueChange={(value: any) => handleInputChange('type', value)}>
+                    <SelectTrigger className="bg-slate-800/50 border-slate-600 text-white">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent className="bg-slate-800 border-slate-600">
+                      <SelectItem value="VIDEO" className="text-white">Vidéo</SelectItem>
+                      <SelectItem value="DOCUMENT" className="text-white">Document</SelectItem>
+                      <SelectItem value="INTERACTIVE" className="text-white">Interactif</SelectItem>
+                      <SelectItem value="QUIZ" className="text-white">Quiz</SelectItem>
+                      <SelectItem value="WEBINAR" className="text-white">Webinaire</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="description" className="text-white">Description</Label>
+                <Textarea
+                  id="description"
+                  value={formData.description}
+                  onChange={(e) => handleInputChange('description', e.target.value)}
+                  placeholder="Décrivez brièvement le contenu de cette formation..."
+                  rows={3}
+                  className="bg-slate-800/50 border-slate-600 text-white"
+                />
+              </div>
+
+              <div className="grid gap-4 md:grid-cols-2">
+                <div className="space-y-2">
+                  <Label htmlFor="duration" className="text-white">Durée estimée (minutes)</Label>
+                  <Input
+                    id="duration"
+                    type="number"
+                    value={formData.estimatedDuration}
+                    onChange={(e) => handleInputChange('estimatedDuration', parseInt(e.target.value) || 0)}
+                    className="bg-slate-800/50 border-slate-600 text-white"
+                  />
+                </div>
+
+                <div className="flex items-center space-x-2 pt-8">
+                  <Switch
+                    id="required"
+                    checked={formData.isRequired}
+                    onCheckedChange={(checked) => handleInputChange('isRequired', checked)}
+                  />
+                  <Label htmlFor="required" className="text-white">Formation obligatoire</Label>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Contenu */}
+          <Card className="rounded-md border border-white/10 bg-[#0c1023]/90 shadow-xl">
+            <CardHeader>
+              <CardTitle className="text-white">Contenu de la formation</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-6">
+              {formData.type === 'VIDEO' && (
+                <div className="space-y-2">
+                  <Label htmlFor="videoUrl" className="text-white">URL de la vidéo</Label>
+                  <Input
+                    id="videoUrl"
+                    value={formData.videoUrl || ''}
+                    onChange={(e) => handleInputChange('videoUrl', e.target.value)}
+                    placeholder="https://youtube.com/watch?v=..."
+                    className="bg-slate-800/50 border-slate-600 text-white"
+                  />
+                </div>
+              )}
+
+              {formData.type === 'DOCUMENT' && (
+                <div className="space-y-2">
+                  <Label htmlFor="documentUrl" className="text-white">URL du document</Label>
+                  <Input
+                    id="documentUrl"
+                    value={formData.documentUrl || ''}
+                    onChange={(e) => handleInputChange('documentUrl', e.target.value)}
+                    placeholder="https://example.com/document.pdf"
+                    className="bg-slate-800/50 border-slate-600 text-white"
+                  />
+                </div>
+              )}
+
+              <div className="space-y-2">
+                <Label htmlFor="content" className="text-white">
+                  {formData.type === 'QUIZ' ? 'Instructions du quiz' : 'Contenu principal'}
+                </Label>
+                <BlockNoteEditor
+                  initialContent={formData.content}
+                  onChange={(content) => handleInputChange('content', content)}
+                  editable={true}
+                />
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Questions Quiz - visible seulement si type est QUIZ */}
+          {formData.type === 'QUIZ' && (
+            <Card className="rounded-md border border-white/10 bg-[#0c1023]/90 shadow-xl">
+              <CardHeader>
+                <div className="flex items-center justify-between">
+                  <CardTitle className="text-white">Questions du Quiz</CardTitle>
+                  <Button onClick={addQuizQuestion} className="bg-orange-600 hover:bg-orange-700">
+                    <Plus className="w-4 h-4 mr-2" />
+                    Ajouter une question
+                  </Button>
+                </div>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                {formData.quizQuestions.length === 0 ? (
+                  <div className="text-center py-8 text-slate-400">
+                    <div className="text-6xl mb-4">❓</div>
+                    <p>Aucune question ajoutée. Cliquez sur "Ajouter une question" pour commencer.</p>
+                  </div>
+                ) : (
+                  <div className="space-y-4">
+                    {formData.quizQuestions.map((question, index) => (
+                      <motion.div
+                        key={question.id}
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        className="border border-slate-600 rounded-lg p-4 bg-slate-800/30"
+                      >
+                        <div className="flex items-center justify-between mb-4">
+                          <div className="flex items-center gap-3">
+                            <Badge variant="outline" className="text-orange-400 border-orange-400/50">
+                              Question {index + 1}
+                            </Badge>
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => toggleQuestionExpansion(question.id)}
+                              className="text-slate-400 hover:text-white"
+                            >
+                              {expandedQuestion === question.id ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
+                            </Button>
+                          </div>
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => removeQuizQuestion(question.id)}
+                            className="text-red-400 hover:text-red-300"
+                          >
+                            <Trash2 className="w-4 h-4" />
+                          </Button>
+                        </div>
+
+                        <div className="space-y-4">
+                          <div className="space-y-2">
+                            <Label className="text-white">Question *</Label>
+                            <Textarea
+                              value={question.question}
+                              onChange={(e) => updateQuizQuestion(question.id, 'question', e.target.value)}
+                              placeholder="Tapez votre question ici..."
+                              rows={2}
+                              className="bg-slate-700/50 border-slate-600 text-white"
+                            />
+                          </div>
+
+                          <AnimatePresence>
+                            {expandedQuestion === question.id && (
+                              <motion.div
+                                initial={{ height: 0, opacity: 0 }}
+                                animate={{ height: 'auto', opacity: 1 }}
+                                exit={{ height: 0, opacity: 0 }}
+                                className="space-y-4"
+                              >
+                                <div className="space-y-3">
+                                  <Label className="text-white">Options de réponse *</Label>
+                                  {question.options.map((option, optionIndex) => (
+                                    <div key={optionIndex} className="flex items-center gap-3">
+                                      <div className="flex items-center">
+                                        <input
+                                          type="radio"
+                                          name={`correct-${question.id}`}
+                                          checked={question.correctAnswer === optionIndex}
+                                          onChange={() => updateQuizQuestion(question.id, 'correctAnswer', optionIndex)}
+                                          className="w-4 h-4 text-green-500 bg-slate-700 border-slate-600"
+                                        />
+                                        <Label className="ml-2 text-green-400 text-sm">Correcte</Label>
+                                      </div>
+                                      <Input
+                                        value={option}
+                                        onChange={(e) => updateQuizOption(question.id, optionIndex, e.target.value)}
+                                        placeholder={`Option ${optionIndex + 1}`}
+                                        className="flex-1 bg-slate-700/50 border-slate-600 text-white"
+                                      />
+                                    </div>
+                                  ))}
+                                </div>
+
+                                <div className="space-y-2">
+                                  <Label className="text-white">Explication (optionnel)</Label>
+                                  <Textarea
+                                    value={question.explanation || ''}
+                                    onChange={(e) => updateQuizQuestion(question.id, 'explanation', e.target.value)}
+                                    placeholder="Expliquez pourquoi cette réponse est correcte..."
+                                    rows={2}
+                                    className="bg-slate-700/50 border-slate-600 text-white"
+                                  />
+                                </div>
+                              </motion.div>
+                            )}
+                          </AnimatePresence>
+                        </div>
+                      </motion.div>
+                    ))}
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+          )}
+
+          {/* Paramètres */}
+          <Card className="rounded-md border border-white/10 bg-[#0c1023]/90 shadow-xl">
+            <CardHeader>
+              <CardTitle className="text-white">Paramètres de la formation</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-6">
+              <div className="grid gap-6 md:grid-cols-2">
+                <div className="space-y-2">
+                  <Label htmlFor="passingScore" className="text-white">Score de réussite minimum (%)</Label>
+                  <Input
+                    id="passingScore"
+                    type="number"
+                    min="0"
+                    max="100"
+                    value={formData.passingScore}
+                    onChange={(e) => handleInputChange('passingScore', parseInt(e.target.value) || 0)}
+                    className="bg-slate-800/50 border-slate-600 text-white"
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="maxAttempts" className="text-white">Nombre maximum de tentatives</Label>
+                  <Input
+                    id="maxAttempts"
+                    type="number"
+                    min="1"
+                    value={formData.maxAttempts}
+                    onChange={(e) => handleInputChange('maxAttempts', parseInt(e.target.value) || 1)}
+                    disabled={!formData.allowRetries}
+                    className="bg-slate-800/50 border-slate-600 text-white"
+                  />
+                </div>
+              </div>
+
+              <div className="flex items-center space-x-2">
+                <Switch
+                  id="allowRetries"
+                  checked={formData.allowRetries}
+                  onCheckedChange={(checked) => handleInputChange('allowRetries', checked)}
+                />
+                <Label htmlFor="allowRetries" className="text-white">Autoriser les nouvelles tentatives</Label>
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Public cible */}
+          <Card className="rounded-md border border-white/10 bg-[#0c1023]/90 shadow-xl">
+            <CardHeader>
+              <CardTitle className="text-white">Public cible</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-6">
+              <div className="flex items-center space-x-2">
+                <Switch
+                  id="allUsers"
+                  checked={formData.targetAudience.allUsers}
+                  onCheckedChange={(checked) => handleTargetAudienceChange('allUsers', checked)}
+                />
+                <Label htmlFor="allUsers" className="text-white">Tous les utilisateurs</Label>
+              </div>
+
+              {!formData.targetAudience.allUsers && (
+                <div className="space-y-4 pl-6 border-l-2 border-slate-600">
+                  <div className="space-y-2">
+                    <Label className="text-white">Groupes spécifiques</Label>
+                    <Select disabled>
+                      <SelectTrigger className="bg-slate-800/50 border-slate-600 text-white">
+                        <SelectValue placeholder="Sélectionner des groupes..." />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="hr">Ressources Humaines</SelectItem>
+                        <SelectItem value="it">IT</SelectItem>
+                        <SelectItem value="sales">Ventes</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label className="text-white">Utilisateurs spécifiques</Label>
+                    <Input
+                      placeholder="Rechercher des utilisateurs..."
+                      className="bg-slate-800/50 border-slate-600 text-white"
+                      disabled
+                    />
+                  </div>
+                </div>
+              )}
+            </CardContent>
+          </Card>
+        </div>
+      </div>
+    </>
+  );
+}

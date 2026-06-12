@@ -1,0 +1,192 @@
+'use client';
+
+import { motion } from 'framer-motion';
+import { CheckCircle, XCircle, Clock, MousePointerClick, Monitor, Smartphone, Tablet } from 'lucide-react';
+import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card';
+import { DetailedTargetAnalysis } from '@/store/campaign.store';
+import { format } from 'date-fns';
+import { fr } from 'date-fns/locale';
+
+interface CampaignDetailedTargetsProps {
+  detailedTargetAnalysis: DetailedTargetAnalysis[];
+}
+
+const getDeviceIcon = (device: string | null) => {
+  if (!device) return Monitor;
+  if (device === 'Mobile') return Smartphone;
+  if (device === 'Tablet') return Tablet;
+  return Monitor;
+};
+
+export function CampaignDetailedTargets({ detailedTargetAnalysis }: CampaignDetailedTargetsProps) {
+  // Trier par nombre total d'événements (du plus actif au moins actif)
+  const sortedTargets = [...detailedTargetAnalysis].sort((a, b) => b.totalEvents - a.totalEvents);
+
+  return (
+    <Card className="rounded-md border border-white/10 bg-[#0c1023]/90 shadow-xl">
+      <CardHeader>
+        <CardTitle className="text-white">Analyse détaillée des cibles</CardTitle>
+        <CardDescription>
+          Interactions complètes pour chaque destinataire
+        </CardDescription>
+      </CardHeader>
+      <CardContent>
+        <div className="overflow-x-auto">
+          <table className="w-full">
+            <thead>
+              <tr className="border-b border-slate-700">
+                <th className="text-left py-3 px-4 text-sm font-medium text-slate-300">Cible</th>
+                <th className="text-center py-3 px-4 text-sm font-medium text-slate-300">Envoyé</th>
+                <th className="text-center py-3 px-4 text-sm font-medium text-slate-300">Ouvert</th>
+                <th className="text-center py-3 px-4 text-sm font-medium text-slate-300">Cliqué</th>
+                <th className="text-center py-3 px-4 text-sm font-medium text-slate-300">Temps ouverture</th>
+                <th className="text-center py-3 px-4 text-sm font-medium text-slate-300">Temps clic</th>
+                <th className="text-center py-3 px-4 text-sm font-medium text-slate-300">Appareil</th>
+                <th className="text-center py-3 px-4 text-sm font-medium text-slate-300">IP</th>
+              </tr>
+            </thead>
+          <tbody>
+            {sortedTargets.map((target, index) => {
+              const DeviceIcon = getDeviceIcon(target.device);
+              
+              return (
+                <motion.tr
+                  key={target.targetId}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: index * 0.05 }}
+                  className="border-b border-slate-800/50 hover:bg-slate-800/30 transition-colors"
+                >
+                  <td className="py-3 px-4">
+                    <div>
+                      <p className="text-sm font-medium text-white">
+                        {target.firstName && target.lastName 
+                          ? `${target.firstName} ${target.lastName}`
+                          : target.email
+                        }
+                      </p>
+                      {target.firstName && target.lastName && (
+                        <p className="text-xs text-slate-400">{target.email}</p>
+                      )}
+                    </div>
+                  </td>
+                  <td className="py-3 px-4 text-center">
+                    {target.emailSent ? (
+                      <div className="flex flex-col items-center">
+                        <CheckCircle className="w-5 h-5 text-green-400" />
+                        {target.emailSentAt && (
+                          <span className="text-xs text-slate-500 mt-1">
+                            {format(new Date(target.emailSentAt), 'HH:mm', { locale: fr })}
+                          </span>
+                        )}
+                      </div>
+                    ) : (
+                      <XCircle className="w-5 h-5 text-slate-600" />
+                    )}
+                  </td>
+                  <td className="py-3 px-4 text-center">
+                    {target.emailOpened ? (
+                      <div className="flex flex-col items-center">
+                        <CheckCircle className="w-5 h-5 text-blue-400" />
+                        {target.emailOpenedAt && (
+                          <span className="text-xs text-slate-500 mt-1">
+                            {format(new Date(target.emailOpenedAt), 'HH:mm', { locale: fr })}
+                          </span>
+                        )}
+                      </div>
+                    ) : (
+                      <XCircle className="w-5 h-5 text-slate-600" />
+                    )}
+                  </td>
+                  <td className="py-3 px-4 text-center">
+                    {target.linkClicked ? (
+                      <div className="flex flex-col items-center">
+                        <CheckCircle className="w-5 h-5 text-purple-400" />
+                        {target.linkClickedAt && (
+                          <span className="text-xs text-slate-500 mt-1">
+                            {format(new Date(target.linkClickedAt), 'HH:mm', { locale: fr })}
+                          </span>
+                        )}
+                      </div>
+                    ) : (
+                      <XCircle className="w-5 h-5 text-slate-600" />
+                    )}
+                  </td>
+                  <td className="py-3 px-4 text-center">
+                    {target.timeToOpenMinutes !== null ? (
+                      <div className="flex items-center justify-center gap-1">
+                        <Clock className="w-4 h-4 text-blue-400" />
+                        <span className="text-sm text-white">
+                          {target.timeToOpenMinutes < 60 
+                            ? `${target.timeToOpenMinutes}m`
+                            : `${Math.floor(target.timeToOpenMinutes / 60)}h${target.timeToOpenMinutes % 60}m`
+                          }
+                        </span>
+                      </div>
+                    ) : (
+                      <span className="text-sm text-slate-600">-</span>
+                    )}
+                  </td>
+                  <td className="py-3 px-4 text-center">
+                    {target.timeToClickMinutes !== null ? (
+                      <div className="flex items-center justify-center gap-1">
+                        <MousePointerClick className="w-4 h-4 text-purple-400" />
+                        <span className="text-sm text-white">
+                          {target.timeToClickMinutes < 60 
+                            ? `${target.timeToClickMinutes}m`
+                            : `${Math.floor(target.timeToClickMinutes / 60)}h${target.timeToClickMinutes % 60}m`
+                          }
+                        </span>
+                      </div>
+                    ) : (
+                      <span className="text-sm text-slate-600">-</span>
+                    )}
+                  </td>
+                  <td className="py-3 px-4 text-center">
+                    {target.timeToClickMinutes !== null ? (
+                      <div className="flex items-center justify-center gap-1">
+                        <MousePointerClick className="w-4 h-4 text-purple-400" />
+                        <span className="text-sm text-white">
+                          {target.timeToClickMinutes < 60 
+                            ? `${target.timeToClickMinutes}m`
+                            : `${Math.floor(target.timeToClickMinutes / 60)}h${target.timeToClickMinutes % 60}m`
+                          }
+                        </span>
+                      </div>
+                    ) : (
+                      <span className="text-sm text-slate-600">-</span>
+                    )}
+                  </td>
+                  <td className="py-3 px-4 text-center">
+                    {target.device ? (
+                      <div className="flex items-center justify-center gap-1">
+                        <DeviceIcon className="w-4 h-4 text-slate-400" />
+                        <span className="text-xs text-slate-400">{target.device}</span>
+                      </div>
+                    ) : (
+                      <span className="text-sm text-slate-600">-</span>
+                    )}
+                  </td>
+                  <td className="py-3 px-4 text-center">
+                    {target.ip ? (
+                      <span className="text-xs text-slate-400 font-mono">{target.ip}</span>
+                    ) : (
+                      <span className="text-sm text-slate-600">-</span>
+                    )}
+                  </td>
+                </motion.tr>
+              );
+            })}
+          </tbody>
+        </table>
+      </div>
+
+      {sortedTargets.length === 0 && (
+        <div className="text-center py-12">
+          <p className="text-slate-400">Aucune donnée d'analyse disponible pour le moment.</p>
+        </div>
+      )}
+    </CardContent>
+    </Card>
+  );
+}

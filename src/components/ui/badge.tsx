@@ -27,6 +27,47 @@ const badgeVariants = cva(
   }
 )
 
+const customBadgeVariants = cva(
+  "inline-flex h-5 w-fit shrink-0 items-center justify-center gap-1 overflow-hidden rounded-full border px-2 py-0.5 text-[11px] font-semibold whitespace-nowrap transition-all focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50",
+  {
+    variants: {
+      color: {
+        default: "bg-primary text-primary-foreground border-transparent",
+        success: "bg-emerald-500/15 text-emerald-200 border-emerald-500/20",
+        warning: "bg-amber-500/15 text-amber-200 border-amber-500/20",
+        danger: "bg-destructive/15 text-destructive border-destructive/20",
+        info: "bg-sky-500/15 text-sky-200 border-sky-500/20",
+        muted: "bg-white/10 text-white border-white/15",
+      },
+    },
+    defaultVariants: {
+      color: "default",
+    },
+  }
+)
+
+function CustomBadge({
+  className,
+  color = "default",
+  render,
+  ...props
+}: useRender.ComponentProps<"span"> & VariantProps<typeof customBadgeVariants>) {
+  return useRender({
+    defaultTagName: "span",
+    props: mergeProps<"span">(
+      {
+        className: cn(customBadgeVariants({ color }), className),
+      },
+      props
+    ),
+    render,
+    state: {
+      slot: "badge",
+      color,
+    },
+  })
+}
+
 function Badge({
   className,
   variant = "default",
@@ -49,4 +90,4 @@ function Badge({
   })
 }
 
-export { Badge, badgeVariants }
+export { Badge, CustomBadge, badgeVariants }

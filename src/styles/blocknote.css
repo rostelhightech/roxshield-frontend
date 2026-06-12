@@ -1,0 +1,53 @@
+/* BlockNote Editor Custom Styles */
+.blocknote-editor-wrapper {
+  border-radius: 0.375rem;
+  border: 1px solid rgb(71 85 105 / 0.6);
+  background-color: rgb(15 23 42 / 0.5);
+  overflow: hidden;
+}
+
+.blocknote-editor-wrapper .bn-container {
+  background-color: transparent !important;
+}
+
+.blocknote-editor-wrapper .bn-editor {
+  color: rgb(226 232 240) !important;
+  min-height: 300px;
+}
+
+.blocknote-editor-wrapper .bn-block-content {
+  color: rgb(226 232 240) !important;
+}
+
+.blocknote-editor-wrapper .bn-inline-content {
+  color: rgb(226 232 240) !important;
+}
+
+/* Toolbar styles */
+.blocknote-editor-wrapper .bn-toolbar {
+  background-color: rgb(30 41 59) !important;
+  border-color: rgb(71 85 105) !important;
+}
+
+.blocknote-editor-wrapper .bn-toolbar-button {
+  color: rgb(226 232 240) !important;
+}
+
+.blocknote-editor-wrapper .bn-toolbar-button:hover {
+  background-color: rgb(51 65 85) !important;
+}
+
+/* Side menu styles */
+.blocknote-editor-wrapper .bn-side-menu {
+  background-color: rgb(30 41 59) !important;
+}
+
+/* Drag handle */
+.blocknote-editor-wrapper .bn-drag-handle {
+  color: rgb(148 163 184) !important;
+}
+
+/* Placeholder */
+.blocknote-editor-wrapper .bn-block-content[data-content-type="none"]::before {
+  color: rgb(100 116 139) !important;
+}
