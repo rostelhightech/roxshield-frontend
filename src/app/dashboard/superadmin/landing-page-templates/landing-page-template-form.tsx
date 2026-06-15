@@ -91,66 +91,66 @@ export const LandingPageTemplateForm = ({ organizations, template, onCancel }: L
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
       <div className="grid grid-cols-2 gap-4">
         <div>
-          <Label htmlFor="name" className="text-gray-300">Nom</Label>
-          <Input id="name" {...register('name')} className="bg-gray-800/50 border-gray-700 text-white mt-1" />
-          {errors.name && <p className="text-red-400 text-sm mt-1">{errors.name.message}</p>}
+          <Label htmlFor="name" className="text-gray-700 dark:text-gray-300">Nom</Label>
+          <Input id="name" {...register('name')} className="bg-white dark:bg-gray-800/50 border-gray-300 dark:border-gray-700 text-gray-900 dark:text-white mt-1" />
+          {errors.name && <p className="text-red-600 dark:text-red-400 text-sm mt-1">{errors.name.message}</p>}
         </div>
 
         <div>
-          <Label htmlFor="organizationId" className="text-gray-300">Organisation</Label>
+          <Label htmlFor="organizationId" className="text-gray-700 dark:text-gray-300">Organisation</Label>
           <Select
             value={watch('organizationId') || ''}
             onValueChange={(value) => setValue('organizationId', value)}
           >
-            <SelectTrigger className="bg-gray-800/50 border-gray-700 text-white mt-1">
+            <SelectTrigger className="bg-white dark:bg-gray-800/50 border-gray-300 dark:border-gray-700 text-gray-900 dark:text-white mt-1">
               {selectedOrganization ? (
                 <span className="truncate">{selectedOrganization.name || selectedOrganization.id}</span>
               ) : (
                 <SelectValue placeholder="Choisir une organisation" />
               )}
             </SelectTrigger>
-            <SelectContent className="bg-slate-200 border-gray-700">
+            <SelectContent className="bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700">
               {organizations.map((org) => (
                 <SelectItem key={org.id} value={org.id}>{org.name || org.id}</SelectItem>
               ))}
             </SelectContent>
           </Select>
-          {errors.organizationId && <p className="text-red-400 text-sm mt-1">{errors.organizationId.message}</p>}
+          {errors.organizationId && <p className="text-red-600 dark:text-red-400 text-sm mt-1">{errors.organizationId.message}</p>}
         </div>
       </div>
 
       <div className="grid grid-cols-2 gap-4">
         <div>
-          <Label htmlFor="title" className="text-gray-300">Titre</Label>
-          <Input id="title" {...register('title')} className="bg-gray-800/50 border-gray-700 text-white mt-1" />
-          {errors.title && <p className="text-red-400 text-sm mt-1">{errors.title.message}</p>}
+          <Label htmlFor="title" className="text-gray-700 dark:text-gray-300">Titre</Label>
+          <Input id="title" {...register('title')} className="bg-white dark:bg-gray-800/50 border-gray-300 dark:border-gray-700 text-gray-900 dark:text-white mt-1" />
+          {errors.title && <p className="text-red-600 dark:text-red-400 text-sm mt-1">{errors.title.message}</p>}
         </div>
 
         <div>
-          <Label htmlFor="category" className="text-gray-300">Catégorie</Label>
-          <Input id="category" {...register('category')} className="bg-gray-800/50 border-gray-700 text-white mt-1" />
+          <Label htmlFor="category" className="text-gray-700 dark:text-gray-300">Catégorie</Label>
+          <Input id="category" {...register('category')} className="bg-white dark:bg-gray-800/50 border-gray-300 dark:border-gray-700 text-gray-900 dark:text-white mt-1" />
         </div>
       </div>
 
-      <div className="space-y-3 rounded-xl border border-white/10 bg-white/5 p-4">
-        <p className="text-sm font-medium text-white">Importer du HTML</p>
+      <div className="space-y-3 rounded-sm border border-gray-200 dark:border-white/10 bg-gray-50 dark:bg-white/5 p-4">
+        <p className="text-sm font-medium text-gray-900 dark:text-white">Importer du HTML</p>
         <div className="space-y-2">
-          <Label htmlFor="importFile" className="text-gray-300">Fichier HTML</Label>
+          <Label htmlFor="importFile" className="text-gray-700 dark:text-gray-300">Fichier HTML</Label>
           <input
             id="importFile"
             type="file"
             accept="text/html"
             onChange={(event) => handleFileUpload(event.target.files?.[0] ?? null)}
-            className="w-full text-sm text-gray-200 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:bg-slate-700 file:text-white file:cursor-pointer"
+            className="w-full text-sm text-gray-600 dark:text-gray-200 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:bg-gray-200 dark:file:bg-slate-700 file:text-gray-700 dark:file:text-white file:cursor-pointer"
           />
         </div>
-        {importStatus && <p className="text-xs text-sky-300">{importStatus}</p>}
-        {importError && <p className="text-xs text-red-400">{importError}</p>}
+        {importStatus && <p className="text-xs text-sky-600 dark:text-sky-300">{importStatus}</p>}
+        {importError && <p className="text-xs text-red-600 dark:text-red-400">{importError}</p>}
       </div>
 
       <div>
-        <Label className="text-gray-300">Éditeur HTML</Label>
-        <div className="h-[620px] bg-white/5 mt-2 rounded-md overflow-hidden">
+        <Label className="text-gray-700 dark:text-gray-300">Éditeur HTML</Label>
+        <div className="h-[620px] bg-gray-50 dark:bg-white/5 mt-2 rounded-sm overflow-hidden">
           <EmailEditorWrapper
             ref={editorRef}
             defaultHtml={editorHtml}
@@ -161,7 +161,6 @@ export const LandingPageTemplateForm = ({ organizations, template, onCancel }: L
 
       <div className="flex justify-end gap-3">
         <Button
-          className="text-gray-700"
           type="button"
           variant="outline"
           onClick={() => {

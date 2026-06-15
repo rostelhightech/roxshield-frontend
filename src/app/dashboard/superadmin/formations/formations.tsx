@@ -16,6 +16,16 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '@/components/ui/alert-dialog';
 import { useFormationStore } from '@/store/formation.store';
 import { toast } from 'sonner';
 
@@ -23,6 +33,8 @@ export const Formations = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState<string>('all');
   const [viewMode, setViewMode] = useState<'table' | 'cards'>('cards');
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [formationToDelete, setFormationToDelete] = useState<{ id: string; title: string } | null>(null);
   
   const navigate = useNavigate();
   
@@ -35,6 +47,8 @@ export const Formations = () => {
     fetchFormationStats,
     deleteFormation,
   } = useFormationStore();
+
+
 
   // Chargement des données
   useEffect(() => {
@@ -74,15 +88,22 @@ export const Formations = () => {
     });
   };
 
-  const handleDeleteFormation = async (formationId: string, formationTitle: string) => {
-    if (window.confirm(`Êtes-vous sûr de vouloir supprimer la formation "${formationTitle}" ?`)) {
-      const success = await deleteFormation(formationId) as unknown as {success:boolean};
-      if (success) {
-        toast.success('Formation supprimée avec succès');
-      } else {
-        toast.error('Erreur lors de la suppression de la formation');
-      }
+  const handleDeleteFormation = (formationId: string, formationTitle: string) => {
+    setFormationToDelete({ id: formationId, title: formationTitle });
+    setDeleteDialogOpen(true);
+  };
+
+  const confirmDelete = async () => {
+    if (!formationToDelete) return;
+
+    const success = await deleteFormation(formationToDelete.id) as unknown as {success:boolean};
+    if (success) {
+      toast.success('✅ Formation supprimée avec succès');
+    } else {
+      toast.error('❌ Erreur lors de la suppression de la formation');
     }
+    setDeleteDialogOpen(false);
+    setFormationToDelete(null);
   };
 
   const completionRate = (formation: any) => {
@@ -150,14 +171,14 @@ export const Formations = () => {
   };
 
   return (
-    <div className="min-h-screen bg-[#050816] -mt-2">
+ <div className="min-h-screen bg-gray-50 dark:bg-[#050816] -mt-2">
       {/* Header */}
-      <div className="border-b border-gray-800/50 bg-[#0a0f1e]/50 backdrop-blur-sm sticky top-0 z-10">
+      <div className="border-b border-gray-200 dark:border-gray-800/50 bg-white dark:bg-[#0a0f1e]/50 backdrop-blur-sm sticky top-0 z-10">
         <div className="mx-auto py-2">
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
             <Button
               onClick={handleCreateFormation}
-              className="bg-slate-600 hover:bg-slate-700 text-white shadow-lg cursor-pointer transition-all duration-300"
+              className="bg-gray-200 hover:bg-gray-300 ml-2 dark:bg-slate-600 dark:hover:bg-slate-700 text-gray-900 dark:text-white cursor-pointer transition-all duration-300"
             >
               <Plus className="w-4 h-4 mr-2" />
               Nouvelle formation
@@ -169,29 +190,29 @@ export const Formations = () => {
       <div className="mx-auto py-6">
         {/* Stats */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
-          <Card className="rounded-md hover:bg-[#1a1f36] cursor-pointer transition-colors duration-200 border border-white/5 bg-[#0c1023] p-4 shadow-xl">
+          <Card className="rounded-sm hover:bg-gray-100 dark:hover:bg-[#1a1f36] cursor-pointer transition-colors duration-200 border border-gray-200 dark:border-white/5 bg-white dark:bg-[#0c1023] p-4">
             <CardContent className="p-4">
               <div className="flex items-center gap-3">
-                <div className="p-2 rounded-lg bg-blue-500/20">
-                  <BookOpen className="w-5 h-5 text-blue-400" />
+                <div className="p-2 rounded-lg bg-blue-100 dark:bg-blue-500/20">
+                  <BookOpen className="w-5 h-5 text-blue-600 dark:text-blue-400" />
                 </div>
                 <div>
-                  <p className="text-gray-400 text-sm">Total formations</p>
-                  <p className="text-2xl font-bold text-white">{stats?.formations?.totalFormations || 0}</p>
+                  <p className="text-gray-500 dark:text-gray-400 text-sm">Total formations</p>
+                  <p className="text-2xl font-bold text-gray-900 dark:text-white">{stats?.formations?.totalFormations || 0}</p>
                 </div>
               </div>
             </CardContent>
           </Card>
           
-          <Card className="rounded-md hover:bg-[#1a1f36] cursor-pointer transition-colors duration-200 border border-white/5 bg-[#0c1023] p-4 shadow-xl">
+          <Card className="rounded-sm hover:bg-gray-100 dark:hover:bg-[#1a1f36] cursor-pointer transition-colors duration-200 border border-gray-200 dark:border-white/5 bg-white dark:bg-[#0c1023] p-4">
             <CardContent className="p-4">
               <div className="flex items-center gap-3">
-                <div className="p-2 rounded-lg bg-green-500/20">
-                  <Play className="w-5 h-5 text-green-400" />
+                <div className="p-2 rounded-lg bg-green-100 dark:bg-green-500/20">
+                  <Play className="w-5 h-5 text-green-600 dark:text-green-400" />
                 </div>
                 <div>
-                  <p className="text-gray-400 text-sm">Publiées</p>
-                  <p className="text-2xl font-bold text-white">
+                  <p className="text-gray-500 dark:text-gray-400 text-sm">Publiées</p>
+                  <p className="text-2xl font-bold text-gray-900 dark:text-white">
                     {stats?.formations?.publishedFormations || 0}
                   </p>
                 </div>
@@ -199,15 +220,15 @@ export const Formations = () => {
             </CardContent>
           </Card>
           
-          <Card className="rounded-md hover:bg-[#1a1f36] cursor-pointer transition-colors duration-200 border border-white/5 bg-[#0c1023] p-4 shadow-xl">
+          <Card className="rounded-sm hover:bg-gray-100 dark:hover:bg-[#1a1f36] cursor-pointer transition-colors duration-200 border border-gray-200 dark:border-white/5 bg-white dark:bg-[#0c1023] p-4">
             <CardContent className="p-4">
               <div className="flex items-center gap-3">
-                <div className="p-2 rounded-lg bg-orange-500/20">
-                  <HelpCircle className="w-5 h-5 text-orange-400" />
+                <div className="p-2 rounded-lg bg-orange-100 dark:bg-orange-500/20">
+                  <HelpCircle className="w-5 h-5 text-orange-600 dark:text-orange-400" />
                 </div>
                 <div>
-                  <p className="text-gray-400 text-sm">Brouillons</p>
-                  <p className="text-2xl font-bold text-white">
+                  <p className="text-gray-500 dark:text-gray-400 text-sm">Brouillons</p>
+                  <p className="text-2xl font-bold text-gray-900 dark:text-white">
                     {stats?.formations?.draftFormations || 0}
                   </p>
                 </div>
@@ -215,15 +236,15 @@ export const Formations = () => {
             </CardContent>
           </Card>
           
-          <Card className="rounded-md hover:bg-[#1a1f36] cursor-pointer transition-colors duration-200 border border-white/5 bg-[#0c1023] p-4 shadow-xl">
+          <Card className="rounded-sm hover:bg-gray-100 dark:hover:bg-[#1a1f36] cursor-pointer transition-colors duration-200 border border-gray-200 dark:border-white/5 bg-white dark:bg-[#0c1023] p-4">
             <CardContent className="p-4">
               <div className="flex items-center gap-3">
-                <div className="p-2 rounded-lg bg-purple-500/20">
-                  <Users className="w-5 h-5 text-purple-400" />
+                <div className="p-2 rounded-lg bg-purple-100 dark:bg-purple-500/20">
+                  <Users className="w-5 h-5 text-purple-600 dark:text-purple-400" />
                 </div>
                 <div>
-                  <p className="text-gray-400 text-sm">Inscrits totaux</p>
-                  <p className="text-2xl font-bold text-white">
+                  <p className="text-gray-500 dark:text-gray-400 text-sm">Inscrits totaux</p>
+                  <p className="text-2xl font-bold text-gray-900 dark:text-white">
                     {stats?.progress?.totalEnrollments || 0}
                   </p>
                 </div>
@@ -238,14 +259,14 @@ export const Formations = () => {
             placeholder="Rechercher une formation..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="bg-gray-800/30 border-gray-700 text-white placeholder:text-gray-400 max-w-sm"
+            className="bg-white dark:bg-gray-800/30 border-gray-300 dark:border-gray-700 text-gray-900 dark:text-white placeholder:text-gray-400 max-w-sm"
           />
           
           <Select value={statusFilter} onValueChange={(value) => setStatusFilter(value || 'all')}>
-            <SelectTrigger className="bg-gray-800/30 border-gray-700 text-white w-48">
+            <SelectTrigger className="bg-white dark:bg-gray-800/30 border-gray-300 dark:border-gray-700 text-gray-900 dark:text-white w-48">
               <SelectValue placeholder="Statut" />
             </SelectTrigger>
-            <SelectContent className="bg-gray-800 border-gray-700">
+            <SelectContent className="bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700">
               <SelectItem value="all">Tous les statuts</SelectItem>
               <SelectItem value="PUBLISHED">Publié</SelectItem>
               <SelectItem value="DRAFT">Brouillon</SelectItem>
@@ -256,42 +277,24 @@ export const Formations = () => {
 
         {/* View Toggle */}
         <div className="flex items-center justify-between mb-4">
-          <p className="text-sm text-gray-400">
+          <p className="text-sm text-gray-500 dark:text-gray-400">
             {filteredFormations?.length} formation(s) trouvée(s)
           </p>
-          <div className="flex items-center gap-2 bg-gray-800/30 rounded-lg p-1">
-            <Button
-              variant={viewMode === 'cards' ? 'default' : 'ghost'}
-              size="sm"
-              onClick={() => setViewMode('cards')}
-              className={viewMode === 'cards' ? 'bg-gray-700' : ''}
-            >
-              <LayoutGrid className="w-4 h-4" />
-            </Button>
-            <Button
-              variant={viewMode === 'table' ? 'default' : 'ghost'}
-              size="sm"
-              onClick={() => setViewMode('table')}
-              className={viewMode === 'table' ? 'bg-gray-700' : ''}
-            >
-              <List className="w-4 h-4" />
-            </Button>
-          </div>
         </div>
 
         {/* Content */}
         {isLoading ? (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             {Array.from({ length: 6 }).map((_, i) => (
-              <Skeleton key={i} className="h-64 bg-gray-800/50" />
+              <Skeleton key={i} className="h-64 bg-gray-200 dark:bg-gray-800/50" />
             ))}
           </div>
         ) : filteredFormations?.length === 0 ? (
-          <Card className="bg-gray-800/30 border-gray-700/50">
+          <Card className="bg-white dark:bg-gray-800/30 border-gray-200 dark:border-gray-700/50">
             <CardContent className="p-12 text-center">
-              <BookOpen className="w-12 h-12 text-gray-600 mx-auto mb-4" />
-              <h3 className="text-lg font-medium text-white mb-2">Aucune formation</h3>
-              <p className="text-gray-400 mb-4">
+              <BookOpen className="w-12 h-12 text-gray-400 dark:text-gray-600 mx-auto mb-4" />
+              <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-2">Aucune formation</h3>
+              <p className="text-gray-500 dark:text-gray-400 mb-4">
                 Commencez par créer votre première formation de sensibilisation
               </p>
               <Button onClick={handleCreateFormation} variant="outline">
@@ -309,7 +312,7 @@ export const Formations = () => {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: index * 0.1 }}
               >
-                <Card className="bg-gray-900/50 border-gray-700/50 hover:border-blue-500/30 transition-all duration-300 overflow-hidden cursor-pointer group"
+                <Card className="bg-white dark:bg-gray-900/50 border-gray-200 dark:border-gray-700/50 hover:border-blue-500/30 transition-all duration-300 overflow-hidden cursor-pointer group"
                       onClick={() => handleViewFormation(formation.id)}>
                   <CardHeader className="pb-3">
                     <div className="flex items-start justify-between">
@@ -322,17 +325,17 @@ export const Formations = () => {
                         </Badge>
                       </div>
                       <DropdownMenu>
-                        <DropdownMenuTrigger >
+                        <DropdownMenuTrigger>
                           <Button 
                             variant="ghost" 
                             size="sm" 
                             className="h-8 w-8 p-0 opacity-0 group-hover:opacity-100 transition-opacity"
                             onClick={(e) => e.stopPropagation()}
                           >
-                            <MoreHorizontal className="h-4 w-4" />
+                            <MoreHorizontal className="h-4 w-4 text-gray-700 dark:text-gray-400" />
                           </Button>
                         </DropdownMenuTrigger>
-                        <DropdownMenuContent align="end" className="bg-gray-800 border-gray-700">
+                        <DropdownMenuContent align="end" className="bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700 w-auto">
                           <DropdownMenuItem onClick={() => handleViewFormation(formation.id)}>
                             <Eye className="w-4 h-4 mr-2" />
                             Voir les détails
@@ -342,7 +345,7 @@ export const Formations = () => {
                             Modifier
                           </DropdownMenuItem>
                           <DropdownMenuItem 
-                            className="text-red-400"
+                            className="text-red-600 dark:text-red-400"
                             onClick={() => handleDeleteFormation(formation.id, formation.title)}
                           >
                             <Trash2 className="w-4 h-4 mr-2" />
@@ -351,8 +354,8 @@ export const Formations = () => {
                         </DropdownMenuContent>
                       </DropdownMenu>
                     </div>
-                    <CardTitle className="text-white text-lg">{formation.title}</CardTitle>
-                    <p className="text-gray-400 text-sm">{formation.description}</p>
+                    <CardTitle className="text-gray-900 dark:text-white text-lg">{formation.title}</CardTitle>
+                    <p className="text-gray-500 dark:text-gray-400 text-sm">{formation.description}</p>
                   </CardHeader>
                   
                   <CardContent>
@@ -362,23 +365,23 @@ export const Formations = () => {
                           {getStatusLabel(formation.status)}
                         </Badge>
                         {formation.isRequired && (
-                          <Badge variant="outline" className="text-red-400 border-red-400/50">
+                          <Badge variant="outline" className="text-red-600 dark:text-red-400 border-red-400/50">
                             Obligatoire
                           </Badge>
                         )}
                       </div>
                       
-                      <div className="flex items-center justify-between text-sm text-gray-400">
+                      <div className="flex items-center justify-between text-sm text-gray-500 dark:text-gray-400">
                         <span>Durée: {formation.estimatedDuration} min</span>
                         <span>Score min: {formation.passingScore}%</span>
                       </div>
                       
                       <div className="space-y-2">
                         <div className="flex justify-between text-sm">
-                          <span className="text-gray-400">Progression</span>
-                          <span className="text-white">{completionRate(formation)}%</span>
+                          <span className="text-gray-500 dark:text-gray-400">Progression</span>
+                          <span className="text-gray-900 dark:text-white">{completionRate(formation)}%</span>
                         </div>
-                        <div className="w-full bg-gray-700 rounded-full h-2">
+                        <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2">
                           <div 
                             className="bg-blue-500 h-2 rounded-full transition-all duration-300"
                             style={{ width: `${completionRate(formation)}%` }}
@@ -397,11 +400,33 @@ export const Formations = () => {
           </div>
         ) : (
           // Table view (à implémenter si nécessaire)
-          <div className="text-center py-8 text-gray-400">
+          <div className="text-center py-8 text-gray-500 dark:text-gray-400">
             Vue tableau à implémenter
           </div>
         )}
       </div>
+
+      <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
+        <AlertDialogContent className="bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-800">
+          <AlertDialogHeader>
+            <AlertDialogTitle className="text-gray-900 dark:text-white">Supprimer la formation?</AlertDialogTitle>
+            <AlertDialogDescription className="text-gray-600 dark:text-gray-400">
+              Êtes-vous sûr de vouloir supprimer la formation <span className="font-semibold text-gray-900 dark:text-white">"{formationToDelete?.title}"</span> ? Cette action est irréversible.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter className='bg-white dark:bg-gray-900'>
+            <AlertDialogCancel className="bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 border-gray-300 dark:border-gray-700 text-gray-700 dark:text-white hover:text-gray-900 dark:hover:text-white">
+              Annuler
+            </AlertDialogCancel>
+            <AlertDialogAction
+              onClick={confirmDelete}
+              className="bg-red-600 hover:bg-red-700 text-white"
+            >
+              Supprimer
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 };

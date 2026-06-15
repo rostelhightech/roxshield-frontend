@@ -23,7 +23,7 @@ import '@/styles/blocknote.css';
 import type { FormationData, FormationModule, FormationChapter, FormationEvaluation, QuizQuestion } from '@/types/formation.types';
 
 // ============================================================================
-// Sous-composants (inchangés mais vérifiés)
+// Sous-composants
 // ============================================================================
 
 export function ChapterItem({
@@ -40,22 +40,22 @@ export function ChapterItem({
   onDelete: (moduleIndex: number, chapterIndex: number) => void;
 }) {
   return (
-    <div className="p-3 bg-slate-700/20 rounded border border-slate-600 space-y-3">
+    <div className="p-3 bg-gray-100 dark:bg-slate-700/20 rounded border border-gray-300 dark:border-slate-600 space-y-3">
       <div className="flex items-center justify-between gap-3">
-        <Badge variant="outline" className="text-blue-400 border-blue-400/50">
+        <Badge variant="outline" className="text-blue-700 dark:text-blue-400 border-blue-300 dark:border-blue-400/50">
           Chapitre {chapterIndex + 1}
         </Badge>
         <Input
           value={chapter.title}
           onChange={(e) => onUpdate(moduleIndex, chapterIndex, 'title', e.target.value)}
-          className="flex-1 bg-slate-700/50 border-slate-600 text-white text-sm"
+          className="flex-1 bg-white dark:bg-slate-700/50 border-gray-300 dark:border-slate-600 text-gray-900 dark:text-white text-sm"
           placeholder="Titre du chapitre"
         />
         <Button
           variant="ghost"
           size="sm"
           onClick={() => onDelete(moduleIndex, chapterIndex)}
-          className="text-red-400 hover:text-red-300"
+          className="text-red-600 dark:text-red-400 hover:text-red-700 dark:hover:text-red-300"
         >
           <Trash2 className="w-3 h-3" />
         </Button>
@@ -63,7 +63,7 @@ export function ChapterItem({
 
       <div className="grid grid-cols-2 gap-3">
         <div className="space-y-1">
-          <Label className="text-white text-xs">Type</Label>
+          <Label className="text-gray-700 dark:text-white text-xs">Type</Label>
           <Select
             value={chapter.type}
             onValueChange={(value) => {
@@ -72,35 +72,35 @@ export function ChapterItem({
               }
             }}
           >
-            <SelectTrigger className="bg-slate-700/50 border-slate-600 text-white h-8 text-sm">
+            <SelectTrigger className="bg-white dark:bg-slate-700/50 border-gray-300 dark:border-slate-600 text-gray-900 dark:text-white h-8 text-sm">
               <SelectValue />
             </SelectTrigger>
-            <SelectContent className="bg-slate-800 border-slate-600">
-              <SelectItem value="VIDEO" className="text-white">Vidéo</SelectItem>
-              <SelectItem value="DOCUMENT" className="text-white">Document</SelectItem>
-              <SelectItem value="INTERACTIVE" className="text-white">Interactif</SelectItem>
-              <SelectItem value="QUIZ" className="text-white">Quiz</SelectItem>
-              <SelectItem value="WEBINAR" className="text-white">Webinaire</SelectItem>
+            <SelectContent className="bg-white dark:bg-slate-800 border-gray-200 dark:border-slate-600">
+              <SelectItem value="VIDEO" className="text-gray-900 dark:text-white">Vidéo</SelectItem>
+              <SelectItem value="DOCUMENT" className="text-gray-900 dark:text-white">Document</SelectItem>
+              <SelectItem value="INTERACTIVE" className="text-gray-900 dark:text-white">Interactif</SelectItem>
+              <SelectItem value="QUIZ" className="text-gray-900 dark:text-white">Quiz</SelectItem>
+              <SelectItem value="WEBINAR" className="text-gray-900 dark:text-white">Webinaire</SelectItem>
             </SelectContent>
           </Select>
         </div>
 
         <div className="space-y-1">
-          <Label className="text-white text-xs">Durée (min)</Label>
+          <Label className="text-gray-700 dark:text-white text-xs">Durée (min)</Label>
           <Input
             type="number"
             value={chapter.estimatedDuration}
             onChange={(e) =>
               onUpdate(moduleIndex, chapterIndex, 'estimatedDuration', parseInt(e.target.value) || 0)
             }
-            className="bg-slate-700/50 border-slate-600 text-white h-8 text-sm"
+            className="bg-white dark:bg-slate-700/50 border-gray-300 dark:border-slate-600 text-gray-900 dark:text-white h-8 text-sm"
           />
         </div>
       </div>
 
       {chapter.type === 'VIDEO' && (
         <div className="space-y-1">
-          <Label className="text-white text-xs">URL de la vidéo</Label>
+          <Label className="text-gray-700 dark:text-white text-xs">URL de la vidéo</Label>
           <Input
             value={chapter.metadata?.videoUrl || ''}
             onChange={(e) =>
@@ -110,13 +110,13 @@ export function ChapterItem({
               })
             }
             placeholder="https://youtube.com/..."
-            className="bg-slate-700/50 border-slate-600 text-white h-8 text-sm"
+            className="bg-white dark:bg-slate-700/50 border-gray-300 dark:border-slate-600 text-gray-900 dark:text-white h-8 text-sm"
           />
         </div>
       )}
 
       <div className="space-y-1">
-        <Label className="text-white text-xs">Contenu</Label>
+        <Label className="text-gray-700 dark:text-white text-xs">Contenu</Label>
         <BlockNoteEditor
           initialContent={chapter.content}
           onChange={(content) => onUpdate(moduleIndex, chapterIndex, 'content', content)}
@@ -152,27 +152,27 @@ export function ModuleItem({
     <motion.div
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
-      className="border border-slate-600 rounded-lg bg-slate-800/30 overflow-hidden"
+      className="border border-gray-300 dark:border-slate-600 rounded-lg bg-gray-50 dark:bg-slate-800/30 overflow-hidden"
     >
-      <div className="p-4 bg-slate-700/30 border-b border-slate-600">
+      <div className="p-4 bg-gray-100 dark:bg-slate-700/30 border-b border-gray-200 dark:border-slate-600">
         <div className="flex items-center justify-between gap-4">
           <div className="flex items-center gap-3 flex-1">
-            <GripVertical className="w-5 h-5 text-slate-500" />
-            <Badge className="bg-orange-600/20 text-orange-400 border-orange-400/50">
+            <GripVertical className="w-5 h-5 text-gray-400 dark:text-slate-500" />
+            <Badge className="bg-orange-100 dark:bg-orange-600/20 text-orange-700 dark:text-orange-400 border-orange-300 dark:border-orange-400/50">
               Module {moduleIndex + 1}
             </Badge>
             <Input
               value={module.title}
               onChange={(e) => onUpdateModule(moduleIndex, 'title', e.target.value)}
-              className="flex-1 bg-slate-700/50 border-slate-600 text-white"
+              className="flex-1 bg-white dark:bg-slate-700/50 border-gray-300 dark:border-slate-600 text-gray-900 dark:text-white"
               placeholder="Titre du module"
             />
           </div>
           <div className="flex items-center gap-2">
-            <Button variant="ghost" size="sm" onClick={onToggleExpand} className="text-slate-400">
+            <Button variant="ghost" size="sm" onClick={onToggleExpand} className="text-gray-500 dark:text-slate-400">
               {isExpanded ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
             </Button>
-            <Button variant="ghost" size="sm" onClick={() => onDeleteModule(moduleIndex)} className="text-red-400 hover:text-red-300">
+            <Button variant="ghost" size="sm" onClick={() => onDeleteModule(moduleIndex)} className="text-red-600 dark:text-red-400 hover:text-red-700 dark:hover:text-red-300">
               <Trash2 className="w-4 h-4" />
             </Button>
           </div>
@@ -188,24 +188,24 @@ export function ModuleItem({
             className="p-4 space-y-4"
           >
             <div className="space-y-2">
-              <Label className="text-white">Description du module</Label>
+              <Label className="text-gray-700 dark:text-white">Description du module</Label>
               <Textarea
                 value={module.description}
                 onChange={(e) => onUpdateModule(moduleIndex, 'description', e.target.value)}
                 placeholder="Décrivez brièvement ce module..."
                 rows={2}
-                className="bg-slate-700/50 border-slate-600 text-white"
+                className="bg-white dark:bg-slate-700/50 border-gray-300 dark:border-slate-600 text-gray-900 dark:text-white"
               />
             </div>
 
             <div className="space-y-3">
               <div className="flex items-center justify-between">
-                <Label className="text-white">Chapitres ({module.chapters.length})</Label>
+                <Label className="text-gray-700 dark:text-white">Chapitres ({module.chapters.length})</Label>
                 <Button
                   onClick={() => onAddChapter(moduleIndex)}
                   size="sm"
                   variant="outline"
-                  className="text-orange-400 border-orange-400/50"
+                  className="text-orange-600 dark:text-orange-400 border-orange-300 dark:border-orange-400/50"
                 >
                   <Plus className="w-4 h-4 mr-1" />
                   Ajouter un chapitre
@@ -213,7 +213,7 @@ export function ModuleItem({
               </div>
 
               {module.chapters.length === 0 ? (
-                <div className="text-center py-6 text-slate-500 bg-slate-800/20 rounded border border-dashed border-slate-600">
+                <div className="text-center py-6 text-gray-500 dark:text-slate-500 bg-gray-100 dark:bg-slate-800/20 rounded border border-dashed border-gray-300 dark:border-slate-600">
                   Aucun chapitre. Ajoutez-en un pour commencer.
                 </div>
               ) : (
@@ -264,29 +264,29 @@ export function QuestionItem({
   };
 
   return (
-    <div className="p-4 bg-slate-700/20 rounded border border-slate-600 space-y-3">
+    <div className="p-4 bg-gray-100 dark:bg-slate-700/20 rounded border border-gray-300 dark:border-slate-600 space-y-3">
       <div className="flex items-start justify-between gap-3">
-        <Badge variant="outline" className="text-green-400 border-green-400/50">
+        <Badge variant="outline" className="text-green-700 dark:text-green-400 border-green-300 dark:border-green-400/50">
           Q{questionIndex + 1}
         </Badge>
-        <Button variant="ghost" size="sm" onClick={deleteQuestion} className="text-red-400 hover:text-red-300">
+        <Button variant="ghost" size="sm" onClick={deleteQuestion} className="text-red-600 dark:text-red-400 hover:text-red-700 dark:hover:text-red-300">
           <Trash2 className="w-4 h-4" />
         </Button>
       </div>
 
       <div className="space-y-2">
-        <Label className="text-white text-sm">Question</Label>
+        <Label className="text-gray-700 dark:text-white text-sm">Question</Label>
         <Textarea
           value={question.question}
           onChange={(e) => updateQuestion('question', e.target.value)}
           placeholder="Tapez votre question..."
           rows={2}
-          className="bg-slate-700/50 border-slate-600 text-white"
+          className="bg-white dark:bg-slate-700/50 border-gray-300 dark:border-slate-600 text-gray-900 dark:text-white"
         />
       </div>
 
       <div className="space-y-2">
-        <Label className="text-white text-sm">Options de réponse</Label>
+        <Label className="text-gray-700 dark:text-white text-sm">Options de réponse</Label>
         {question.options?.map((option, oIndex) => (
           <div key={oIndex} className="flex items-center gap-2">
             <input
@@ -294,7 +294,7 @@ export function QuestionItem({
               name={`correct-${question.id}`}
               checked={question.correctAnswer === oIndex}
               onChange={() => updateQuestion('correctAnswer', oIndex)}
-              className="w-4 h-4 text-green-500"
+              className="w-4 h-4 text-green-600 dark:text-green-500"
             />
             <Input
               value={option}
@@ -304,7 +304,7 @@ export function QuestionItem({
                 updateQuestion('options', newOptions);
               }}
               placeholder={`Option ${oIndex + 1}`}
-              className="flex-1 bg-slate-700/50 border-slate-600 text-white text-sm"
+              className="flex-1 bg-white dark:bg-slate-700/50 border-gray-300 dark:border-slate-600 text-gray-900 dark:text-white text-sm"
             />
           </div>
         ))}
@@ -314,7 +314,7 @@ export function QuestionItem({
 }
 
 // ============================================================================
-// Étape Informations générales (corrigée)
+// Étape Informations générales
 // ============================================================================
 export function InfoStep({
   formData,
@@ -326,26 +326,20 @@ export function InfoStep({
   onNext: () => void;
 }) {
   const { user } = useAuthStore();
-  const { organizations, isLoading: loadingOrgs, fetchAll: fetchOrganizations } = useOrganizationStore();
-
-  useEffect(() => {
-    if (user?.role === 'superadmin' && organizations.length === 0) {
-      fetchOrganizations();
-    }
-  }, [user, organizations.length, fetchOrganizations]);
+  const { organizations, isLoading: loadingOrgs } = useOrganizationStore();
 
   return (
-    <Card className="rounded-md border border-white/10 bg-[#0c1023]/90 shadow-xl">
+    <Card className="rounded-sm border border-gray-200 dark:border-white/10 bg-white dark:bg-[#0c1023]/90 shadow-sm dark:shadow-xl">
       <CardHeader>
-        <CardTitle className="text-white">Informations générales</CardTitle>
+        <CardTitle className="text-gray-900 dark:text-white">Informations générales</CardTitle>
       </CardHeader>
       <CardContent className="space-y-6">
         {user?.role === 'superadmin' && (
           <div className="space-y-2">
-            <Label htmlFor="organization" className="text-white">Organisation *</Label>
+            <Label htmlFor="organization" className="text-gray-700 dark:text-white">Organisation *</Label>
             {loadingOrgs ? (
-              <div className="bg-slate-800/50 border border-slate-600 rounded-md p-3">
-                <span className="text-gray-400">Chargement...</span>
+              <div className="bg-gray-100 dark:bg-slate-800/50 border border-gray-300 dark:border-slate-600 rounded-md p-3">
+                <span className="text-gray-500 dark:text-gray-400">Chargement...</span>
               </div>
             ) : (
               <Select
@@ -356,12 +350,12 @@ export function InfoStep({
                   }
                 }}
               >
-                <SelectTrigger className="bg-slate-800/50 border-slate-600 text-white">
+                <SelectTrigger className="bg-white dark:bg-slate-800/50 border-gray-300 dark:border-slate-600 text-gray-900 dark:text-white">
                   <SelectValue placeholder="Sélectionner une organisation" />
                 </SelectTrigger>
-                <SelectContent className="bg-slate-800 border-slate-600">
+                <SelectContent className="bg-white dark:bg-slate-800 border-gray-200 dark:border-slate-600">
                   {organizations.map((org) => (
-                    <SelectItem key={org.id} value={org.id} className="text-white">
+                    <SelectItem key={org.id} value={org.id} className="text-gray-900 dark:text-white">
                       {org.name}
                     </SelectItem>
                   ))}
@@ -372,34 +366,34 @@ export function InfoStep({
         )}
 
         <div className="space-y-2">
-          <Label htmlFor="title" className="text-white">Titre de la formation *</Label>
+          <Label htmlFor="title" className="text-gray-700 dark:text-white">Titre de la formation *</Label>
           <Input
             id="title"
             value={formData.title}
             onChange={(e) => setFormData((prev) => ({ ...prev, title: e.target.value }))}
             placeholder="Ex: Sensibilisation au Phishing Avancé"
-            className="bg-slate-800/50 border-slate-600 text-white"
+            className="bg-white dark:bg-slate-800/50 border-gray-300 dark:border-slate-600 text-gray-900 dark:text-white"
           />
         </div>
 
         <div className="space-y-2">
-          <Label htmlFor="description" className="text-white">Description</Label>
+          <Label htmlFor="description" className="text-gray-700 dark:text-white">Description</Label>
           <Textarea
             id="description"
             value={formData.description}
             onChange={(e) => setFormData((prev) => ({ ...prev, description: e.target.value }))}
             placeholder="Décrivez brièvement le contenu de cette formation..."
             rows={3}
-            className="bg-slate-800/50 border-slate-600 text-white"
+            className="bg-white dark:bg-slate-800/50 border-gray-300 dark:border-slate-600 text-gray-900 dark:text-white"
           />
         </div>
 
         <div className="grid gap-4 md:grid-cols-2">
           <div className="space-y-2">
-            <Label className="text-white">Durée totale estimée</Label>
-            <div className="bg-slate-700/30 border border-slate-600 rounded-md p-3 text-white">
+            <Label className="text-gray-700 dark:text-white">Durée totale estimée</Label>
+            <div className="bg-gray-100 dark:bg-slate-700/30 border border-gray-300 dark:border-slate-600 rounded-md p-3 text-gray-900 dark:text-white">
               {formData.estimatedDuration} minutes
-              <span className="text-slate-400 text-sm ml-2">(Calculée automatiquement)</span>
+              <span className="text-gray-500 dark:text-slate-400 text-sm ml-2">(Calculée automatiquement)</span>
             </div>
           </div>
 
@@ -409,13 +403,13 @@ export function InfoStep({
               checked={formData.isRequired}
               onCheckedChange={(checked) => setFormData((prev) => ({ ...prev, isRequired: checked }))}
             />
-            <Label htmlFor="required" className="text-white">Formation obligatoire</Label>
+            <Label htmlFor="required" className="text-gray-700 dark:text-white">Formation obligatoire</Label>
           </div>
         </div>
 
         <div className="grid gap-4 md:grid-cols-3">
           <div className="space-y-2">
-            <Label htmlFor="passingScore" className="text-white">Score de réussite (%)</Label>
+            <Label htmlFor="passingScore" className="text-gray-700 dark:text-white">Score de réussite (%)</Label>
             <Input
               id="passingScore"
               type="number"
@@ -423,12 +417,12 @@ export function InfoStep({
               max="100"
               value={formData.passingScore}
               onChange={(e) => setFormData((prev) => ({ ...prev, passingScore: parseInt(e.target.value) || 0 }))}
-              className="bg-slate-800/50 border-slate-600 text-white"
+              className="bg-white dark:bg-slate-800/50 border-gray-300 dark:border-slate-600 text-gray-900 dark:text-white"
             />
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="maxAttempts" className="text-white">Tentatives max</Label>
+            <Label htmlFor="maxAttempts" className="text-gray-700 dark:text-white">Tentatives max</Label>
             <Input
               id="maxAttempts"
               type="number"
@@ -439,7 +433,7 @@ export function InfoStep({
                 setFormData((prev) => ({ ...prev, maxAttempts: isNaN(val) ? 1 : val }));
               }}
               disabled={!formData.allowRetries}
-              className="bg-slate-800/50 border-slate-600 text-white"
+              className="bg-white dark:bg-slate-800/50 border-gray-300 dark:border-slate-600 text-gray-900 dark:text-white"
             />
           </div>
 
@@ -449,11 +443,11 @@ export function InfoStep({
               checked={formData.allowRetries}
               onCheckedChange={(checked) => setFormData((prev) => ({ ...prev, allowRetries: checked }))}
             />
-            <Label htmlFor="allowRetries" className="text-white">Autoriser nouvelles tentatives</Label>
+            <Label htmlFor="allowRetries" className="text-gray-700 dark:text-white">Autoriser nouvelles tentatives</Label>
           </div>
         </div>
 
-        <div className="space-y-4 pt-4 border-t border-slate-700">
+        <div className="space-y-4 pt-4 border-t border-gray-200 dark:border-slate-700">
           <div className="flex items-center space-x-2">
             <Switch
               id="allUsers"
@@ -465,12 +459,12 @@ export function InfoStep({
                 }))
               }
             />
-            <Label htmlFor="allUsers" className="text-white">Assigner à tous les utilisateurs</Label>
+            <Label htmlFor="allUsers" className="text-gray-700 dark:text-white">Assigner à tous les utilisateurs</Label>
           </div>
         </div>
 
         <div className="flex justify-end pt-4">
-          <Button onClick={onNext} className="bg-orange-600 hover:bg-orange-700">
+          <Button onClick={onNext} className="bg-orange-600 hover:bg-orange-700 text-white">
             Suivant : Modules & Chapitres
           </Button>
         </div>
@@ -569,11 +563,11 @@ export function ModulesStep({
   };
 
   return (
-    <Card className="rounded-md border border-white/10 bg-[#0c1023]/90 shadow-xl">
+    <Card className="rounded-sm border border-gray-200 dark:border-white/10 bg-white dark:bg-[#0c1023]/90 shadow-sm dark:shadow-xl">
       <CardHeader>
         <div className="flex items-center justify-between">
-          <CardTitle className="text-white">Modules de formation</CardTitle>
-          <Button onClick={addModule} className="bg-orange-600 hover:bg-orange-700">
+          <CardTitle className="text-gray-900 dark:text-white">Modules de formation</CardTitle>
+          <Button onClick={addModule} className="bg-orange-600 hover:bg-orange-700 text-white">
             <Plus className="w-4 h-4 mr-2" />
             Ajouter un module
           </Button>
@@ -581,7 +575,7 @@ export function ModulesStep({
       </CardHeader>
       <CardContent className="space-y-4">
         {formData.modules.length === 0 ? (
-          <div className="text-center py-12 text-slate-400">
+          <div className="text-center py-12 text-gray-500 dark:text-slate-400">
             <div className="text-6xl mb-4">📚</div>
             <p>Aucun module créé. Commencez par ajouter un module.</p>
           </div>
@@ -610,7 +604,7 @@ export function ModulesStep({
           <Button variant="outline" onClick={onPrev}>
             Précédent
           </Button>
-          <Button onClick={onNext} className="bg-orange-600 hover:bg-orange-700">
+          <Button onClick={onNext} className="bg-orange-600 hover:bg-orange-700 text-white">
             Suivant : Évaluation finale
           </Button>
         </div>
@@ -620,7 +614,7 @@ export function ModulesStep({
 }
 
 // ============================================================================
-// Étape Évaluation finale (corrigée)
+// Étape Évaluation finale
 // ============================================================================
 export function EvaluationStep({
   formData,
@@ -662,9 +656,9 @@ export function EvaluationStep({
   };
 
   return (
-    <Card className="rounded-md border border-white/10 bg-[#0c1023]/90 shadow-xl">
+    <Card className="rounded-sm border border-gray-200 dark:border-white/10 bg-white dark:bg-[#0c1023]/90 shadow-sm dark:shadow-xl">
       <CardHeader>
-        <CardTitle className="text-white">Évaluation finale (Optionnelle)</CardTitle>
+        <CardTitle className="text-gray-900 dark:text-white">Évaluation finale (Optionnelle)</CardTitle>
       </CardHeader>
       <CardContent className="space-y-6">
         <div className="flex items-center space-x-2">
@@ -693,26 +687,26 @@ export function EvaluationStep({
               }
             }}
           />
-          <Label htmlFor="hasFinalEval" className="text-white">
+          <Label htmlFor="hasFinalEval" className="text-gray-700 dark:text-white">
             Ajouter une évaluation finale pour valider la formation complète
           </Label>
         </div>
 
         {formData.finalEvaluation && (
-          <div className="space-y-6 pl-6 border-l-2 border-orange-600">
+          <div className="space-y-6 pl-6 border-l-2 border-orange-500 dark:border-orange-600">
             <div className="space-y-4">
               <div className="space-y-2">
-                <Label className="text-white">Titre de l'évaluation</Label>
+                <Label className="text-gray-700 dark:text-white">Titre de l'évaluation</Label>
                 <Input
                   value={formData.finalEvaluation.title}
                   onChange={(e) => updateEvaluation((prev) => ({ ...prev, title: e.target.value }))}
-                  className="bg-slate-800/50 border-slate-600 text-white"
+                  className="bg-white dark:bg-slate-800/50 border-gray-300 dark:border-slate-600 text-gray-900 dark:text-white"
                 />
               </div>
 
               <div className="grid grid-cols-3 gap-4">
                 <div className="space-y-2">
-                  <Label className="text-white">Score requis (%)</Label>
+                  <Label className="text-gray-700 dark:text-white">Score requis (%)</Label>
                   <Input
                     type="number"
                     min="0"
@@ -721,12 +715,12 @@ export function EvaluationStep({
                     onChange={(e) =>
                       updateEvaluation((prev) => ({ ...prev, passingScore: parseInt(e.target.value) || 0 }))
                     }
-                    className="bg-slate-800/50 border-slate-600 text-white"
+                    className="bg-white dark:bg-slate-800/50 border-gray-300 dark:border-slate-600 text-gray-900 dark:text-white"
                   />
                 </div>
 
                 <div className="space-y-2">
-                  <Label className="text-white">Temps limite (min)</Label>
+                  <Label className="text-gray-700 dark:text-white">Temps limite (min)</Label>
                   <Input
                     type="number"
                     min="0"
@@ -736,12 +730,12 @@ export function EvaluationStep({
                       updateEvaluation((prev) => ({ ...prev, timeLimit: isNaN(val) ? undefined : val }));
                     }}
                     placeholder="Illimité"
-                    className="bg-slate-800/50 border-slate-600 text-white"
+                    className="bg-white dark:bg-slate-800/50 border-gray-300 dark:border-slate-600 text-gray-900 dark:text-white"
                   />
                 </div>
 
                 <div className="space-y-2">
-                  <Label className="text-white">Tentatives max</Label>
+                  <Label className="text-gray-700 dark:text-white">Tentatives max</Label>
                   <Input
                     type="number"
                     min="1"
@@ -750,7 +744,7 @@ export function EvaluationStep({
                       const val = parseInt(e.target.value);
                       updateEvaluation((prev) => ({ ...prev, maxAttempts: isNaN(val) ? 1 : val }));
                     }}
-                    className="bg-slate-800/50 border-slate-600 text-white"
+                    className="bg-white dark:bg-slate-800/50 border-gray-300 dark:border-slate-600 text-gray-900 dark:text-white"
                   />
                 </div>
               </div>
@@ -763,7 +757,7 @@ export function EvaluationStep({
                       updateEvaluation((prev) => ({ ...prev, showCorrectAnswers: checked }))
                     }
                   />
-                  <Label className="text-white">Afficher les bonnes réponses après tentative</Label>
+                  <Label className="text-gray-700 dark:text-white">Afficher les bonnes réponses après tentative</Label>
                 </div>
 
                 <div className="flex items-center space-x-2">
@@ -773,22 +767,22 @@ export function EvaluationStep({
                       updateEvaluation((prev) => ({ ...prev, randomizeQuestions: checked }))
                     }
                   />
-                  <Label className="text-white">Ordre aléatoire des questions</Label>
+                  <Label className="text-gray-700 dark:text-white">Ordre aléatoire des questions</Label>
                 </div>
               </div>
             </div>
 
             <div className="space-y-4">
               <div className="flex items-center justify-between">
-                <Label className="text-white">Questions ({formData.finalEvaluation.questions.length})</Label>
-                <Button onClick={addQuestion} size="sm" className="bg-orange-600 hover:bg-orange-700">
+                <Label className="text-gray-700 dark:text-white">Questions ({formData.finalEvaluation.questions.length})</Label>
+                <Button onClick={addQuestion} size="sm" className="bg-orange-600 hover:bg-orange-700 text-white">
                   <Plus className="w-4 h-4 mr-1" />
                   Ajouter une question
                 </Button>
               </div>
 
               {formData.finalEvaluation.questions.length === 0 ? (
-                <div className="text-center py-8 text-slate-400 bg-slate-800/20 rounded border border-dashed border-slate-600">
+                <div className="text-center py-8 text-gray-500 dark:text-slate-400 bg-gray-100 dark:bg-slate-800/20 rounded border border-dashed border-gray-300 dark:border-slate-600">
                   <div className="text-4xl mb-2">❓</div>
                   <p>Aucune question ajoutée</p>
                 </div>
@@ -818,7 +812,7 @@ export function EvaluationStep({
               <Save className="w-4 h-4 mr-2" />
               Sauvegarder brouillon
             </Button>
-            <Button onClick={onPublish} className="bg-green-600 hover:bg-green-700">
+            <Button onClick={onPublish} className="bg-green-600 hover:bg-green-700 text-white">
               <Eye className="w-4 h-4 mr-2" />
               Publier la formation
             </Button>
@@ -852,7 +846,6 @@ function useFormationForm() {
     finalEvaluation: undefined,
   });
 
-  // ✅ Calculer la durée directement comme valeur dérivée (pas dans l'état)
   const estimatedDuration = useMemo(() => {
     return formData.modules.reduce(
       (total, mod) =>
@@ -861,7 +854,6 @@ function useFormationForm() {
     );
   }, [formData.modules]);
 
-  // Retourner formData avec la durée calculée
   const formDataWithDuration = useMemo(() => ({
     ...formData,
     estimatedDuration,
@@ -974,18 +966,18 @@ export function CreateFormationPage() {
         title="Créer une formation"
         description="Créez une formation structurée avec modules, chapitres et évaluations"
       />
-      <div className="min-h-screen bg-[#050816] px-6 pb-12">
+      <div className="min-h-screen bg-gray-50 dark:bg-[#050816] px-6 pb-12">
         <div className="flex items-center justify-between mb-6">
           <Button
             variant="ghost"
             onClick={() => navigate({ to: '/dashboard/formations' })}
-            className="text-slate-400 hover:text-gray-700"
+            className="text-gray-500 dark:text-slate-400 hover:text-gray-700 dark:hover:text-white"
           >
             <ArrowLeft className="w-4 h-4 mr-2" />
             Retour aux formations
           </Button>
           <div className="flex gap-3">
-            <Button variant="outline" onClick={() => handleSave(false)} className="text-gray-600">
+            <Button variant="outline" onClick={() => handleSave(false)}>
               <Save className="w-4 h-4 mr-2" />
               Sauvegarder en brouillon
             </Button>
@@ -997,14 +989,14 @@ export function CreateFormationPage() {
         </div>
 
         <Tabs value={currentStep} onValueChange={(value: any) => setCurrentStep(value)} className="space-y-6">
-          <TabsList className="grid w-full gap-4 max-w-md mx-auto grid-cols-3 bg-slate-800/50">
-            <TabsTrigger value="info" className="data-[state=active]:bg-orange-600 text-white hover:text-gray-500 px-2">
+          <TabsList className="grid w-full gap-4 max-w-md mx-auto grid-cols-3 bg-gray-100 dark:bg-slate-800/50">
+            <TabsTrigger value="info" className="data-[state=active]:bg-orange-600 data-[state=active]:text-white text-gray-700 dark:text-white">
               Informations
             </TabsTrigger>
-            <TabsTrigger value="modules" className="data-[state=active]:bg-orange-600 text-white hover:text-gray-500 px-2">
+            <TabsTrigger value="modules" className="data-[state=active]:bg-orange-600 data-[state=active]:text-white text-gray-700 dark:text-white">
               Modules & Chapitres
             </TabsTrigger>
-            <TabsTrigger value="evaluation" className="data-[state=active]:bg-orange-600 text-white hover:text-gray-500 px-2">
+            <TabsTrigger value="evaluation" className="data-[state=active]:bg-orange-600 data-[state=active]:text-white text-gray-700 dark:text-white">
               Évaluation finale
             </TabsTrigger>
           </TabsList>

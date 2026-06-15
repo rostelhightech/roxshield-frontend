@@ -197,9 +197,9 @@ export function EvaluationQuiz({ evaluation, attemptId, onSubmit, onSuccess, onF
     const passed = score >= evaluation.passingScore;
     
     return (
-      <Card className="rounded-md border border-white/10 bg-[#0c1023]/90 shadow-xl">
+      <Card className="rounded-md border border-white/10 bg-white  dark:bg-[#0c1023]/90 shadow-xl">
         <CardHeader>
-          <CardTitle className="text-white text-center">Résultat de l'évaluation</CardTitle>
+          <CardTitle className="text-gray-900 dark:text-white text-center">Résultat de l'évaluation</CardTitle>
         </CardHeader>
         <CardContent className="text-center space-y-6">
           <div className={cn(
@@ -232,7 +232,7 @@ export function EvaluationQuiz({ evaluation, attemptId, onSubmit, onSuccess, onF
 
           {evaluation.showCorrectAnswers && (
             <div className="mt-6 text-left space-y-4">
-              <h3 className="text-white font-semibold">Réponses correctes:</h3>
+              <h3 className="text-gray-900 dark:text-white font-semibold">Réponses correctes:</h3>
               {evaluation.questions.map((question, index) => {
                 const userAnswer = answers[question.id];
                 const isCorrect = (() => {
@@ -249,7 +249,7 @@ export function EvaluationQuiz({ evaluation, attemptId, onSubmit, onSuccess, onF
                     "p-4 rounded-lg border",
                     isCorrect ? "border-green-500/30 bg-green-500/10" : "border-red-500/30 bg-red-500/10"
                   )}>
-                    <p className="text-white font-medium mb-2">
+                    <p className="text-gray-900 dark:text-white font-medium mb-2">
                       {index + 1}. {question.question}
                     </p>
                     {question.type === 'multiple_choice' && question.options && (
@@ -294,10 +294,10 @@ export function EvaluationQuiz({ evaluation, attemptId, onSubmit, onSuccess, onF
   return (
     <div className="space-y-6">
       {/* En-tête avec timer */}
-      <Card className="rounded-md border border-white/10 bg-[#0c1023]/90 shadow-xl">
+      <Card className="rounded-md border border-white/10 bg-white  dark:bg-[#0c1023]/90 shadow-xl">
         <CardHeader>
           <div className="flex items-center justify-between mb-4">
-            <CardTitle className="text-white">{evaluation.title}</CardTitle>
+            <CardTitle className="text-gray-900 dark:text-white">{evaluation.title}</CardTitle>
             {timeRemaining !== null && (
               <div className={cn(
                 "flex items-center gap-2 px-4 py-2 rounded-lg font-mono text-lg font-bold",
@@ -339,10 +339,10 @@ export function EvaluationQuiz({ evaluation, attemptId, onSubmit, onSuccess, onF
       {/* Toutes les questions */}
       <div className="space-y-4">
         {evaluation.questions.map((question, index) => (
-          <Card key={question.id} className="rounded-md border border-white/10 bg-[#0c1023]/90 shadow-xl">
+          <Card key={question.id} className="rounded-md border border-white/10 bg-white  dark:bg-[#0c1023]/90 shadow-xl">
             <CardHeader>
               <div className="flex items-center justify-between">
-                <CardTitle className="text-white text-lg">
+                <CardTitle className="text-gray-900 dark:text-white text-lg">
                   Question {index + 1}
                 </CardTitle>
                 <div className="flex items-center gap-2 text-orange-400">
@@ -352,7 +352,7 @@ export function EvaluationQuiz({ evaluation, attemptId, onSubmit, onSuccess, onF
               </div>
             </CardHeader>
             <CardContent className="space-y-4">
-              <p className="text-white text-lg">{question.question}</p>
+              <p className="text-gray-900 dark:text-white text-lg">{question.question}</p>
 
               {question.type === 'multiple_choice' && question.options && (
                 <RadioGroup
@@ -363,7 +363,7 @@ export function EvaluationQuiz({ evaluation, attemptId, onSubmit, onSuccess, onF
                     {question.options.map((option, optionIndex) => (
                       <div key={optionIndex} className="flex items-center space-x-3 p-4 rounded-lg border border-slate-700 hover:border-orange-600 hover:bg-slate-800/30 transition-colors">
                         <RadioGroupItem value={optionIndex.toString()} id={`q${index}-option-${optionIndex}`} />
-                        <Label htmlFor={`q${index}-option-${optionIndex}`} className="text-white flex-1 cursor-pointer">
+                        <Label htmlFor={`q${index}-option-${optionIndex}`} className="text-gray-900 dark:text-white flex-1 cursor-pointer">
                           {option}
                         </Label>
                       </div>
@@ -380,13 +380,13 @@ export function EvaluationQuiz({ evaluation, attemptId, onSubmit, onSuccess, onF
                   <div className="space-y-3">
                     <div className="flex items-center space-x-3 p-4 rounded-lg border border-slate-700 hover:border-orange-600 hover:bg-slate-800/30 transition-colors">
                       <RadioGroupItem value="true" id={`q${index}-true`} />
-                      <Label htmlFor={`q${index}-true`} className="text-white flex-1 cursor-pointer">
+                      <Label htmlFor={`q${index}-true`} className="text-gray-900 dark:text-white flex-1 cursor-pointer">
                         Vrai
                       </Label>
                     </div>
                     <div className="flex items-center space-x-3 p-4 rounded-lg border border-slate-700 hover:border-orange-600 hover:bg-slate-800/30 transition-colors">
                       <RadioGroupItem value="false" id={`q${index}-false`} />
-                      <Label htmlFor={`q${index}-false`} className="text-white flex-1 cursor-pointer">
+                      <Label htmlFor={`q${index}-false`} className="text-gray-900 dark:text-white flex-1 cursor-pointer">
                         Faux
                       </Label>
                     </div>
@@ -399,12 +399,12 @@ export function EvaluationQuiz({ evaluation, attemptId, onSubmit, onSuccess, onF
       </div>
 
       {/* Bouton de soumission */}
-      <Card className="rounded-md border border-white/10 bg-[#0c1023]/90 shadow-xl">
+      <Card className="rounded-md border border-white/10 bg-white  dark:bg-[#0c1023]/90 shadow-xl">
         <CardContent className="pt-6">
           <Button
             onClick={handleSubmitQuiz}
             disabled={!allQuestionsAnswered || isSubmitting}
-            className="w-full bg-green-600 hover:bg-green-700 text-white text-lg py-6"
+            className="w-full bg-green-600 hover:bg-green-700 text-gray-900 dark:text-white text-lg py-6"
           >
             {isSubmitting ? 'Soumission...' : 'Soumettre l\'évaluation'}
           </Button>

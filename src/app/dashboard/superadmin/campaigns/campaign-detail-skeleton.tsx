@@ -4,7 +4,7 @@ import { DashboardTopbar } from '@/components/layout/topbar';
 
 export function CampaignDetailSkeleton() {
   return (
-    <div className="min-h-screen bg-[#050816] text-white">
+    <div className="min-h-screen bg-gray-50 dark:bg-[#050816] text-gray-900 dark:text-white">
       <DashboardTopbar
         title="Chargement de la campagne"
         description="Veuillez patienter pendant que nous récupérons les informations de la campagne."

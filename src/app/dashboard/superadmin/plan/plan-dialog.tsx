@@ -20,12 +20,12 @@ interface PlanDialogProps {
 export const PlanDialog = ({ open, onClose, editingPlan }: PlanDialogProps) => {
   return (
     <Dialog open={open} onOpenChange={onClose}>
-      <DialogContent className="bg-gray-900 border-gray-800 text-white min-w-3xl max-h-[90vh] overflow-y-auto">
+      <DialogContent className="bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-800 text-gray-900 dark:text-white min-w-3xl max-h-[90vh] overflow-y-auto rounded-sm">
         <DialogHeader>
-          <DialogTitle className="text-2xl font-bold text-white">
+          <DialogTitle className="text-2xl font-bold text-gray-900 dark:text-white">
             {editingPlan ? 'Modifier le plan' : 'Créer un plan'}
           </DialogTitle>
-          <DialogDescription className="text-gray-400">
+          <DialogDescription className="text-gray-500 dark:text-gray-400">
             {editingPlan 
               ? 'Modifiez les informations du plan d\'abonnement' 
               : 'Remplissez les informations pour créer un nouveau plan'}

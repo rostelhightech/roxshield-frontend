@@ -135,9 +135,10 @@ export function Combobox({
         aria-expanded={open}
         aria-controls={listboxId}
         className={cn(
-          "flex h-9 w-full items-center justify-between rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-xs transition-colors",
-          "hover:bg-accent focus:outline-none focus:ring-1 focus:ring-ring disabled:cursor-not-allowed disabled:opacity-50",
-          !value && "text-muted-foreground"
+          "flex h-9 w-full items-center justify-between rounded-sm border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-800/50 px-3 py-1 text-sm shadow-xs transition-colors",
+          "hover:bg-gray-100 dark:hover:bg-slate-800 focus:outline-none focus:ring-1 focus:ring-ring disabled:cursor-not-allowed disabled:opacity-50",
+          !value && "text-gray-500",
+          value && "text-gray-900 dark:text-white"
         )}
       >
         <span className="flex items-center gap-2 truncate">
@@ -148,15 +149,15 @@ export function Combobox({
       </button>
 
       {open && (
-        <div className="absolute z-50 mt-1 max-h-[280px] w-full overflow-hidden rounded-lg border bg-popover shadow-lg animate-in fade-in-0 zoom-in-95">
-          <div className="flex items-center gap-2 border-b px-3 py-2">
-            <Search className="h-4 w-4 shrink-0 text-muted-foreground" />
+        <div className="absolute z-50 mt-1 max-h-[280px] w-full overflow-hidden rounded-sm border border-gray-200 dark:border-white/[0.08] bg-white dark:bg-[#0c1023] shadow-lg animate-in fade-in-0 zoom-in-95">
+          <div className="flex items-center gap-2 border-b border-gray-200 dark:border-white/[0.08] px-3 py-2">
+            <Search className="h-4 w-4 shrink-0 text-gray-500 dark:text-gray-400" />
             <input
               ref={inputRef}
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               placeholder={searchPlaceholder}
-              className="flex-1 bg-transparent text-sm outline-none placeholder:text-muted-foreground"
+              className="flex-1 bg-transparent text-sm text-gray-900 dark:text-white outline-none placeholder:text-gray-400 dark:placeholder:text-gray-500"
               role="combobox"
               aria-autocomplete="list"
               aria-controls={listboxId}
@@ -165,7 +166,7 @@ export function Combobox({
           </div>
           <div ref={listRef} id={listboxId} role="listbox" className="max-h-[220px] overflow-y-auto p-1">
             {filtered.length === 0 ? (
-              <div className="px-3 py-6 text-center text-sm text-muted-foreground">
+              <div className="px-3 py-6 text-center text-sm text-gray-500 dark:text-gray-400">
                 {allowCustom && search ? (
                   <button
                     type="button"
@@ -188,14 +189,14 @@ export function Combobox({
                   aria-selected={value === option.value}
                   onClick={() => selectOption(option.value)}
                   className={cn(
-                    "flex w-full items-center gap-2 rounded-md px-2 py-1.5 text-sm transition-colors hover:bg-accent",
-                    value === option.value && "bg-accent",
-                    highlightIndex === index && "bg-accent/70 ring-1 ring-ring"
+                    "flex w-full items-center gap-2 rounded-md px-2 py-1.5 text-sm text-gray-900 dark:text-white transition-colors hover:bg-gray-100 dark:hover:bg-slate-800",
+                    value === option.value && "bg-gray-100 dark:bg-slate-800",
+                    highlightIndex === index && "bg-gray-200 dark:bg-slate-700 ring-1 ring-gray-300 dark:ring-white/10"
                   )}
                 >
                   {option.icon && <span className="text-base">{option.icon}</span>}
                   <span className="flex-1 text-left">{option.label}</span>
-                  {option.sub && <span className="text-xs text-muted-foreground">{option.sub}</span>}
+                  {option.sub && <span className="text-xs text-gray-500 dark:text-gray-400">{option.sub}</span>}
                   {value === option.value && <Check className="h-4 w-4 text-rht-violet-light" />}
                 </button>
               ))

@@ -31,13 +31,13 @@ export function MetricsSection() {
 
   if (isLoading) {
     return (
-      <div className="rounded-3xl border border-white/5 bg-[#0c1023] p-6">
-        <h2 className="mb-6 text-lg font-semibold">Métriques clés</h2>
+      <div className="rounded-3xl border border-gray-200 dark:border-white/5 bg-white  dark:bg-[#0c1023] p-6 shadow-lg dark:shadow-xl">
+        <h2 className="mb-6 text-lg font-semibold text-gray-900 dark:text-gray-900 dark:text-white">Métriques clés</h2>
         <div className="space-y-8">
           {Array.from({ length: 3 }).map((_, i) => (
             <div key={i} className="animate-pulse">
-              <div className="h-4 bg-slate-700 rounded mb-2"></div>
-              <div className="h-2 bg-slate-800 rounded"></div>
+              <div className="h-4 bg-gray-200 dark:bg-slate-700 rounded mb-2"></div>
+              <div className="h-2 bg-gray-100 dark:bg-slate-800 rounded"></div>
             </div>
           ))}
         </div>
@@ -46,8 +46,8 @@ export function MetricsSection() {
   }
 
   return (
-    <div className="rounded-3xl border border-white/5 bg-[#0c1023] p-6">
-      <h2 className="mb-6 text-lg font-semibold">
+    <div className="rounded-sm border border-gray-200 dark:border-white/5 bg-white  dark:bg-[#0c1023] p-6 shadow-xs dark:shadow-xl">
+      <h2 className="mb-6 text-lg font-semibold text-gray-900 dark:text-gray-900 dark:text-white">
         Métriques clés
       </h2>
 

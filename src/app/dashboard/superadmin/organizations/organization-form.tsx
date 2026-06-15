@@ -86,32 +86,32 @@ export const OrganizationForm = ({ initialData, plans, onSuccess, onCancel }: Or
   };
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+ <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
       <div className="space-y-4">
         {/* Nom */}
         <div>
-          <Label htmlFor="name" className="text-gray-300">Nom de l'organisation *</Label>
+          <Label htmlFor="name" className="text-gray-700 dark:text-gray-300">Nom de l'organisation *</Label>
           <Input
             id="name"
             {...register('name')}
-            className="bg-gray-800/50 border-gray-700 text-white mt-1"
+            className="bg-white dark:bg-gray-800/50 border-gray-300 dark:border-gray-700 text-gray-900 dark:text-white mt-1"
             placeholder="Ex: Rostel High-Tech"
           />
-          {errors.name && <p className="text-red-400 text-sm mt-1">{errors.name.message}</p>}
+          {errors.name && <p className="text-red-600 dark:text-red-400 text-sm mt-1">{errors.name.message}</p>}
         </div>
 
         {/* Type et Plan */}
         <div className="grid grid-cols-2 gap-4">
           <div>
-            <Label htmlFor="type" className="text-gray-300">Type *</Label>
+            <Label htmlFor="type" className="text-gray-700 dark:text-gray-300">Type *</Label>
             <Select
               value={watchType}
               onValueChange={(value) => setValue('type', value as 'enterprise' | 'campus')}
             >
-              <SelectTrigger className="bg-gray-800/50 border-gray-700 text-white mt-1">
+              <SelectTrigger className="bg-white dark:bg-gray-800/50 border-gray-300 dark:border-gray-700 text-gray-900 dark:text-white mt-1">
                 <SelectValue placeholder="Sélectionner un type" />
               </SelectTrigger>
-              <SelectContent className="bg-slate-200 border-gray-700">
+              <SelectContent className="bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700">
                 <SelectItem value="enterprise">Entreprise</SelectItem>
                 <SelectItem value="campus">Campus</SelectItem>
               </SelectContent>
@@ -119,19 +119,19 @@ export const OrganizationForm = ({ initialData, plans, onSuccess, onCancel }: Or
           </div>
 
           <div>
-            <Label htmlFor="planId" className="text-gray-300">Plan *</Label>
+            <Label htmlFor="planId" className="text-gray-700 dark:text-gray-300">Plan *</Label>
             <Select
               value={watchPlanId}
               onValueChange={(value) => setValue('planId', value)}
             >
-              <SelectTrigger className="bg-gray-800/50 border-gray-700 text-white mt-1">
+              <SelectTrigger className="bg-white dark:bg-gray-800/50 border-gray-300 dark:border-gray-700 text-gray-900 dark:text-white mt-1">
                 {selectedPlan ? (
                   <span>{selectedPlan.label} - {selectedPlan.pricePerUser.toLocaleString()} F/utilisateur</span>
                 ) : (
                   <SelectValue placeholder="Sélectionner un plan" />
                 )}
               </SelectTrigger>
-              <SelectContent className="bg-slate-200 border-gray-700">
+              <SelectContent className="bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700">
                 {plans.map((plan) => (
                   <SelectItem key={plan.id} value={plan.id}>
                     {plan.label} - {plan.pricePerUser.toLocaleString()} F/utilisateur
@@ -139,23 +139,23 @@ export const OrganizationForm = ({ initialData, plans, onSuccess, onCancel }: Or
                 ))}
               </SelectContent>
             </Select>
-            {errors.planId && <p className="text-red-400 text-sm mt-1">{errors.planId.message}</p>}
+            {errors.planId && <p className="text-red-600 dark:text-red-400 text-sm mt-1">{errors.planId.message}</p>}
           </div>
         </div>
 
         {/* Détails du plan sélectionné */}
         {selectedPlan && (
-          <div className="bg-gradient-to-r from-blue-500/10 to-purple-500/10 rounded-lg p-4 border border-blue-500/20">
-            <p className="text-sm text-gray-300 mb-2">Détails du plan {selectedPlan.label}</p>
+          <div className="bg-gradient-to-r from-blue-50 to-purple-50 dark:from-blue-500/10 dark:to-purple-500/10 rounded-lg p-4 border border-blue-200 dark:border-blue-500/20">
+            <p className="text-sm text-gray-700 dark:text-gray-300 mb-2">Détails du plan {selectedPlan.label}</p>
             <div className="grid grid-cols-2 gap-2 text-sm">
-              <span className="text-gray-400">Prix par utilisateur:</span>
-              <span className="text-white">{selectedPlan.pricePerUser.toLocaleString()} F</span>
-              <span className="text-gray-400">Employés:</span>
-              <span className="text-white">
+              <span className="text-gray-500 dark:text-gray-400">Prix par utilisateur:</span>
+              <span className="text-gray-900 dark:text-white">{selectedPlan.pricePerUser.toLocaleString()} F</span>
+              <span className="text-gray-500 dark:text-gray-400">Employés:</span>
+              <span className="text-gray-900 dark:text-white">
                 {selectedPlan.minEmployees} - {selectedPlan.maxEmployees || '∞'}
               </span>
-              <span className="text-gray-400">Description:</span>
-              <span className="text-white text-sm">{selectedPlan.targetDescription}</span>
+              <span className="text-gray-500 dark:text-gray-400">Description:</span>
+              <span className="text-gray-900 dark:text-white text-sm">{selectedPlan.targetDescription}</span>
             </div>
           </div>
         )}
@@ -163,32 +163,32 @@ export const OrganizationForm = ({ initialData, plans, onSuccess, onCancel }: Or
         {/* Localisation */}
         <div className="grid grid-cols-2 gap-4">
           <div>
-            <Label htmlFor="city" className="text-gray-300">Ville</Label>
+            <Label htmlFor="city" className="text-gray-700 dark:text-gray-300">Ville</Label>
             <Input
               id="city"
               {...register('city')}
-              className="bg-gray-800/50 border-gray-700 text-white mt-1"
+              className="bg-white dark:bg-gray-800/50 border-gray-300 dark:border-gray-700 text-gray-900 dark:text-white mt-1"
               placeholder="Ex: Dakar"
             />
           </div>
 
           <div>
-            <Label htmlFor="country" className="text-gray-300">Pays</Label>
+            <Label htmlFor="country" className="text-gray-700 dark:text-gray-300">Pays</Label>
             <Input
               id="country"
               {...register('country')}
-              className="bg-gray-800/50 border-gray-700 text-white mt-1"
+              className="bg-white dark:bg-gray-800/50 border-gray-300 dark:border-gray-700 text-gray-900 dark:text-white mt-1"
               placeholder="Ex: Sénégal"
             />
           </div>
         </div>
 
         <div>
-          <Label htmlFor="sector" className="text-gray-300">Secteur d'activité</Label>
+          <Label htmlFor="sector" className="text-gray-700 dark:text-gray-300">Secteur d'activité</Label>
           <Input
             id="sector"
             {...register('sector')}
-            className="bg-gray-800/50 border-gray-700 text-white mt-1"
+            className="bg-white dark:bg-gray-800/50 border-gray-300 dark:border-gray-700 text-gray-900 dark:text-white mt-1"
             placeholder="Ex: Technologie, Éducation..."
           />
         </div>
@@ -196,69 +196,69 @@ export const OrganizationForm = ({ initialData, plans, onSuccess, onCancel }: Or
         {/* Admin */}
         <div className="grid grid-cols-2 gap-4">
           <div>
-            <Label htmlFor="adminName" className="text-gray-300">Nom de l'admin</Label>
+            <Label htmlFor="adminName" className="text-gray-700 dark:text-gray-300">Nom de l'admin</Label>
             <Input
               id="adminName"
               {...register('adminName')}
-              className="bg-gray-800/50 border-gray-700 text-white mt-1"
+              className="bg-white dark:bg-gray-800/50 border-gray-300 dark:border-gray-700 text-gray-900 dark:text-white mt-1"
               placeholder="Nom complet"
             />
           </div>
 
           <div>
-            <Label htmlFor="adminEmail" className="text-gray-300">Email de l'admin</Label>
+            <Label htmlFor="adminEmail" className="text-gray-700 dark:text-gray-300">Email de l'admin</Label>
             <Input
               id="adminEmail"
               type="email"
               {...register('adminEmail')}
-              className="bg-gray-800/50 border-gray-700 text-white mt-1"
+              className="bg-white dark:bg-gray-800/50 border-gray-300 dark:border-gray-700 text-gray-900 dark:text-white mt-1"
               placeholder="admin@exemple.com"
             />
-            {errors.adminEmail && <p className="text-red-400 text-sm mt-1">{errors.adminEmail.message}</p>}
+            {errors.adminEmail && <p className="text-red-600 dark:text-red-400 text-sm mt-1">{errors.adminEmail.message}</p>}
           </div>
         </div>
 
         {/* Employés et Statut */}
         <div className="grid grid-cols-2 gap-4">
           <div>
-            <Label htmlFor="currentEmployees" className="text-gray-300">Nombre d'employés</Label>
+            <Label htmlFor="currentEmployees" className="text-gray-700 dark:text-gray-300">Nombre d'employés</Label>
             <Input
               id="currentEmployees"
               type="number"
               {...register('currentEmployees', { valueAsNumber: true })}
-              className="bg-gray-800/50 border-gray-700 text-white mt-1"
+              className="bg-white dark:bg-gray-800/50 border-gray-300 dark:border-gray-700 text-gray-900 dark:text-white mt-1"
               min={0}
               max={selectedPlan?.maxEmployees ?? undefined}
             />
             {selectedPlan?.maxEmployees !== null && selectedPlan?.maxEmployees !== undefined && (
-              <p className="text-xs text-gray-500 mt-1">
+              <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
                 Maximum autorisé pour ce plan : {selectedPlan.maxEmployees}
               </p>
             )}
           </div>
 
           <div className="flex items-center justify-between">
-            <Label htmlFor="isActive" className="text-gray-300">Statut</Label>
+            <Label htmlFor="isActive" className="text-gray-700 dark:text-gray-300">Statut</Label>
             <div className="flex items-center gap-2">
-              <span className="text-sm text-gray-400">Inactif</span>
+              <span className="text-sm text-gray-500 dark:text-gray-400">Inactif</span>
               <Switch
                 id="isActive"
                 checked={watch('isActive')}
                 onCheckedChange={(checked) => setValue('isActive', checked)}
               />
-              <span className="text-sm text-gray-400">Actif</span>
+              <span className="text-sm text-gray-500 dark:text-gray-400">Actif</span>
             </div>
           </div>
         </div>
       </div>
 
       {/* Actions */}
-      <div className="flex justify-end gap-3 pt-4 border-t border-gray-800">
+      <div className="flex justify-end gap-3 pt-4 border-t border-gray-200 dark:border-gray-800">
         <Button
           type="button"
           variant="outline"
           onClick={onCancel}
-          className="border-gray-700 text-gray-500 hover:text-gray-600 cursor-pointer"
+          className="border-gray-300 dark:border-gray-700 text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 cursor-pointer"
         >
           Annuler
         </Button>

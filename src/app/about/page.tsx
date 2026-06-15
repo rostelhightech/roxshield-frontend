@@ -98,7 +98,7 @@ export default function AboutPage() {
         <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-4">
           <Link href="/" className="flex items-center gap-2">
             <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-rht-violet to-rht-violet-light">
-              <Shield className="h-4 w-4 text-white" />
+              <Shield className="h-4 w-4 text-gray-900 dark:text-white" />
             </div>
             <span className="font-bold"><span className="font-normal opacity-60">Rox</span>Shield</span>
           </Link>
@@ -124,7 +124,7 @@ export default function AboutPage() {
             </Badge>
             <h1 className="text-4xl font-bold tracking-tight">
               {t("about.heroTitle1")}<br />
-              <span className="bg-gradient-to-r from-rht-violet to-rht-orange bg-clip-text text-transparent">
+              <span className="bg-linear-to-r from-rht-violet to-rht-orange bg-clip-text text-transparent">
                 {t("about.heroTitle2")}
               </span>
             </h1>
@@ -180,7 +180,7 @@ export default function AboutPage() {
                 <motion.div whileHover={{ y: -4 }} transition={{ duration: 0.2 }}>
                   <Card className="h-full transition-all duration-300 hover:border-rht-violet/20">
                     <CardContent className="p-6 text-center">
-                      <div className={`mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-gradient-to-br ${member.gradient} text-lg font-bold text-white`}>
+                      <div className={`mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-gradient-to-br ${member.gradient} text-lg font-bold text-gray-900 dark:text-white`}>
                         {member.initials}
                       </div>
                       <h3 className="font-semibold">{member.name}</h3>
@@ -206,7 +206,7 @@ export default function AboutPage() {
               <FadeIn key={m.year} delay={i * 0.1}>
                 <div className="flex gap-4">
                   <div className="flex flex-col items-center">
-                    <div className="flex h-10 w-10 items-center justify-center rounded-full bg-gradient-to-br from-rht-violet to-rht-violet-light text-xs font-bold text-white">
+                    <div className="flex h-10 w-10 items-center justify-center rounded-full bg-gradient-to-br from-rht-violet to-rht-violet-light text-xs font-bold text-gray-900 dark:text-white">
                       {m.year}
                     </div>
                     {i < milestonesMeta.length - 1 && (
@@ -232,7 +232,7 @@ export default function AboutPage() {
               animate={{ y: [0, -6, 0] }}
               transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
             >
-              <Mail className="h-8 w-8 text-white" />
+              <Mail className="h-8 w-8 text-gray-900 dark:text-white" />
             </motion.div>
             <h2 className="text-2xl font-bold">{t("about.contactTitle")}</h2>
             <p className="mt-2 text-muted-foreground">
@@ -251,7 +251,7 @@ export default function AboutPage() {
             <div className="mt-6">
               <Link href="/">
                 <motion.div whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.98 }} className="inline-block">
-                  <Button size="lg" className="rounded-full bg-gradient-to-r from-rht-orange to-rht-orange-light px-8 text-white hover:opacity-90">
+                  <Button size="lg" className="rounded-full bg-linear-to-r from-rht-orange to-rht-orange-light px-8 text-gray-900 dark:text-white hover:opacity-90">
                     {t("about.backHome")}
                   </Button>
                 </motion.div>

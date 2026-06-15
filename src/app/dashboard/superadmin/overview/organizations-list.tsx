@@ -44,8 +44,8 @@ export function OrganizationsList() {
   }, []);
 
   return (
-    <div className="rounded-3xl border border-white/5 bg-[#0c1023] p-6">
-      <h2 className="mb-5 text-md font-semibold">
+    <div className="rounded-sm border border-gray-200 dark:border-white/5 bg-white  dark:bg-[#0c1023] p-6 shadow-xs dark:shadow-xl">
+      <h2 className="mb-5 text-md font-semibold text-gray-900  dark:text-white">
         Organisations récentes
       </h2>
 
@@ -53,14 +53,18 @@ export function OrganizationsList() {
         <div className="space-y-4">
           {Array.from({ length: 3 }).map((_, i) => (
             <div key={i} className="animate-pulse">
-              <div className="h-4 bg-slate-700 rounded mb-2"></div>
-              <div className="h-3 bg-slate-800 rounded w-2/3"></div>
+              <div className="h-4 bg-gray-200 dark:bg-slate-700 rounded mb-2"></div>
+              <div className="h-3 bg-gray-100 dark:bg-slate-800 rounded w-2/3"></div>
             </div>
           ))}
         </div>
       ) : organizations.length > 0 ? (
         organizations.map((org) => (
-          <div key={org.id} onClick={() => handleOrganizationClick(org.id)}>
+          <div 
+            key={org.id} 
+            onClick={() => handleOrganizationClick(org.id)}
+            className="cursor-pointer"
+          >
             <OrganizationItem
               name={org.name}
               city={`${org.city}${org.country ? `, ${org.country}` : ''}`}
@@ -71,7 +75,7 @@ export function OrganizationsList() {
           </div>
         ))
       ) : (
-        <div className="text-center py-8 text-slate-400">
+        <div className="text-center py-8 text-gray-400 dark:text-slate-400">
           Aucune organisation trouvée
         </div>
       )}

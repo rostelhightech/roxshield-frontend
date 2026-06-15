@@ -23,10 +23,10 @@ export function CampaignDetailedTargets({ detailedTargetAnalysis }: CampaignDeta
   const sortedTargets = [...detailedTargetAnalysis].sort((a, b) => b.totalEvents - a.totalEvents);
 
   return (
-    <Card className="rounded-md border border-white/10 bg-[#0c1023]/90 shadow-xl">
+<Card className="rounded-sm border border-gray-200 dark:border-white/10 bg-white dark:bg-[#0c1023]/90">
       <CardHeader>
-        <CardTitle className="text-white">Analyse détaillée des cibles</CardTitle>
-        <CardDescription>
+        <CardTitle className="text-gray-900 dark:text-white">Analyse détaillée des cibles</CardTitle>
+        <CardDescription className="text-gray-500 dark:text-gray-400">
           Interactions complètes pour chaque destinataire
         </CardDescription>
       </CardHeader>
@@ -34,15 +34,15 @@ export function CampaignDetailedTargets({ detailedTargetAnalysis }: CampaignDeta
         <div className="overflow-x-auto">
           <table className="w-full">
             <thead>
-              <tr className="border-b border-slate-700">
-                <th className="text-left py-3 px-4 text-sm font-medium text-slate-300">Cible</th>
-                <th className="text-center py-3 px-4 text-sm font-medium text-slate-300">Envoyé</th>
-                <th className="text-center py-3 px-4 text-sm font-medium text-slate-300">Ouvert</th>
-                <th className="text-center py-3 px-4 text-sm font-medium text-slate-300">Cliqué</th>
-                <th className="text-center py-3 px-4 text-sm font-medium text-slate-300">Temps ouverture</th>
-                <th className="text-center py-3 px-4 text-sm font-medium text-slate-300">Temps clic</th>
-                <th className="text-center py-3 px-4 text-sm font-medium text-slate-300">Appareil</th>
-                <th className="text-center py-3 px-4 text-sm font-medium text-slate-300">IP</th>
+              <tr className="border-b border-gray-200 dark:border-slate-700">
+                <th className="text-left py-3 px-4 text-sm font-medium text-gray-600 dark:text-slate-300">Cible</th>
+                <th className="text-center py-3 px-4 text-sm font-medium text-gray-600 dark:text-slate-300">Envoyé</th>
+                <th className="text-center py-3 px-4 text-sm font-medium text-gray-600 dark:text-slate-300">Ouvert</th>
+                <th className="text-center py-3 px-4 text-sm font-medium text-gray-600 dark:text-slate-300">Cliqué</th>
+                <th className="text-center py-3 px-4 text-sm font-medium text-gray-600 dark:text-slate-300">Temps ouverture</th>
+                <th className="text-center py-3 px-4 text-sm font-medium text-gray-600 dark:text-slate-300">Temps clic</th>
+                <th className="text-center py-3 px-4 text-sm font-medium text-gray-600 dark:text-slate-300">Appareil</th>
+                <th className="text-center py-3 px-4 text-sm font-medium text-gray-600 dark:text-slate-300">IP</th>
               </tr>
             </thead>
           <tbody>
@@ -55,68 +55,68 @@ export function CampaignDetailedTargets({ detailedTargetAnalysis }: CampaignDeta
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: index * 0.05 }}
-                  className="border-b border-slate-800/50 hover:bg-slate-800/30 transition-colors"
+                  className="border-b border-gray-100 dark:border-slate-800/50 hover:bg-gray-50 dark:hover:bg-slate-800/30 transition-colors"
                 >
                   <td className="py-3 px-4">
                     <div>
-                      <p className="text-sm font-medium text-white">
+                      <p className="text-sm font-medium text-gray-900 dark:text-white">
                         {target.firstName && target.lastName 
                           ? `${target.firstName} ${target.lastName}`
                           : target.email
                         }
                       </p>
                       {target.firstName && target.lastName && (
-                        <p className="text-xs text-slate-400">{target.email}</p>
+                        <p className="text-xs text-gray-500 dark:text-slate-400">{target.email}</p>
                       )}
                     </div>
-                  </td>
+                   </td>
                   <td className="py-3 px-4 text-center">
                     {target.emailSent ? (
                       <div className="flex flex-col items-center">
-                        <CheckCircle className="w-5 h-5 text-green-400" />
+                        <CheckCircle className="w-5 h-5 text-green-600 dark:text-green-400" />
                         {target.emailSentAt && (
-                          <span className="text-xs text-slate-500 mt-1">
+                          <span className="text-xs text-gray-500 dark:text-slate-500 mt-1">
                             {format(new Date(target.emailSentAt), 'HH:mm', { locale: fr })}
                           </span>
                         )}
                       </div>
                     ) : (
-                      <XCircle className="w-5 h-5 text-slate-600" />
+                      <XCircle className="w-5 h-5 text-gray-400 dark:text-slate-600" />
                     )}
-                  </td>
+                   </td>
                   <td className="py-3 px-4 text-center">
                     {target.emailOpened ? (
                       <div className="flex flex-col items-center">
-                        <CheckCircle className="w-5 h-5 text-blue-400" />
+                        <CheckCircle className="w-5 h-5 text-blue-600 dark:text-blue-400" />
                         {target.emailOpenedAt && (
-                          <span className="text-xs text-slate-500 mt-1">
+                          <span className="text-xs text-gray-500 dark:text-slate-500 mt-1">
                             {format(new Date(target.emailOpenedAt), 'HH:mm', { locale: fr })}
                           </span>
                         )}
                       </div>
                     ) : (
-                      <XCircle className="w-5 h-5 text-slate-600" />
+                      <XCircle className="w-5 h-5 text-gray-400 dark:text-slate-600" />
                     )}
-                  </td>
+                   </td>
                   <td className="py-3 px-4 text-center">
                     {target.linkClicked ? (
                       <div className="flex flex-col items-center">
-                        <CheckCircle className="w-5 h-5 text-purple-400" />
+                        <CheckCircle className="w-5 h-5 text-purple-600 dark:text-purple-400" />
                         {target.linkClickedAt && (
-                          <span className="text-xs text-slate-500 mt-1">
+                          <span className="text-xs text-gray-500 dark:text-slate-500 mt-1">
                             {format(new Date(target.linkClickedAt), 'HH:mm', { locale: fr })}
                           </span>
                         )}
                       </div>
                     ) : (
-                      <XCircle className="w-5 h-5 text-slate-600" />
+                      <XCircle className="w-5 h-5 text-gray-400 dark:text-slate-600" />
                     )}
-                  </td>
+                   </td>
                   <td className="py-3 px-4 text-center">
                     {target.timeToOpenMinutes !== null ? (
                       <div className="flex items-center justify-center gap-1">
-                        <Clock className="w-4 h-4 text-blue-400" />
-                        <span className="text-sm text-white">
+                        <Clock className="w-4 h-4 text-blue-600 dark:text-blue-400" />
+                        <span className="text-sm text-gray-900 dark:text-white">
                           {target.timeToOpenMinutes < 60 
                             ? `${target.timeToOpenMinutes}m`
                             : `${Math.floor(target.timeToOpenMinutes / 60)}h${target.timeToOpenMinutes % 60}m`
@@ -124,14 +124,14 @@ export function CampaignDetailedTargets({ detailedTargetAnalysis }: CampaignDeta
                         </span>
                       </div>
                     ) : (
-                      <span className="text-sm text-slate-600">-</span>
+                      <span className="text-sm text-gray-400 dark:text-slate-600">-</span>
                     )}
-                  </td>
+                   </td>
                   <td className="py-3 px-4 text-center">
                     {target.timeToClickMinutes !== null ? (
                       <div className="flex items-center justify-center gap-1">
-                        <MousePointerClick className="w-4 h-4 text-purple-400" />
-                        <span className="text-sm text-white">
+                        <MousePointerClick className="w-4 h-4 text-purple-600 dark:text-purple-400" />
+                        <span className="text-sm text-gray-900 dark:text-white">
                           {target.timeToClickMinutes < 60 
                             ? `${target.timeToClickMinutes}m`
                             : `${Math.floor(target.timeToClickMinutes / 60)}h${target.timeToClickMinutes % 60}m`
@@ -139,51 +139,36 @@ export function CampaignDetailedTargets({ detailedTargetAnalysis }: CampaignDeta
                         </span>
                       </div>
                     ) : (
-                      <span className="text-sm text-slate-600">-</span>
+                      <span className="text-sm text-gray-400 dark:text-slate-600">-</span>
                     )}
-                  </td>
-                  <td className="py-3 px-4 text-center">
-                    {target.timeToClickMinutes !== null ? (
-                      <div className="flex items-center justify-center gap-1">
-                        <MousePointerClick className="w-4 h-4 text-purple-400" />
-                        <span className="text-sm text-white">
-                          {target.timeToClickMinutes < 60 
-                            ? `${target.timeToClickMinutes}m`
-                            : `${Math.floor(target.timeToClickMinutes / 60)}h${target.timeToClickMinutes % 60}m`
-                          }
-                        </span>
-                      </div>
-                    ) : (
-                      <span className="text-sm text-slate-600">-</span>
-                    )}
-                  </td>
+                   </td>
                   <td className="py-3 px-4 text-center">
                     {target.device ? (
                       <div className="flex items-center justify-center gap-1">
-                        <DeviceIcon className="w-4 h-4 text-slate-400" />
-                        <span className="text-xs text-slate-400">{target.device}</span>
+                        <DeviceIcon className="w-4 h-4 text-gray-500 dark:text-slate-400" />
+                        <span className="text-xs text-gray-500 dark:text-slate-400">{target.device}</span>
                       </div>
                     ) : (
-                      <span className="text-sm text-slate-600">-</span>
+                      <span className="text-sm text-gray-400 dark:text-slate-600">-</span>
                     )}
-                  </td>
+                   </td>
                   <td className="py-3 px-4 text-center">
                     {target.ip ? (
-                      <span className="text-xs text-slate-400 font-mono">{target.ip}</span>
+                      <span className="text-xs text-gray-500 dark:text-slate-400 font-mono">{target.ip}</span>
                     ) : (
-                      <span className="text-sm text-slate-600">-</span>
+                      <span className="text-sm text-gray-400 dark:text-slate-600">-</span>
                     )}
-                  </td>
+                   </td>
                 </motion.tr>
               );
             })}
           </tbody>
-        </table>
+         </table>
       </div>
 
       {sortedTargets.length === 0 && (
         <div className="text-center py-12">
-          <p className="text-slate-400">Aucune donnée d'analyse disponible pour le moment.</p>
+          <p className="text-gray-500 dark:text-slate-400">Aucune donnée d'analyse disponible pour le moment.</p>
         </div>
       )}
     </CardContent>

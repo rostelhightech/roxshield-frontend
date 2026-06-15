@@ -38,9 +38,9 @@ const colorMap: Record<string, string> = {
 
 export function CampaignTimeline({ timeline }: CampaignTimelineProps) {
   return (
-    <Card className="rounded-md border border-white/10 bg-[#0c1023]/90 shadow-xl">
+    <Card className="rounded-md border border-white/10 bg-white  dark:bg-[#0c1023]/90  ">
       <CardHeader>
-        <CardTitle className="text-white flex items-center gap-2">
+        <CardTitle className="text-gray-900 dark:text-white flex items-center gap-2">
           <Clock className="w-5 h-5 text-blue-400" />
           Timeline de la campagne
         </CardTitle>
@@ -68,7 +68,7 @@ export function CampaignTimeline({ timeline }: CampaignTimelineProps) {
                 >
                   {/* Icon */}
                   <div 
-                    className="relative z-10 flex h-8 w-8 items-center justify-center rounded-full shadow-lg"
+                    className="relative z-10 flex h-8 w-8 items-center justify-center rounded-full shadow-xs"
                     style={{ backgroundColor: `${color}40` }}
                   >
                     <Icon className="w-4 h-4" style={{ color }} />
@@ -77,7 +77,7 @@ export function CampaignTimeline({ timeline }: CampaignTimelineProps) {
                   {/* Content */}
                   <div className="flex-1 pb-6">
                     <div className="flex items-center justify-between">
-                      <p className="text-sm font-medium text-white">
+                      <p className="text-sm font-medium text-gray-900 dark:text-white">
                         {event.description}
                       </p>
                       <time className="text-xs text-zinc-400">

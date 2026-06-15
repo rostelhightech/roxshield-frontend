@@ -16,7 +16,7 @@ export default function LegalPage() {
         <div className="mx-auto flex h-16 max-w-4xl items-center justify-between px-4">
           <Link href="/" className="flex items-center gap-2">
             <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-rht-violet to-cyber-green">
-              <Shield className="h-4 w-4 text-white" />
+              <Shield className="h-4 w-4 text-gray-900 dark:text-white" />
             </div>
             <span className="text-sm font-bold">
               <span className="font-normal opacity-60">Rox</span>Shield

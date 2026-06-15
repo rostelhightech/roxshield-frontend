@@ -11,7 +11,7 @@ import { useCampaignStore } from '@/store/campaign.store';
 import { Button } from '@/components/ui/button';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
-import { Badge, CustomBadge } from '@/components/ui/badge';
+import { CustomBadge } from '@/components/ui/badge';
 import {
   Select,
   SelectContent,
@@ -19,6 +19,16 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '@/components/ui/alert-dialog';
 import {
   Table,
   TableHeader,
@@ -29,17 +39,20 @@ import {
 } from '@/components/ui/table';
 import { Mail, Plus, ChevronDown, Play } from 'lucide-react';
 import { Link } from '@tanstack/react-router';
+import { useAuthStore } from '@/store/auth.store';
+import { roleEnum } from '@/constants/roleEnum';
 
 interface CampaignsProps {
   formOpen?: boolean;
 }
 
 export default function Campaigns({ formOpen = false }: CampaignsProps) {
-  const { organizations, fetchAll: fetchOrganizations } = useOrganizationStore();
+  const { organizations } = useOrganizationStore();
   const { groups, fetchAll: fetchGroups } = useGroupStore();
   const { templateList, fetchTemplateList } = useTemplateStore();
   const { landingPageTemplates, fetchAll: fetchLandingPageTemplates } = useLandingPageTemplateStore();
   const { smtpProfiles, fetchAll: fetchSmtpProfiles } = useSmtpProfileStore();
+  const {user} = useAuthStore()
   const {
     campaigns,
     fetchAll: fetchCampaigns,
@@ -57,9 +70,16 @@ export default function Campaigns({ formOpen = false }: CampaignsProps) {
   const [statusFilter, setStatusFilter] = useState('ALL');
   const [sortBy, setSortBy] = useState('createdAt');
   const [sortOrder, setSortOrder] = useState<'desc' | 'asc'>('desc');
+  const isNotSuperAdmin = user?.role !== roleEnum.SUPERADMIN
+
+  // États pour les dialogs de confirmation
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [archiveDialogOpen, setArchiveDialogOpen] = useState(false);
+  const [launchDialogOpen, setLaunchDialogOpen] = useState(false);
+  const [restoreDialogOpen, setRestoreDialogOpen] = useState(false);
+  const [selectedCampaign, setSelectedCampaign] = useState<{ id: string; name: string } | null>(null);
 
   useEffect(() => {
-    fetchOrganizations();
     fetchGroups();
     fetchTemplateList();
     fetchLandingPageTemplates();
@@ -144,35 +164,51 @@ export default function Campaigns({ formOpen = false }: CampaignsProps) {
   };
 
   const handleDeleteCampaign = async (id: string, name: string) => {
-    if (!window.confirm(`Supprimer définitivement la campagne "${name}" ?`)) {
-      return;
-    }
+    setSelectedCampaign({ id, name });
+    setDeleteDialogOpen(true);
+  };
 
-    await deleteCampaign(id);
+  const confirmDeleteCampaign = async () => {
+    if (!selectedCampaign) return;
+    await deleteCampaign(selectedCampaign.id);
+    setDeleteDialogOpen(false);
+    setSelectedCampaign(null);
   };
 
   const handleArchiveCampaign = async (id: string, name: string) => {
-    if (!window.confirm(`Archiver la campagne "${name}" ?`)) {
-      return;
-    }
-
-    await archiveCampaign(id);
+    setSelectedCampaign({ id, name });
+    setArchiveDialogOpen(true);
   };
 
-  const handleLaunchCampaign = async (id: string) => {
-    if (!window.confirm(`Lancer la campagne ?`)) {
-        return;
-    }
+  const confirmArchiveCampaign = async () => {
+    if (!selectedCampaign) return;
+    await archiveCampaign(selectedCampaign.id);
+    setArchiveDialogOpen(false);
+    setSelectedCampaign(null);
+  };
 
-    await launchCampaign(id);
+  const handleLaunchCampaign = async (id: string, name: string) => {
+    setSelectedCampaign({ id, name });
+    setLaunchDialogOpen(true);
+  };
+
+  const confirmLaunchCampaign = async () => {
+    if (!selectedCampaign) return;
+    await launchCampaign(selectedCampaign.id);
+    setLaunchDialogOpen(false);
+    setSelectedCampaign(null);
   };
 
   const handleRestoreCampaign = async (id: string, name: string) => {
-    if (!window.confirm(`Désarchiver la campagne "${name}" ?`)) {
-      return;
-    }
+    setSelectedCampaign({ id, name });
+    setRestoreDialogOpen(true);
+  };
 
-    await restoreCampaign(id);
+  const confirmRestoreCampaign = async () => {
+    if (!selectedCampaign) return;
+    await restoreCampaign(selectedCampaign.id);
+    setRestoreDialogOpen(false);
+    setSelectedCampaign(null);
   };
 
   const handleDuplicateCampaign = async (campaign: typeof campaigns[number]) => {
@@ -190,21 +226,7 @@ export default function Campaigns({ formOpen = false }: CampaignsProps) {
     fetchCampaigns();
   };
 
-  const handleRemixCampaign = (campaign: typeof campaigns[number]) => {
-    setFormInitialValues({
-      name: `Remix - ${campaign.name}`,
-      description: campaign.description ?? '',
-      organizationId: campaign.organizationId,
-      smtpProfileId: campaign.smtpProfileId,
-      emailTemplateId: campaign.emailTemplateId,
-      landingPageTemplateId: campaign.landingPageTemplateId,
-      scheduledAt: campaign.scheduledAt ?? '',
-      endAt: campaign.endAt ?? '',
-      targetGroupId: '',
-      targetEmails: '',
-    });
-    setIsFormOpen(true);
-  };
+
 
   const handleOnCreated = async () => {
     await fetchCampaigns();
@@ -232,63 +254,63 @@ export default function Campaigns({ formOpen = false }: CampaignsProps) {
   };
 
   return (
-    <div className="min-h-screen bg-[#050816] text-white">
+    <div className="min-h-screen bg-gray-50 dark:bg-[#050816] text-gray-900 dark:text-white">
       <div className="mx-auto">
         <div className="grid gap-6">
 
           {/* Stats */}
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
-            <Card className="rounded-md hover:bg-[#1a1f36] cursor-pointer transition-colors duration-200 border border-white/5 bg-[#0c1023] p-4 shadow-xl">
+            <Card className="rounded-sm hover:bg-gray-100 dark:hover:bg-[#1a1f36] cursor-pointer transition-colors duration-200 border border-gray-200 dark:border-white/5 bg-white dark:bg-[#0c1023] p-4 shadow-xs dark:shadow-xl">
               <div className="p-4">
-                <p className="text-gray-400 text-sm">Total campagnes</p>
-                <p className="text-2xl font-bold text-white">{campaignStats.total}</p>
+                <p className="text-gray-500 dark:text-gray-400 text-sm">Total campagnes</p>
+                <p className="text-2xl font-bold text-gray-900 dark:text-white">{campaignStats.total}</p>
               </div>
             </Card>
-            <Card className="rounded-md hover:bg-[#1a1f36] cursor-pointer transition-colors duration-200 border border-white/5 bg-[#0c1023] p-4 shadow-xl">
+            <Card className="rounded-sm hover:bg-gray-100 dark:hover:bg-[#1a1f36] cursor-pointer transition-colors duration-200 border border-gray-200 dark:border-white/5 bg-white dark:bg-[#0c1023] p-4 shadow-xs dark:shadow-xl">
               <div className="p-4">
-                <p className="text-gray-400 text-sm">En cours</p>
-                <p className="text-2xl font-bold text-blue-400">{campaignStats.inProgress}</p>
+                <p className="text-gray-500 dark:text-gray-400 text-sm">En cours</p>
+                <p className="text-2xl font-bold text-blue-600 dark:text-blue-400">{campaignStats.inProgress}</p>
               </div>
             </Card>
-            <Card className="rounded-md hover:bg-[#1a1f36] cursor-pointer transition-colors duration-200 border border-white/5 bg-[#0c1023] p-4 shadow-xl">
+            <Card className="rounded-sm hover:bg-gray-100 dark:hover:bg-[#1a1f36] cursor-pointer transition-colors duration-200 border border-gray-200 dark:border-white/5 bg-white dark:bg-[#0c1023] p-4 shadow-xs dark:shadow-xl">
               <div className="p-4">
-                <p className="text-gray-400 text-sm">Terminées</p>
-                <p className="text-2xl font-bold text-green-400">{campaignStats.completed}</p>
+                <p className="text-gray-500 dark:text-gray-400 text-sm">Terminées</p>
+                <p className="text-2xl font-bold text-green-600 dark:text-green-400">{campaignStats.completed}</p>
               </div>
             </Card>
-            <Card className="rounded-md hover:bg-[#1a1f36] cursor-pointer transition-colors duration-200 border border-white/5 bg-[#0c1023] p-4 shadow-xl">
+            <Card className="rounded-sm hover:bg-gray-100 dark:hover:bg-[#1a1f36] cursor-pointer transition-colors duration-200 border border-gray-200 dark:border-white/5 bg-white dark:bg-[#0c1023] p-4 shadow-xs dark:shadow-xl">
               <div className="p-4">
-                <p className="text-gray-400 text-sm">Brouillons</p>
-                <p className="text-2xl font-bold text-gray-400">{campaignStats.draft}</p>
+                <p className="text-gray-500 dark:text-gray-400 text-sm">Brouillons</p>
+                <p className="text-2xl font-bold text-gray-500 dark:text-gray-400">{campaignStats.draft}</p>
               </div>
             </Card>
-            <Card className="rounded-md hover:bg-[#1a1f36] cursor-pointer transition-colors duration-200 border border-white/5 bg-[#0c1023] p-4 shadow-xl">
+            <Card className="rounded-sm hover:bg-gray-100 dark:hover:bg-[#1a1f36] cursor-pointer transition-colors duration-200 border border-gray-200 dark:border-white/5 bg-white dark:bg-[#0c1023] p-4 shadow-xs dark:shadow-xl">
               <div className="p-4">
-                <p className="text-gray-400 text-sm">Archivées</p>
-                <p className="text-2xl font-bold text-orange-400">{campaignStats.archived}</p>
+                <p className="text-gray-500 dark:text-gray-400 text-sm">Archivées</p>
+                <p className="text-2xl font-bold text-orange-600 dark:text-orange-400">{campaignStats.archived}</p>
               </div>
             </Card>
           </div>
 
           {/* Card formulaire collapsible */}
-          <Card className="rounded-md border border-white/10 bg-[#0c1023]/90 shadow-xl overflow-hidden">
+          <Card className="rounded-sm border border-gray-200 dark:border-white/10 bg-white dark:bg-[#0c1023]/90 shadow-xs dark:shadow-xl overflow-hidden">
             <CardHeader
               className="flex flex-row items-center justify-between gap-4 px-6 py-4 cursor-pointer select-none"
               onClick={() => setIsFormOpen((v) => !v)}
             >
               <div className="flex items-center gap-3">
-                <div className="grid h-10 w-10 place-items-center rounded-md bg-violet-500/15 text-violet-300">
+                <div className="grid h-10 w-10 place-items-center rounded-md bg-violet-100 dark:bg-violet-500/15 text-violet-600 dark:text-violet-300">
                   <Mail className="h-5 w-5" />
                 </div>
                 <div>
-                  <CardTitle className="text-lg text-white">Créer une nouvelle campagne</CardTitle>
-                  <CardDescription className="text-sm text-gray-400">
+                  <CardTitle className="text-lg text-gray-900 dark:text-white">Créer une nouvelle campagne</CardTitle>
+                  <CardDescription className="text-sm text-gray-500 dark:text-gray-400">
                     Remplissez les informations pour lancer votre campagne email.
                   </CardDescription>
                 </div>
               </div>
               <ChevronDown
-                className={`h-4 w-4 text-gray-400 transition-transform duration-200 ${isFormOpen ? 'rotate-180' : ''}`}
+                className={`h-4 w-4 text-gray-400 dark:text-gray-400 transition-transform duration-200 ${isFormOpen ? 'rotate-180' : ''}`}
               />
             </CardHeader>
 
@@ -312,6 +334,8 @@ export default function Campaigns({ formOpen = false }: CampaignsProps) {
                       setIsFormOpen(false);
                       setFormInitialValues(null);
                     }}
+                    defaultOrganizationId={isNotSuperAdmin ? organizations[0]?.id : undefined}
+                    hideOrganization={isNotSuperAdmin}
                   />
                 </CardContent>
               </div>
@@ -319,11 +343,11 @@ export default function Campaigns({ formOpen = false }: CampaignsProps) {
           </Card>
 
           {/* Card campagnes récentes */}
-          <Card className="rounded-md border w-full border-white/10 bg-[#0c1023]/90 shadow-xl">
-            <CardHeader className="flex px-6  w-full justify-between gap-4   pt-2">
+          <Card className="rounded-sm w-full border border-gray-200 dark:border-white/10 bg-white dark:bg-[#0c1023]/90 shadow-xs dark:shadow-xl">
+            <CardHeader className="flex px-6 w-full justify-between gap-4 pt-2">
               <div>
-                <CardTitle className="text-xl text-white">Campagnes récentes</CardTitle>
-                <CardDescription className="text-sm text-gray-400">
+                <CardTitle className="text-xl text-gray-900 dark:text-white">Campagnes récentes</CardTitle>
+                <CardDescription className="text-sm text-gray-500 dark:text-gray-400">
                   Suivez les campagnes créées et vérifiez leur statut.
                 </CardDescription>
               </div>
@@ -332,25 +356,24 @@ export default function Campaigns({ formOpen = false }: CampaignsProps) {
                   <Plus className="h-3.5 w-3.5" />
                   Nouvelle campagne
                 </Button>
-               
               </div>
             </CardHeader>
 
             <CardContent className="space-y-6 p-6">
-              <div className="flex w-full gap-3  justify-between">
+              <div className="flex w-full gap-3 justify-between">
                 <Input
                   placeholder="Rechercher une campagne..."
                   value={searchText}
                   onChange={(event) => setSearchText(event.target.value)}
                   className="min-w-0 max-w-[320px]"
                 />
-                <div className=" gap-2 flex ">
+                <div className="gap-2 flex">
                   <div>
                     <Select value={statusFilter} onValueChange={handleStatusFilterChange}>
-                      <SelectTrigger className="min-w-[120px] text-white" size="sm">
+                      <SelectTrigger className="min-w-[120px] text-gray-900 dark:text-white" size="sm">
                         <SelectValue placeholder="Filtrer par statut" />
                       </SelectTrigger>
-                      <SelectContent>
+                      <SelectContent className="bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700">
                         <SelectItem value="ALL">Tous les statuts</SelectItem>
                         <SelectItem value="DRAFT">Brouillon</SelectItem>
                         <SelectItem value="QUEUED">En file</SelectItem>
@@ -361,12 +384,12 @@ export default function Campaigns({ formOpen = false }: CampaignsProps) {
                       </SelectContent>
                     </Select>
                   </div>
-                  <div className=" gap-2 flex">
+                  <div className="gap-2 flex">
                     <Select value={sortBy} onValueChange={handleSortByChange}>
-                      <SelectTrigger className="min-w-[150px] text-white" size="sm">
+                      <SelectTrigger className="min-w-[150px] text-gray-900 dark:text-white" size="sm">
                         <SelectValue placeholder="Trier par" />
                       </SelectTrigger>
-                      <SelectContent>
+                      <SelectContent className="bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700">
                         <SelectItem value="createdAt">Créée le</SelectItem>
                         <SelectItem value="scheduledAt">Planifiée le</SelectItem>
                         <SelectItem value="status">Statut</SelectItem>
@@ -374,10 +397,10 @@ export default function Campaigns({ formOpen = false }: CampaignsProps) {
                       </SelectContent>
                     </Select>
                     <Select value={sortOrder} onValueChange={handleSortOrderChange}>
-                      <SelectTrigger className="w-full text-white" size="sm">
-                        <SelectValue className="text-white" placeholder="Ordre" />
+                      <SelectTrigger className="w-full text-gray-900 dark:text-white" size="sm">
+                        <SelectValue placeholder="Ordre" />
                       </SelectTrigger>
-                      <SelectContent>
+                      <SelectContent className="bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700">
                         <SelectItem value="desc">Décroissant</SelectItem>
                         <SelectItem value="asc">Croissant</SelectItem>
                       </SelectContent>
@@ -387,44 +410,44 @@ export default function Campaigns({ formOpen = false }: CampaignsProps) {
               </div>
 
               {isLoadingCampaigns && campaigns.length === 0 ? (
-                <div className="rounded-md border border-white/10 bg-white/5 p-8 text-center text-gray-400">
+                <div className="rounded-md border border-gray-200 dark:border-white/10 bg-gray-50 dark:bg-white/5 p-8 text-center text-gray-500 dark:text-gray-400">
                   Chargement des campagnes...
                 </div>
               ) : filteredCampaigns.length === 0 ? (
-                <div className="grid place-items-center rounded-md border border-white/10 p-8 text-center text-gray-400">
-                  <div className="mb-4 inline-flex h-16 w-16 items-center justify-center rounded-md text-violet-300">
+                <div className="grid place-items-center rounded-md border border-gray-200 dark:border-white/10 p-8 text-center text-gray-500 dark:text-gray-400">
+                  <div className="mb-4 inline-flex h-16 w-16 items-center justify-center rounded-md text-violet-600 dark:text-violet-300">
                     <Mail className="h-7 w-7" />
                   </div>
-                  <p className="text-base font-medium text-white">Aucune campagne correspondante</p>
-                  <p className="mt-2 text-sm text-gray-400">Essayez une autre recherche ou ajustez vos filtres.</p>
+                  <p className="text-base font-medium text-gray-900 dark:text-white">Aucune campagne correspondante</p>
+                  <p className="mt-2 text-sm text-gray-500 dark:text-gray-400">Essayez une autre recherche ou ajustez vos filtres.</p>
                 </div>
               ) : (
-                <div className="overflow-hidden rounded-md border border-white/10 bg-white/5">
-                  <Table className="min-w-full text-white text-white border-separate border-spacing-0">
+                <div className="overflow-hidden rounded-md border border-gray-200 dark:border-white/10 bg-white dark:bg-white/5">
+                  <Table className="min-w-full text-gray-900 dark:text-white border-separate border-spacing-0">
                     <TableHeader>
                       <TableRow>
-                        <TableHead className="text-white">Campagne</TableHead>
-                        <TableHead className="text-white">Statut</TableHead>
-                        <TableHead className="text-white">Organisation</TableHead>
-                        <TableHead className="text-white">Planifiée</TableHead>
-                        <TableHead className="text-right text-white">Actions</TableHead>
+                        <TableHead className="text-gray-600 dark:text-white">Campagne</TableHead>
+                        <TableHead className="text-gray-600 dark:text-white">Statut</TableHead>
+                        <TableHead className="text-gray-600 dark:text-white">Organisation</TableHead>
+                        <TableHead className="text-gray-600 dark:text-white">Planifiée</TableHead>
+                        <TableHead className="text-right text-gray-600 dark:text-white">Actions</TableHead>
                       </TableRow>
                     </TableHeader>
                     <TableBody>
                       {filteredCampaigns.map((campaign) => (
                         <TableRow key={campaign.id}>
                           <TableCell className="max-w-[220px] truncate pr-3">
-                            <div className="text-sm font-semibold text-white">{campaign.name}</div>
-                            <div className="text-xs text-gray-400 truncate">{campaign.description ?? 'Aucune description'}</div>
+                            <div className="text-sm font-semibold text-gray-900 dark:text-white">{campaign.name}</div>
+                            <div className="text-xs text-gray-500 dark:text-gray-400 truncate">{campaign.description ?? 'Aucune description'}</div>
                           </TableCell>
                           <TableCell>
                             <CustomBadge color={getStatusVariant(campaign.status)}>{campaign.status}</CustomBadge>
                           </TableCell>
                           <TableCell>
-                            <div className="text-sm text-white">{campaign.organization?.name ?? '—'}</div>
+                            <div className="text-sm text-gray-900 dark:text-white">{campaign.organization?.name ?? '—'}</div>
                           </TableCell>
                           <TableCell>
-                            <div className="text-sm text-white">
+                            <div className="text-sm text-gray-900 dark:text-white">
                               {campaign.scheduledAt
                                 ? new Date(campaign.scheduledAt).toLocaleString('fr-FR')
                                 : 'Non planifiée'}
@@ -434,21 +457,13 @@ export default function Campaigns({ formOpen = false }: CampaignsProps) {
                             <Link
                               to="/dashboard/campaigns/$campaignId"
                               params={{ campaignId: campaign.id }}
-                              className="inline-flex rounded-md border border-white/10 bg-white/5 px-2 py-1 text-xs text-white transition hover:bg-white/10"
+                              className="inline-flex rounded-md border border-gray-300 dark:border-white/10 bg-gray-100 dark:bg-white/5 px-2 py-1 text-xs text-gray-700 dark:text-white transition hover:bg-gray-200 dark:hover:bg-white/10"
                             >
                               Détails
                             </Link>
-                            {/* <Button
-                              size="sm"
-                              variant="outline"
-                              className="text-gray-700"
-                              onClick={() => handleRemixCampaign(campaign)}
-                            >
-                              Remixer
-                            </Button> */}
                             <Button
                               size="sm"
-                              className="text-gray-700"
+                              className="text-gray-700 dark:text-gray-300"
                               variant="outline"
                               onClick={() => handleDuplicateCampaign(campaign)}
                             >
@@ -465,7 +480,7 @@ export default function Campaigns({ formOpen = false }: CampaignsProps) {
                             ) : (
                               <Button
                                 size="sm"
-                                className="text-gray-700"
+                                className="text-gray-700 dark:text-gray-300"
                                 variant="outline"
                                 onClick={() => handleArchiveCampaign(campaign.id, campaign.name)}
                               >
@@ -473,20 +488,17 @@ export default function Campaigns({ formOpen = false }: CampaignsProps) {
                               </Button>
                             )}
 
-                           
-                                {
-                            ['DRAFT', 'SCHEDULED'].includes(campaign.status) && (
-  <Button
-    size="sm"
-    variant="outline"
-    className="text-green-400 border-green-400/30  hover:bg-green-400/10 hover:text-green-300"
-    onClick={() => handleLaunchCampaign(campaign.id)}
-    title="Lancer la campagne"
-  >
-    <Play className="h-3.5 w-3.5" />
-  </Button>
-)}
-                            
+                            {['DRAFT', 'SCHEDULED'].includes(campaign.status) && (
+                              <Button
+                                size="sm"
+                                variant="outline"
+                                className="text-green-600 dark:text-green-400 border-green-300 dark:border-green-400/30 hover:bg-green-50 dark:hover:bg-green-400/10 hover:text-green-700 dark:hover:text-green-300"
+                                onClick={() => handleLaunchCampaign(campaign.id, campaign.name)}
+                                title="Lancer la campagne"
+                              >
+                                <Play className="h-3.5 w-3.5" />
+                              </Button>
+                            )}
 
                             <Button
                               size="sm"
@@ -507,6 +519,95 @@ export default function Campaigns({ formOpen = false }: CampaignsProps) {
 
         </div>
       </div>
+
+      {/* Dialogs de confirmation */}
+      <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
+        <AlertDialogContent className="bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-800 rounded-sm">
+          <AlertDialogHeader>
+            <AlertDialogTitle className="text-gray-900 dark:text-white">Supprimer la campagne?</AlertDialogTitle>
+            <AlertDialogDescription className="text-gray-600 dark:text-gray-400">
+              Êtes-vous sûr de vouloir supprimer définitivement la campagne <span className="font-semibold text-gray-900 dark:text-white">"{selectedCampaign?.name}"</span> ? Cette action est irréversible.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter className='bg-white dark:bg-gray-900'>
+            <AlertDialogCancel className="bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 border-gray-300 dark:border-gray-700 text-gray-700 dark:text-white hover:text-gray-900 dark:hover:text-white">
+              Annuler
+            </AlertDialogCancel>
+            <AlertDialogAction
+              onClick={confirmDeleteCampaign}
+              className="bg-red-600 hover:bg-red-700 text-white"
+            >
+              Supprimer
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      <AlertDialog open={archiveDialogOpen} onOpenChange={setArchiveDialogOpen}>
+        <AlertDialogContent className="bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-800 rounded-sm">
+          <AlertDialogHeader>
+            <AlertDialogTitle className="text-gray-900 dark:text-white">Archiver la campagne?</AlertDialogTitle>
+            <AlertDialogDescription className="text-gray-600 dark:text-gray-400">
+              Voulez-vous archiver la campagne <span className="font-semibold text-gray-900 dark:text-white">"{selectedCampaign?.name}"</span> ? Vous pourrez la restaurer plus tard.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter className='bg-white dark:bg-gray-900'>
+            <AlertDialogCancel className="bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 border-gray-300 dark:border-gray-700 text-gray-700 dark:text-white hover:text-gray-900 dark:hover:text-white">
+              Annuler
+            </AlertDialogCancel>
+            <AlertDialogAction
+              onClick={confirmArchiveCampaign}
+              className="bg-orange-600 hover:bg-orange-700 text-white"
+            >
+              Archiver
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      <AlertDialog open={launchDialogOpen} onOpenChange={setLaunchDialogOpen}>
+        <AlertDialogContent className="bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-800 rounded-sm">
+          <AlertDialogHeader>
+            <AlertDialogTitle className="text-gray-900 dark:text-white">Lancer la campagne?</AlertDialogTitle>
+            <AlertDialogDescription className="text-gray-600 dark:text-gray-400">
+              Êtes-vous sûr de vouloir lancer la campagne <span className="font-semibold text-gray-900 dark:text-white">"{selectedCampaign?.name}"</span> ? Les emails seront envoyés aux cibles.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter className='bg-white dark:bg-gray-900'>
+            <AlertDialogCancel className="bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 border-gray-300 dark:border-gray-700 text-gray-700 dark:text-white hover:text-gray-900 dark:hover:text-white">
+              Annuler
+            </AlertDialogCancel>
+            <AlertDialogAction
+              onClick={confirmLaunchCampaign}
+              className="bg-green-600 hover:bg-green-700 text-white"
+            >
+              Lancer
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      <AlertDialog open={restoreDialogOpen} onOpenChange={setRestoreDialogOpen}>
+        <AlertDialogContent className="bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-800 rounded-sm">
+          <AlertDialogHeader>
+            <AlertDialogTitle className="text-gray-900 dark:text-white">Restaurer la campagne?</AlertDialogTitle>
+            <AlertDialogDescription className="text-gray-600 dark:text-gray-400">
+              Voulez-vous restaurer la campagne <span className="font-semibold text-gray-900 dark:text-white">"{selectedCampaign?.name}"</span> ? Elle redeviendra active.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter className='bg-white dark:bg-gray-900'>
+            <AlertDialogCancel className="bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 border-gray-300 dark:border-gray-700 text-gray-700 dark:text-white hover:text-gray-900 dark:hover:text-white">
+              Annuler
+            </AlertDialogCancel>
+            <AlertDialogAction
+              onClick={confirmRestoreCampaign}
+              className="bg-blue-600 hover:bg-blue-700 text-white"
+            >
+              Restaurer
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }

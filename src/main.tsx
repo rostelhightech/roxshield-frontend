@@ -4,6 +4,7 @@ import ReactDOM from 'react-dom/client';
 import { RouterProvider, createRouter } from '@tanstack/react-router';
 import { routeTree } from './routeTree.gen';
 import { useAuthStore } from '@/store/auth.store';
+import { ThemeProvider } from '@/contexts/theme.context';
 import './globals.css';
 
 // Création du routeur TanStack
@@ -43,6 +44,7 @@ function InnerApp() {
 }
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
+  <ThemeProvider>
     <InnerApp />
-  
+  </ThemeProvider>
 );

@@ -29,12 +29,12 @@ export function FormationAnalytics({ formation }: FormationAnalyticsProps) {
     return (
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {Array.from({ length: 4 }).map((_, i) => (
-          <Card key={i} className="rounded-md border border-white/10 bg-[#0c1023]/90 shadow-xl">
+          <Card key={i} className="rounded-sm border border-gray-200 dark:border-white/10 bg-white dark:bg-[#0c1023]/90">
             <CardHeader>
-              <Skeleton className="h-6 w-48 bg-gray-700/50" />
+              <Skeleton className="h-6 w-48 bg-gray-200 dark:bg-gray-700/50" />
             </CardHeader>
             <CardContent>
-              <Skeleton className="h-32 w-full bg-gray-700/50" />
+              <Skeleton className="h-32 w-full bg-gray-200 dark:bg-gray-700/50" />
             </CardContent>
           </Card>
         ))}
@@ -46,22 +46,22 @@ export function FormationAnalytics({ formation }: FormationAnalyticsProps) {
 
   return (
     <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-      <Card className="rounded-md border border-white/10 bg-[#0c1023]/90 shadow-xl">
+      <Card className="rounded-sm border border-gray-200 dark:border-white/10 bg-white dark:bg-[#0c1023]/90">
         <CardHeader>
-          <CardTitle className="text-white">Statistiques de performance</CardTitle>
+          <CardTitle className="text-gray-900 dark:text-white">Statistiques de performance</CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="flex justify-between">
-            <span className="text-gray-400">Taux de réussite</span>
-            <span className="text-white">{completionRate}%</span>
+            <span className="text-gray-500 dark:text-gray-400">Taux de réussite</span>
+            <span className="text-gray-900 dark:text-white">{completionRate}%</span>
           </div>
           <div className="flex justify-between">
-            <span className="text-gray-400">Score moyen</span>
-            <span className="text-white">{Math.round(formation.stats?.averageScore || 0)}%</span>
+            <span className="text-gray-500 dark:text-gray-400">Score moyen</span>
+            <span className="text-gray-900 dark:text-white">{Math.round(formation.stats?.averageScore || 0)}%</span>
           </div>
           <div className="flex justify-between">
-            <span className="text-gray-400">Temps moyen</span>
-            <span className="text-white">
+            <span className="text-gray-500 dark:text-gray-400">Temps moyen</span>
+            <span className="text-gray-900 dark:text-white">
               {(() => {
                 const seconds = Math.round(formation.stats?.averageTimeSpent || 0);
                 const minutes = Math.floor(seconds / 60);
@@ -77,23 +77,23 @@ export function FormationAnalytics({ formation }: FormationAnalyticsProps) {
             </span>
           </div>
           <div className="flex justify-between">
-            <span className="text-gray-400">En cours</span>
-            <span className="text-white">{formation.stats?.inProgressUsers || 0}</span>
+            <span className="text-gray-500 dark:text-gray-400">En cours</span>
+            <span className="text-gray-900 dark:text-white">{formation.stats?.inProgressUsers || 0}</span>
           </div>
           <div className="flex justify-between">
-            <span className="text-gray-400">Total inscrits</span>
-            <span className="text-white">{formation.stats?.totalUsers || 0}</span>
+            <span className="text-gray-500 dark:text-gray-400">Total inscrits</span>
+            <span className="text-gray-900 dark:text-white">{formation.stats?.totalUsers || 0}</span>
           </div>
           <div className="flex justify-between">
-            <span className="text-gray-400">Complétés</span>
-            <span className="text-white">{formation.stats?.completedUsers || 0}</span>
+            <span className="text-gray-500 dark:text-gray-400">Complétés</span>
+            <span className="text-gray-900 dark:text-white">{formation.stats?.completedUsers || 0}</span>
           </div>
         </CardContent>
       </Card>
       
-      <Card className="rounded-md border border-white/10 bg-[#0c1023]/90 shadow-xl">
+      <Card className="rounded-sm border border-gray-200 dark:border-white/10 bg-white dark:bg-[#0c1023]/90">
         <CardHeader>
-          <CardTitle className="text-white flex items-center gap-2">
+          <CardTitle className="text-gray-900 dark:text-white flex items-center gap-2">
             <TrendingUp className="w-5 h-5" />
             Tendances hebdomadaires
           </CardTitle>
@@ -101,20 +101,20 @@ export function FormationAnalytics({ formation }: FormationAnalyticsProps) {
         <CardContent>
           <div className="space-y-4">
             {/* Trend indicator */}
-            <div className="flex items-center justify-between p-3 bg-slate-800/30 rounded-lg">
+            <div className="flex items-center justify-between p-3 bg-gray-50 dark:bg-slate-800/30 rounded-lg">
               <div className="flex items-center gap-2">
                 {trend.isPositive ? (
-                  <TrendingUp className="w-4 h-4 text-green-400" />
+                  <TrendingUp className="w-4 h-4 text-green-600 dark:text-green-400" />
                 ) : (
-                  <TrendingDown className="w-4 h-4 text-red-400" />
+                  <TrendingDown className="w-4 h-4 text-red-600 dark:text-red-400" />
                 )}
-                <span className="text-white text-sm">Cette semaine</span>
+                <span className="text-gray-900 dark:text-white text-sm">Cette semaine</span>
               </div>
               <div className="text-right">
-                <span className={`font-medium ${trend.isPositive ? 'text-green-400' : 'text-red-400'}`}>
+                <span className={`font-medium ${trend.isPositive ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'}`}>
                   {trend.isPositive ? '+' : ''}{trend.value} complétions
                 </span>
-                <p className="text-xs text-gray-400">
+                <p className="text-xs text-gray-500 dark:text-gray-400">
                   {trend.isPositive ? '+' : ''}{trend.percentage}% vs semaine dernière
                 </p>
               </div>
@@ -122,22 +122,22 @@ export function FormationAnalytics({ formation }: FormationAnalyticsProps) {
 
             {/* Weekly progress chart */}
             <div className="space-y-3">
-              <h4 className="text-white text-sm font-medium">Progression sur 4 semaines</h4>
+              <h4 className="text-gray-900 dark:text-white text-sm font-medium">Progression sur 4 semaines</h4>
               {weeklyProgress.length === 0 ? (
-                <p className="text-gray-400 text-sm text-center py-4">Pas encore de données</p>
+                <p className="text-gray-500 dark:text-gray-400 text-sm text-center py-4">Pas encore de données</p>
               ) : (
                 weeklyProgress.map((week, index) => (
                   <div key={week.week} className="space-y-2">
                     <div className="flex justify-between text-sm">
-                      <span className="text-gray-400">{week.week}</span>
-                      <span className="text-white">{week.completed}/{week.started}</span>
+                      <span className="text-gray-500 dark:text-gray-400">{week.week}</span>
+                      <span className="text-gray-900 dark:text-white">{week.completed}/{week.started}</span>
                     </div>
                     <div className="flex gap-1">
                       <Progress 
                         value={week.started > 0 ? (week.completed / week.started) * 100 : 0} 
                         className="h-2 flex-1" 
                       />
-                      <span className="text-xs text-gray-400 w-10">
+                      <span className="text-xs text-gray-500 dark:text-gray-400 w-10">
                         {week.started > 0 ? Math.round((week.completed / week.started) * 100) : 0}%
                       </span>
                     </div>
@@ -150,9 +150,9 @@ export function FormationAnalytics({ formation }: FormationAnalyticsProps) {
       </Card>
 
       {/* Statistiques par département */}
-      <Card className="rounded-md border border-white/10 bg-[#0c1023]/90 shadow-xl">
+      <Card className="rounded-sm border border-gray-200 dark:border-white/10 bg-white dark:bg-[#0c1023]/90">
         <CardHeader>
-          <CardTitle className="text-white flex items-center gap-2">
+          <CardTitle className="text-gray-900 dark:text-white flex items-center gap-2">
             <Users className="w-5 h-5" />
             Performance par département
           </CardTitle>
@@ -160,20 +160,20 @@ export function FormationAnalytics({ formation }: FormationAnalyticsProps) {
         <CardContent>
           <div className="space-y-4">
             {departmentStats.length === 0 ? (
-              <p className="text-gray-400 text-sm text-center py-4">Aucune donnée par département</p>
+              <p className="text-gray-500 dark:text-gray-400 text-sm text-center py-4">Aucune donnée par département</p>
             ) : (
               departmentStats.map((dept) => (
                 <div key={dept.name} className="space-y-2">
                   <div className="flex justify-between items-center">
-                    <span className="text-white text-sm font-medium">{dept.name}</span>
+                    <span className="text-gray-900 dark:text-white text-sm font-medium">{dept.name}</span>
                     <div className="flex items-center gap-2">
-                      <span className="text-gray-400 text-xs">{dept.completed}/{dept.total}</span>
+                      <span className="text-gray-500 dark:text-gray-400 text-xs">{dept.completed}/{dept.total}</span>
                       <Badge 
                         variant="outline" 
                         className={`text-xs ${
-                          dept.rate >= 80 ? 'text-green-400 border-green-400/50' :
-                          dept.rate >= 60 ? 'text-orange-400 border-orange-400/50' :
-                          'text-red-400 border-red-400/50'
+                          dept.rate >= 80 ? 'text-green-600 dark:text-green-400 border-green-400/50' :
+                          dept.rate >= 60 ? 'text-orange-600 dark:text-orange-400 border-orange-400/50' :
+                          'text-red-600 dark:text-red-400 border-red-400/50'
                         }`}
                       >
                         {dept.rate}%
@@ -189,9 +189,9 @@ export function FormationAnalytics({ formation }: FormationAnalyticsProps) {
       </Card>
 
       {/* Répartition du temps */}
-      <Card className="rounded-md border border-white/10 bg-[#0c1023]/90 shadow-xl">
+      <Card className="rounded-sm border border-gray-200 dark:border-white/10 bg-white dark:bg-[#0c1023]/90">
         <CardHeader>
-          <CardTitle className="text-white flex items-center gap-2">
+          <CardTitle className="text-gray-900 dark:text-white flex items-center gap-2">
             <Clock className="w-5 h-5" />
             Répartition du temps de complétion
           </CardTitle>
@@ -199,28 +199,28 @@ export function FormationAnalytics({ formation }: FormationAnalyticsProps) {
         <CardContent>
           <div className="space-y-4">
             {timeDistribution.length === 0 ? (
-              <p className="text-gray-400 text-sm text-center py-4">Pas encore de données de temps</p>
+              <p className="text-gray-500 dark:text-gray-400 text-sm text-center py-4">Pas encore de données de temps</p>
             ) : (
               <>
                 {timeDistribution.map((time) => (
                   <div key={time.range} className="space-y-2">
                     <div className="flex justify-between items-center">
-                      <span className="text-white text-sm">{time.range}</span>
+                      <span className="text-gray-900 dark:text-white text-sm">{time.range}</span>
                       <div className="flex items-center gap-2">
-                        <span className="text-gray-400 text-xs">{time.count} utilisateurs</span>
-                        <span className="text-white text-sm font-medium">{time.percentage}%</span>
+                        <span className="text-gray-500 dark:text-gray-400 text-xs">{time.count} utilisateurs</span>
+                        <span className="text-gray-900 dark:text-white text-sm font-medium">{time.percentage}%</span>
                       </div>
                     </div>
                     <Progress value={time.percentage} className="h-2" />
                   </div>
                 ))}
                 
-                <div className="mt-4 p-3 bg-slate-800/30 rounded-lg">
+                <div className="mt-4 p-3 bg-gray-50 dark:bg-slate-800/30 rounded-lg">
                   <div className="flex items-center gap-2 mb-2">
-                    <Target className="w-4 h-4 text-blue-400" />
-                    <span className="text-white text-sm font-medium">Temps optimal</span>
+                    <Target className="w-4 h-4 text-blue-600 dark:text-blue-400" />
+                    <span className="text-gray-900 dark:text-white text-sm font-medium">Temps optimal</span>
                   </div>
-                  <p className="text-gray-400 text-xs">
+                  <p className="text-gray-500 dark:text-gray-400 text-xs">
                     {timeDistribution.length > 0 
                       ? `La majorité des utilisateurs complètent cette formation en ${timeDistribution[0].range}, ce qui correspond à la durée estimée de ${formation.estimatedDuration} minutes.`
                       : `Durée estimée : ${formation.estimatedDuration} minutes`

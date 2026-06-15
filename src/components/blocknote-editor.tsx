@@ -4,6 +4,7 @@ import { BlockNoteView } from "@blocknote/mantine";
 import "@blocknote/mantine/style.css";
 import { useCreateBlockNote } from "@blocknote/react";
 import { useEffect, useMemo } from "react";
+import { useTheme } from "@/contexts/theme.context";
 
 interface BlockNoteEditorProps {
   initialContent?: string;
@@ -12,6 +13,8 @@ interface BlockNoteEditorProps {
 }
 
 export function BlockNoteEditor({ initialContent, onChange, editable = true }: BlockNoteEditorProps) {
+  const { theme } = useTheme();
+
   // Parse initial content
   const parsedContent = useMemo(() => {
     if (!initialContent) return undefined;
@@ -60,7 +63,7 @@ export function BlockNoteEditor({ initialContent, onChange, editable = true }: B
       <BlockNoteView 
         editor={editor} 
         editable={editable}
-        theme="dark"
+        theme={theme === 'dark' ? 'dark' : 'light'}
       />
     </div>
   );

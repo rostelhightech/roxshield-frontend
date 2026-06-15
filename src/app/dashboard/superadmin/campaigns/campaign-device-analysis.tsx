@@ -23,22 +23,22 @@ export function CampaignDeviceAnalysis({ userAgentAnalysis }: CampaignDeviceAnal
   , deviceData[0]);
 
   return (
-    <div className="space-y-6">
+   <div className="space-y-6">
       {/* Stats principales */}
       <div className="grid gap-4 md:grid-cols-3">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="rounded-xl hover:bg-[#1a1f36] cursor-pointer transition-colors duration-200 border border-white/5 bg-[#0c1023] p-6 shadow-xl"
+          className="rounded-sm hover:bg-gray-100 dark:hover:bg-[#1a1f36] cursor-pointer transition-colors duration-200 border border-gray-200 dark:border-white/5 bg-white dark:bg-[#0c1023] p-6"
         >
           <div className="flex items-center gap-4">
-            <div className="rounded-sm bg-blue-500/20 p-3">
-              <Monitor className="h-6 w-6 text-blue-400" />
+            <div className="rounded-sm bg-blue-100 dark:bg-blue-500/20 p-3">
+              <Monitor className="h-6 w-6 text-blue-600 dark:text-blue-400" />
             </div>
             <div>
-              <p className="text-sm text-zinc-400">Appareil principal</p>
-              <h2 className="text-2xl font-bold text-white">{primaryDevice?.name || 'N/A'}</h2>
-              <p className="text-xs text-zinc-500">
+              <p className="text-sm text-gray-500 dark:text-zinc-400">Appareil principal</p>
+              <h2 className="text-2xl font-bold text-gray-900 dark:text-white">{primaryDevice?.name || 'N/A'}</h2>
+              <p className="text-xs text-gray-400 dark:text-zinc-500">
                 {primaryDevice ? Math.round((primaryDevice.value / totalDevices) * 100) : 0}% du trafic
               </p>
             </div>
@@ -49,16 +49,16 @@ export function CampaignDeviceAnalysis({ userAgentAnalysis }: CampaignDeviceAnal
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.1 }}
-          className="rounded-xl hover:bg-[#1a1f36] cursor-pointer transition-colors duration-200 border border-white/5 bg-[#0c1023] p-6 shadow-xl"
+          className="rounded-sm hover:bg-gray-100 dark:hover:bg-[#1a1f36] cursor-pointer transition-colors duration-200 border border-gray-200 dark:border-white/5 bg-white dark:bg-[#0c1023] p-6"
         >
           <div className="flex items-center gap-4">
-            <div className="rounded-sm bg-purple-500/20 p-3">
-              <Globe className="h-6 w-6 text-purple-400" />
+            <div className="rounded-sm bg-purple-100 dark:bg-purple-500/20 p-3">
+              <Globe className="h-6 w-6 text-purple-600 dark:text-purple-400" />
             </div>
             <div>
-              <p className="text-sm text-zinc-400">Navigateurs</p>
-              <h2 className="text-2xl font-bold text-white">{browserData.length}</h2>
-              <p className="text-xs text-zinc-500">types détectés</p>
+              <p className="text-sm text-gray-500 dark:text-zinc-400">Navigateurs</p>
+              <h2 className="text-2xl font-bold text-gray-900 dark:text-white">{browserData.length}</h2>
+              <p className="text-xs text-gray-400 dark:text-zinc-500">types détectés</p>
             </div>
           </div>
         </motion.div>
@@ -67,16 +67,16 @@ export function CampaignDeviceAnalysis({ userAgentAnalysis }: CampaignDeviceAnal
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.2 }}
-          className="rounded-xl hover:bg-[#1a1f36] cursor-pointer transition-colors duration-200 border border-white/5 bg-[#0c1023] p-6 shadow-xl"
+          className="rounded-sm hover:bg-gray-100 dark:hover:bg-[#1a1f36] cursor-pointer transition-colors duration-200 border border-gray-200 dark:border-white/5 bg-white dark:bg-[#0c1023] p-6"
         >
           <div className="flex items-center gap-4">
-            <div className="rounded-sm bg-pink-500/20 p-3">
-              <Cpu className="h-6 w-6 text-pink-400" />
+            <div className="rounded-sm bg-pink-100 dark:bg-pink-500/20 p-3">
+              <Cpu className="h-6 w-6 text-pink-600 dark:text-pink-400" />
             </div>
             <div>
-              <p className="text-sm text-zinc-400">Systèmes d'exploitation</p>
-              <h2 className="text-2xl font-bold text-white">{osData.length}</h2>
-              <p className="text-xs text-zinc-500">plateformes utilisées</p>
+              <p className="text-sm text-gray-500 dark:text-zinc-400">Systèmes d'exploitation</p>
+              <h2 className="text-2xl font-bold text-gray-900 dark:text-white">{osData.length}</h2>
+              <p className="text-xs text-gray-400 dark:text-zinc-500">plateformes utilisées</p>
             </div>
           </div>
         </motion.div>
@@ -90,13 +90,13 @@ export function CampaignDeviceAnalysis({ userAgentAnalysis }: CampaignDeviceAnal
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.3 }}
         >
-          <Card className="rounded-md border border-white/10 bg-[#0c1023]/90 shadow-xl">
+          <Card className="rounded-sm border border-gray-200 dark:border-white/5 bg-white dark:bg-[#0c1023]/90">
             <CardHeader>
-              <CardTitle className="text-white flex items-center gap-2">
-                <Smartphone className="w-5 h-5 text-blue-400" />
+              <CardTitle className="text-gray-900 dark:text-white flex items-center gap-2">
+                <Smartphone className="w-5 h-5 text-blue-600 dark:text-blue-400" />
                 Appareils
               </CardTitle>
-              <CardDescription>Répartition par type d'appareil</CardDescription>
+              <CardDescription className="text-gray-500 dark:text-gray-400">Répartition par type d'appareil</CardDescription>
             </CardHeader>
             <CardContent>
               <ResponsiveContainer width="100%" height={250}>
@@ -117,10 +117,10 @@ export function CampaignDeviceAnalysis({ userAgentAnalysis }: CampaignDeviceAnal
                   </Pie>
                   <Tooltip
                     contentStyle={{
-                      backgroundColor: '#1e293b',
-                      border: '1px solid #334155',
+                      backgroundColor: '#ffffff',
+                      border: '1px solid #e5e7eb',
                       borderRadius: '8px',
-                      color: '#fff',
+                      color: '#111827',
                     }}
                   />
                 </PieChart>
@@ -135,13 +135,13 @@ export function CampaignDeviceAnalysis({ userAgentAnalysis }: CampaignDeviceAnal
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.4 }}
         >
-          <Card className="rounded-md border border-white/10 bg-[#0c1023]/90 shadow-xl">
+          <Card className="rounded-sm border border-gray-200 dark:border-white/5 bg-white dark:bg-[#0c1023]/90">
             <CardHeader>
-              <CardTitle className="text-white flex items-center gap-2">
-                <Globe className="w-5 h-5 text-purple-400" />
+              <CardTitle className="text-gray-900 dark:text-white flex items-center gap-2">
+                <Globe className="w-5 h-5 text-purple-600 dark:text-purple-400" />
                 Navigateurs
               </CardTitle>
-              <CardDescription>Répartition par navigateur</CardDescription>
+              <CardDescription className="text-gray-500 dark:text-gray-400">Répartition par navigateur</CardDescription>
             </CardHeader>
             <CardContent>
               <ResponsiveContainer width="100%" height={250}>
@@ -162,10 +162,10 @@ export function CampaignDeviceAnalysis({ userAgentAnalysis }: CampaignDeviceAnal
                   </Pie>
                   <Tooltip
                     contentStyle={{
-                      backgroundColor: '#1e293b',
-                      border: '1px solid #334155',
+                      backgroundColor: '#ffffff',
+                      border: '1px solid #e5e7eb',
                       borderRadius: '8px',
-                      color: '#fff',
+                      color: '#111827',
                     }}
                   />
                 </PieChart>
@@ -180,13 +180,13 @@ export function CampaignDeviceAnalysis({ userAgentAnalysis }: CampaignDeviceAnal
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.5 }}
         >
-          <Card className="rounded-md border border-white/10 bg-[#0c1023]/90 shadow-xl">
+          <Card className="rounded-sm border border-gray-200 dark:border-white/5 bg-white dark:bg-[#0c1023]/90">
             <CardHeader>
-              <CardTitle className="text-white flex items-center gap-2">
-                <Cpu className="w-5 h-5 text-pink-400" />
+              <CardTitle className="text-gray-900 dark:text-white flex items-center gap-2">
+                <Cpu className="w-5 h-5 text-pink-600 dark:text-pink-400" />
                 OS
               </CardTitle>
-              <CardDescription>Répartition par système d'exploitation</CardDescription>
+              <CardDescription className="text-gray-500 dark:text-gray-400">Répartition par système d'exploitation</CardDescription>
             </CardHeader>
             <CardContent>
               <ResponsiveContainer width="100%" height={250}>
@@ -207,10 +207,10 @@ export function CampaignDeviceAnalysis({ userAgentAnalysis }: CampaignDeviceAnal
                   </Pie>
                   <Tooltip
                     contentStyle={{
-                      backgroundColor: '#1e293b',
-                      border: '1px solid #334155',
+                      backgroundColor: '#ffffff',
+                      border: '1px solid #e5e7eb',
                       borderRadius: '8px',
-                      color: '#fff',
+                      color: '#111827',
                     }}
                   />
                 </PieChart>

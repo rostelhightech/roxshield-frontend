@@ -72,6 +72,8 @@ interface CampaignFormProps {
   onSubmitAction?: (data: CampaignFormData) => Promise<void>;
   initialValues?: CampaignFormData;
   submitLabel?: string;
+  defaultOrganizationId?: string;
+  hideOrganization?: boolean;
 }
 
 export function CampaignForm({
@@ -85,6 +87,9 @@ export function CampaignForm({
   onSubmitAction,
   initialValues,
   submitLabel,
+  defaultOrganizationId,
+  hideOrganization = false,
+  
 }: CampaignFormProps) {
   const { createCampaign, isSaving } = useCampaignStore();
 
@@ -133,7 +138,14 @@ export function CampaignForm({
   const availableLandingPages = useMemo(
     () => landingPageTemplates.filter((template) => template.organizationId === selectedOrganizationId),
     [landingPageTemplates, selectedOrganizationId],
+
   );
+
+  useEffect(() => {
+  if (defaultOrganizationId && !initialValues) {
+    setValue('organizationId', defaultOrganizationId);
+  }
+}, [defaultOrganizationId, initialValues]);
 
   const handleFormSubmit = async (data: CampaignFormData) => {
     const targets: CampaignTargetPayload[] = [];
@@ -177,50 +189,52 @@ export function CampaignForm({
   };
 
 return (
-  <form onSubmit={handleSubmit(handleFormSubmit)} className="space-y-8">
+ <form onSubmit={handleSubmit(handleFormSubmit)} className="space-y-8">
 
     {/* Section: Informations générales */}
     <div className="space-y-4">
-      <h3 className="text-xs font-semibold uppercase tracking-widest text-white/40">Informations générales</h3>
+      <h3 className="text-xs font-semibold uppercase tracking-widest text-gray-500 dark:text-gray-900 dark:text-white/40">Informations générales</h3>
       <div className="grid gap-4 sm:grid-cols-2">
         <div className="space-y-1.5">
-          <Label htmlFor="name" className="text-gray-300">Nom de la campagne <span className="text-red-400">*</span></Label>
+          <Label htmlFor="name" className="text-gray-700 dark:text-gray-300">Nom de la campagne <span className="text-red-600 dark:text-red-400">*</span></Label>
           <Input
             id="name"
             {...register('name')}
-            className="bg-[#071120] border-white/10 text-white"
+            className="bg-white dark:bg-white dark:bg-[#071120] border-gray-300 dark:border-white/10 text-gray-900 dark:text-gray-900 dark:text-white"
             placeholder="Ex: Campagne de sensibilisation Q3"
           />
-          {errors.name && <p className="text-red-400 text-xs">{errors.name.message}</p>}
+          {errors.name && <p className="text-red-600 dark:text-red-400 text-xs">{errors.name.message}</p>}
         </div>
 
-        <div className="space-y-1.5">
-          <Label htmlFor="organizationId" className="text-gray-300">Organisation <span className="text-red-400">*</span></Label>
-          <Select value={watch('organizationId') || ''} onValueChange={(value) => setValue('organizationId', value ?? '')}>
-            <SelectTrigger className="bg-[#071120] border-white/10 text-white">
-              <SelectValue placeholder="Sélectionner une organisation">
-                {selectedOrganization ? selectedOrganization.name : undefined}
-              </SelectValue>
-            </SelectTrigger>
-            <SelectContent className="bg-slate-200 border-gray-700">
-              <SelectItem value="">Sélectionner une organisation</SelectItem>
-              {organizations.map((organization) => (
-                <SelectItem key={organization.id} value={organization.id}>
-                  {organization.name ?? organization.id}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-          {errors.organizationId && <p className="text-red-400 text-xs">{errors.organizationId.message}</p>}
-        </div>
+       {!hideOrganization && (
+    <div className="space-y-1.5">
+      <Label htmlFor="organizationId" className="text-gray-700 dark:text-gray-300">Organisation <span className="text-red-600 dark:text-red-400">*</span></Label>
+      <Select value={watch('organizationId') || ''} onValueChange={(value) => setValue('organizationId', value ?? '')}>
+        <SelectTrigger className="bg-white dark:bg-white dark:bg-[#071120] border-gray-300 dark:border-white/10 text-gray-900 dark:text-gray-900 dark:text-white">
+          <SelectValue placeholder="Sélectionner une organisation">
+            {selectedOrganization ? selectedOrganization.name : undefined}
+          </SelectValue>
+        </SelectTrigger>
+        <SelectContent className="bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700">
+          <SelectItem value="">Sélectionner une organisation</SelectItem>
+          {organizations.map((organization) => (
+            <SelectItem key={organization.id} value={organization.id}>
+              {organization.name ?? organization.id}
+            </SelectItem>
+          ))}
+        </SelectContent>
+      </Select>
+      {errors.organizationId && <p className="text-red-600 dark:text-red-400 text-xs">{errors.organizationId.message}</p>}
+    </div>
+  )}
       </div>
 
       <div className="space-y-1.5">
-        <Label htmlFor="description" className="text-gray-300">Description</Label>
+        <Label htmlFor="description" className="text-gray-700 dark:text-gray-300">Description</Label>
         <Textarea
           id="description"
           {...register('description')}
-          className="bg-[#071120] border-white/10 text-white"
+          className="bg-white dark:bg-white dark:bg-[#071120] border-gray-300 dark:border-white/10 text-gray-900 dark:text-gray-900 dark:text-white"
           placeholder="Décrivez les objectifs ou les détails de la campagne..."
           rows={3}
         />
@@ -229,104 +243,104 @@ return (
 
     {/* Section: Configuration */}
     <div className="space-y-4">
-      <h3 className="text-xs font-semibold uppercase tracking-widest text-white/40">Configuration</h3>
+      <h3 className="text-xs font-semibold uppercase tracking-widest text-gray-500 dark:text-gray-900 dark:text-white/40">Configuration</h3>
       <div className="grid gap-4 sm:grid-cols-2">
         <div className="space-y-1.5">
-          <Label htmlFor="smtpProfileId" className="text-gray-300">Profil SMTP <span className="text-red-400">*</span></Label>
+          <Label htmlFor="smtpProfileId" className="text-gray-700 dark:text-gray-300">Profil SMTP <span className="text-red-600 dark:text-red-400">*</span></Label>
           <Select value={watch('smtpProfileId') || ''} onValueChange={(value) => setValue('smtpProfileId', value ?? '')}>
-            <SelectTrigger className="bg-[#071120] border-white/10 text-white">
+            <SelectTrigger className="bg-white dark:bg-white dark:bg-[#071120] border-gray-300 dark:border-white/10 text-gray-900 dark:text-gray-900 dark:text-white">
               <SelectValue placeholder="Sélectionner un profil SMTP">
                 {selectedSmtpProfile?.name}
               </SelectValue>
             </SelectTrigger>
-            <SelectContent className="bg-slate-200 border-gray-700">
+            <SelectContent className="bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700">
               <SelectItem value="">Sélectionner un profil SMTP</SelectItem>
               {availableSmtpProfiles.map((profile) => (
                 <SelectItem key={profile.id} value={profile.id}>{profile.name}</SelectItem>
               ))}
             </SelectContent>
           </Select>
-          {errors.smtpProfileId && <p className="text-red-400 text-xs">{errors.smtpProfileId.message}</p>}
+          {errors.smtpProfileId && <p className="text-red-600 dark:text-red-400 text-xs">{errors.smtpProfileId.message}</p>}
         </div>
 
         <div className="space-y-1.5">
-          <Label htmlFor="emailTemplateId" className="text-gray-300">Template email <span className="text-red-400">*</span></Label>
+          <Label htmlFor="emailTemplateId" className="text-gray-700 dark:text-gray-300">Template email <span className="text-red-600 dark:text-red-400">*</span></Label>
           <Select value={watch('emailTemplateId') || ''} onValueChange={(value) => setValue('emailTemplateId', value ?? '')}>
-            <SelectTrigger className="bg-[#071120] border-white/10 text-white">
+            <SelectTrigger className="bg-white dark:bg-white dark:bg-[#071120] border-gray-300 dark:border-white/10 text-gray-900 dark:text-gray-900 dark:text-white">
               <SelectValue placeholder="Sélectionner un template">
                 {selectedEmailTemplate?.name}
               </SelectValue>
             </SelectTrigger>
-            <SelectContent className="bg-slate-200 border-gray-700">
+            <SelectContent className="bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700">
               <SelectItem value="">Sélectionner un template email</SelectItem>
               {availableTemplates.map((template) => (
                 <SelectItem key={template.id} value={template.id}>{template.name}</SelectItem>
               ))}
             </SelectContent>
           </Select>
-          {errors.emailTemplateId && <p className="text-red-400 text-xs">{errors.emailTemplateId.message}</p>}
+          {errors.emailTemplateId && <p className="text-red-600 dark:text-red-400 text-xs">{errors.emailTemplateId.message}</p>}
         </div>
 
         <div className="space-y-1.5">
-          <Label htmlFor="landingPageTemplateId" className="text-gray-300">Template landing page <span className="text-red-400">*</span></Label>
+          <Label htmlFor="landingPageTemplateId" className="text-gray-700 dark:text-gray-300">Template landing page <span className="text-red-600 dark:text-red-400">*</span></Label>
           <Select value={watch('landingPageTemplateId') || ''} onValueChange={(value) => setValue('landingPageTemplateId', value ?? '')}>
-            <SelectTrigger className="bg-[#071120] border-white/10 text-white">
+            <SelectTrigger className="bg-white dark:bg-white dark:bg-[#071120] border-gray-300 dark:border-white/10 text-gray-900 dark:text-gray-900 dark:text-white">
               <SelectValue placeholder="Sélectionner un template">
                 {selectedLandingPageTemplate?.name}
               </SelectValue>
             </SelectTrigger>
-            <SelectContent className="bg-slate-200 border-gray-700">
+            <SelectContent className="bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700">
               <SelectItem value="">Sélectionner un template de landing page</SelectItem>
               {availableLandingPages.map((template) => (
                 <SelectItem key={template.id} value={template.id}>{template.name}</SelectItem>
               ))}
             </SelectContent>
           </Select>
-          {errors.landingPageTemplateId && <p className="text-red-400 text-xs">{errors.landingPageTemplateId.message}</p>}
+          {errors.landingPageTemplateId && <p className="text-red-600 dark:text-red-400 text-xs">{errors.landingPageTemplateId.message}</p>}
         </div>
       </div>
     </div>
 
     {/* Section: Planification */}
     <div className="space-y-4">
-      <h3 className="text-xs font-semibold uppercase tracking-widest text-white/40">Planification</h3>
+      <h3 className="text-xs font-semibold uppercase tracking-widest text-gray-500 dark:text-gray-900 dark:text-white/40">Planification</h3>
       <div className="grid gap-4 sm:grid-cols-2">
         <div className="space-y-1.5">
-          <Label htmlFor="scheduledAt" className="text-gray-300">Date de début</Label>
+          <Label htmlFor="scheduledAt" className="text-gray-700 dark:text-gray-300">Date de début</Label>
           <Input
             id="scheduledAt"
             type="datetime-local"
             {...register('scheduledAt')}
-            className="bg-[#071120] border-white/10 text-white"
+            className="bg-white dark:bg-white dark:bg-[#071120] border-gray-300 dark:border-white/10 text-gray-900 dark:text-gray-900 dark:text-white"
           />
         </div>
 
         <div className="space-y-1.5">
-          <Label htmlFor="endAt" className="text-gray-300">Date de fin</Label>
+          <Label htmlFor="endAt" className="text-gray-700 dark:text-gray-300">Date de fin</Label>
           <Input
             id="endAt"
             type="datetime-local"
             {...register('endAt')}
-            className="bg-[#071120] border-white/10 text-white"
+            className="bg-white dark:bg-white dark:bg-[#071120] border-gray-300 dark:border-white/10 text-gray-900 dark:text-gray-900 dark:text-white"
           />
-          {errors.endAt && <p className="text-red-400 text-xs">{errors.endAt.message}</p>}
+          {errors.endAt && <p className="text-red-600 dark:text-red-400 text-xs">{errors.endAt.message}</p>}
         </div>
       </div>
     </div>
 
     {/* Section: Destinataires */}
     <div className="space-y-4">
-      <h3 className="text-xs font-semibold uppercase tracking-widest text-white/40">Destinataires</h3>
+      <h3 className="text-xs font-semibold uppercase tracking-widest text-gray-500 dark:text-gray-900 dark:text-white/40">Destinataires</h3>
       <div className="grid gap-4 sm:grid-cols-2">
         <div className="space-y-1.5">
-          <Label htmlFor="targetGroupId" className="text-gray-300">Groupe de destinataires</Label>
+          <Label htmlFor="targetGroupId" className="text-gray-700 dark:text-gray-300">Groupe de destinataires</Label>
           <Select value={watch('targetGroupId') || ''} onValueChange={(value) => setValue('targetGroupId', value ?? '')}>
-            <SelectTrigger className="bg-[#071120] border-white/10 text-white">
+            <SelectTrigger className="bg-white dark:bg-white dark:bg-[#071120] border-gray-300 dark:border-white/10 text-gray-900 dark:text-gray-900 dark:text-white">
               <SelectValue placeholder="Sélectionner un groupe">
                 {selectedTargetGroup?.name}
               </SelectValue>
             </SelectTrigger>
-            <SelectContent className="bg-slate-200 border-gray-700">
+            <SelectContent className="bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700">
               <SelectItem value="">Sélectionner un groupe</SelectItem>
               {availableGroups.map((group) => (
                 <SelectItem key={group.id} value={group.id}>{group.name}</SelectItem>
@@ -336,21 +350,21 @@ return (
         </div>
 
         <div className="space-y-1.5">
-          <Label htmlFor="targetEmails" className="text-gray-300">Adresses email supplémentaires</Label>
+          <Label htmlFor="targetEmails" className="text-gray-700 dark:text-gray-300">Adresses email supplémentaires</Label>
           <Textarea
             id="targetEmails"
             {...register('targetEmails')}
-            className="bg-[#071120] border-white/10 text-white"
+            className="bg-white dark:bg-white dark:bg-[#071120] border-gray-300 dark:border-white/10 text-gray-900 dark:text-gray-900 dark:text-white"
             placeholder="Une adresse par ligne..."
             rows={3}
           />
-          {errors.targetEmails && <p className="text-red-400 text-xs">{errors.targetEmails.message}</p>}
+          {errors.targetEmails && <p className="text-red-600 dark:text-red-400 text-xs">{errors.targetEmails.message}</p>}
         </div>
       </div>
     </div>
 
     {/* Actions */}
-    <div className="flex items-center justify-end gap-3 border-t border-white/10 pt-6">
+    <div className="flex items-center justify-end gap-3 border-t border-gray-200 dark:border-white/10 pt-6">
       {onCancel && (
         <Button type="button" variant="outline" onClick={onCancel}>
           Annuler

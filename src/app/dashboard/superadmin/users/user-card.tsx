@@ -16,7 +16,7 @@ import { User } from '@/store/user.store';
 interface UserCardProps {
   user: User;
   onEdit: (user: User) => void;
-  onDelete: (id: string) => void;
+  onDelete: (id: string, firstName: string, lastName: string) => void;
   onToggleActive: (id: string) => void;
 }
 
@@ -30,37 +30,37 @@ export const UserCard = ({ user, onEdit, onDelete, onToggleActive }: UserCardPro
   }[user.role];
 
   return (
-    <Card className="bg-gradient-to-br from-gray-900/50 to-gray-800/30 border-gray-700/50 hover:border-blue-500/30 transition-all duration-300 overflow-hidden">
+    <Card className="bg-gradient-to-br from-white to-gray-100 dark:from-gray-900/50 dark:to-gray-800/30 border-gray-200 dark:border-gray-700/50 hover:border-blue-500/30 transition-all duration-300 overflow-hidden">
       <div className="p-5">
         <div className="flex items-start justify-between mb-4">
           <div className="flex items-center gap-3 min-w-0">
             <Avatar className="h-11 w-11">
-              <AvatarFallback className="bg-blue-500/15 text-blue-300">
+              <AvatarFallback className="bg-blue-100 dark:bg-blue-500/15 text-blue-700 dark:text-blue-300">
                 {getInitials(user)}
               </AvatarFallback>
             </Avatar>
             <div className="min-w-0">
-              <h3 className="font-semibold text-white truncate">{user.firstName} {user.lastName}</h3>
-              <p className="text-xs text-gray-400 truncate">{user.organization?.name || 'Sans organisation'}</p>
+              <h3 className="font-semibold text-gray-900 dark:text-white truncate">{user.firstName} {user.lastName}</h3>
+              <p className="text-xs text-gray-500 dark:text-gray-400 truncate">{user.organization?.name || 'Sans organisation'}</p>
             </div>
           </div>
 
           <DropdownMenu>
             <DropdownMenuTrigger>
-              <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
+              <Button variant="ghost" size="sm" className="h-8 w-8 p-0 text-gray-700 dark:text-gray-300">
                 <MoreVertical className="h-4 w-4" />
               </Button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="bg-gray-800 border-gray-700">
-              <DropdownMenuItem onClick={() => onEdit(user)}>
+            <DropdownMenuContent align="end" className="bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700">
+              <DropdownMenuItem onClick={() => onEdit(user)} className="text-gray-700 dark:text-gray-300">
                 <Edit className="w-4 h-4 mr-2" />
                 Modifier
               </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => onToggleActive(user.id)}>
+              <DropdownMenuItem onClick={() => onToggleActive(user.id)} className="text-gray-700 dark:text-gray-300">
                 {user.isActive ? <UserX className="w-4 h-4 mr-2" /> : <UserCheck className="w-4 h-4 mr-2" />}
                 {user.isActive ? 'Désactiver' : 'Activer'}
               </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => onDelete(user.id)} className="text-red-400">
+              <DropdownMenuItem onClick={() => onDelete(user.id, user.firstName, user.lastName)} className="text-red-600 dark:text-red-400">
                 <Trash2 className="w-4 h-4 mr-2" />
                 Supprimer
               </DropdownMenuItem>
@@ -69,27 +69,27 @@ export const UserCard = ({ user, onEdit, onDelete, onToggleActive }: UserCardPro
         </div>
 
         <div className="flex items-center gap-2 mb-4">
-          <Badge className="bg-purple-500/20 text-purple-400 border-purple-500/30">
+          <Badge className="bg-purple-100 dark:bg-purple-500/20 text-purple-700 dark:text-purple-400 border-purple-300 dark:border-purple-500/30">
             <Shield className="w-3 h-3 mr-1" />
             {roleLabel}
           </Badge>
-          <Badge className={user.isActive ? 'bg-green-500/20 text-green-400' : 'bg-red-500/20 text-red-400'}>
+          <Badge className={user.isActive ? 'bg-green-100 dark:bg-green-500/20 text-green-700 dark:text-green-400 border-green-300 dark:border-green-500/30' : 'bg-red-100 dark:bg-red-500/20 text-red-700 dark:text-red-400 border-red-300 dark:border-red-500/30'}>
             {user.isActive ? 'Actif' : 'Inactif'}
           </Badge>
         </div>
 
         <div className="space-y-2 text-sm">
-          <div className="flex items-center gap-2 text-gray-400">
+          <div className="flex items-center gap-2 text-gray-500 dark:text-gray-400">
             <Mail className="w-4 h-4" />
             <span className="truncate">{user.email}</span>
           </div>
           {user.phone && (
-            <div className="flex items-center gap-2 text-gray-400">
+            <div className="flex items-center gap-2 text-gray-500 dark:text-gray-400">
               <Phone className="w-4 h-4" />
               <span>{user.phone}</span>
             </div>
           )}
-          <div className="flex items-center gap-2 text-gray-400">
+          <div className="flex items-center gap-2 text-gray-500 dark:text-gray-400">
             <Users className="w-4 h-4" />
             <span>{user.group?.name || 'Aucun groupe'}</span>
           </div>

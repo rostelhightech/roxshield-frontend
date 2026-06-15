@@ -33,11 +33,10 @@ import { GroupUsersPanel } from './group-users-panel';
 interface GroupTableProps {
   groups: Group[];
   onEdit: (group: Group) => void;
-  onDelete: (id: string) => void;
-  onSelect: (group: Group) => void;
+  onDelete: (id: string, name: string) => void;
 }
 
-export const GroupTable = ({ groups, onEdit, onDelete, onSelect }: GroupTableProps) => {
+export const GroupTable = ({ groups, onEdit, onDelete }: GroupTableProps) => {
   const [selectedGroupForPanel, setSelectedGroupForPanel] = useState<Group | null>(null);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const { users } = useUserStore();
@@ -55,72 +54,71 @@ export const GroupTable = ({ groups, onEdit, onDelete, onSelect }: GroupTablePro
 
   return (
     <>
-      <div className="rounded-md border border-gray-800/50 bg-gray-900/30 backdrop-blur-sm overflow-hidden">
+      <div className="rounded-sm border border-gray-200 dark:border-gray-800/50 bg-white dark:bg-gray-900/30 backdrop-blur-sm overflow-hidden">
         <Table>
-          <TableHeader className="bg-gray-800/50">
-            <TableRow className="border-gray-800 hover:bg-transparent">
-              <TableHead className="text-gray-300">Groupe</TableHead>
-              <TableHead className="text-gray-300">Organisation</TableHead>
-              <TableHead className="text-gray-300">Membres</TableHead>
-              <TableHead className="text-gray-300">Description</TableHead>
-              <TableHead className="text-gray-300">Créé le</TableHead>
-              <TableHead className="text-gray-300 text-right">Actions</TableHead>
+          <TableHeader className="bg-gray-100 dark:bg-gray-800/50">
+            <TableRow className="border-gray-200 dark:border-gray-800 hover:bg-transparent">
+              <TableHead className="text-gray-700 dark:text-gray-300">Groupe</TableHead>
+              <TableHead className="text-gray-700 dark:text-gray-300">Organisation</TableHead>
+              <TableHead className="text-gray-700 dark:text-gray-300">Membres</TableHead>
+              <TableHead className="text-gray-700 dark:text-gray-300">Description</TableHead>
+              <TableHead className="text-gray-700 dark:text-gray-300">Créé le</TableHead>
+              <TableHead className="text-gray-700 dark:text-gray-300 text-right">Actions</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
             {groups.map((group) => (
               <TableRow
                 key={group.id}
-                onClick={() => onSelect(group)}
-                className="border-gray-800 hover:bg-gray-800/30 cursor-pointer"
+                className="border-gray-200 dark:border-gray-800 hover:bg-gray-50 dark:hover:bg-gray-800/30 cursor-pointer"
               >
-                <TableCell className="font-medium text-white">
+                <TableCell className="font-medium text-gray-900 dark:text-white">
                   <div className="flex items-center gap-3">
-                    <div className="p-2 rounded-md bg-blue-500/10">
-                      <Users className="w-4 h-4 text-blue-400" />
+                    <div className="p-2 rounded-md bg-blue-100 dark:bg-blue-500/10">
+                      <Users className="w-4 h-4 text-blue-600 dark:text-blue-400" />
                     </div>
                     <span>{group.name}</span>
                   </div>
                 </TableCell>
                 <TableCell>
                   <div>
-                    <p className="text-white">{group.organization?.name || '-'}</p>
+                    <p className="text-gray-900 dark:text-white">{group.organization?.name || '-'}</p>
                     {group.organization && (
-                      <Badge className="mt-1 bg-purple-500/20 text-purple-400 border-purple-500/30">
+                      <Badge className="mt-1 bg-purple-100 dark:bg-purple-500/20 text-purple-700 dark:text-purple-400 border-purple-300 dark:border-purple-500/30">
                         <Building2 className="w-3 h-3 mr-1" />
                         {group.organization.type === 'campus' ? 'Campus' : 'Entreprise'}
                       </Badge>
                     )}
                   </div>
                 </TableCell>
-                <TableCell className="text-gray-300">{group.users?.length ?? 0}</TableCell>
-                <TableCell className="text-gray-300 max-w-xs truncate">
+                <TableCell className="text-gray-700 dark:text-gray-300">{group.users?.length ?? 0}</TableCell>
+                <TableCell className="text-gray-700 dark:text-gray-300 max-w-xs truncate">
                   {group.description || '-'}
                 </TableCell>
-                <TableCell className="text-gray-300">
+                <TableCell className="text-gray-700 dark:text-gray-300">
                   {format(new Date(group.createdAt), 'dd MMM yyyy', { locale: fr })}
                 </TableCell>
                 <TableCell className="text-right">
                   <DropdownMenu>
-                    <DropdownMenuTrigger >
-                      <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
+                    <DropdownMenuTrigger>
+                      <Button variant="ghost" size="sm" className="h-8 w-8 p-0 text-gray-700 dark:text-gray-300">
                         <MoreHorizontal className="h-4 w-4" />
                       </Button>
                     </DropdownMenuTrigger>
-                    <DropdownMenuContent align="end"  className="bg-gray-800 border-gray-700 max-w-md">
+                    <DropdownMenuContent align="end" className="bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700 max-w-md">
                       <DropdownMenuItem
                         onClick={(event) => {
                           event.stopPropagation();
                           onEdit(group);
                         }}
-                        className="text-gray-300 hover:bg-gray-600 focus:text-white"
+                        className="text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white"
                       >
                         <Edit className="w-4 h-4 mr-2" />
                         Modifier
                       </DropdownMenuItem>
                       <DropdownMenuItem
                         onClick={(event) => handleOpenUsersPanel(group, event)}
-                        className="text-blue-400 hover:bg-gray-600 hover:text-blue-300 focus:text-blue-300"
+                        className="text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300"
                       >
                         <UserPlus className="w-4 h-4 mr-2" />
                         Affecter
@@ -128,9 +126,9 @@ export const GroupTable = ({ groups, onEdit, onDelete, onSelect }: GroupTablePro
                       <DropdownMenuItem
                         onClick={(event) => {
                           event.stopPropagation();
-                          onDelete(group.id);
+                          onDelete(group.id, group.name);
                         }}
-                        className="text-red-400 hover:bg-gray-600 hover:text-red-300 focus:text-red-300"
+                        className="text-red-600 dark:text-red-400 hover:text-red-700 dark:hover:text-red-300"
                       >
                         <Trash2 className="w-4 h-4 mr-2" />
                         Supprimer
@@ -146,10 +144,10 @@ export const GroupTable = ({ groups, onEdit, onDelete, onSelect }: GroupTablePro
 
       {/* Dialog pour l'affectation des utilisateurs */}
       <Dialog open={isDialogOpen} onOpenChange={handleCloseDialog}>
-        <DialogContent className="min-w-4xl max-h-[90vh] overflow-y-auto bg-gray-900 border-gray-800">
+        <DialogContent className="min-w-4xl max-h-[90vh] overflow-y-auto bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-800">
           <DialogHeader>
-            <DialogTitle className="text-white flex items-center gap-2">
-              <UserPlus className="h-5 w-5 text-blue-400" />
+            <DialogTitle className="text-gray-900 dark:text-white flex items-center gap-2">
+              <UserPlus className="h-5 w-5 text-blue-600 dark:text-blue-400" />
               Affecter des utilisateurs
             </DialogTitle>
           </DialogHeader>

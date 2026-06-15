@@ -49,7 +49,7 @@ export function NetworkStatus() {
           initial={{ y: -60, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
           exit={{ y: -60, opacity: 0 }}
-          className="fixed top-0 left-0 right-0 z-[150] flex items-center justify-center gap-2 bg-cyber-green py-2 text-sm font-medium text-white"
+          className="fixed top-0 left-0 right-0 z-[150] flex items-center justify-center gap-2 bg-cyber-green py-2 text-sm font-medium text-gray-900 dark:text-white"
         >
           <Wifi className="h-4 w-4" />
           <span>Connexion rétablie</span>

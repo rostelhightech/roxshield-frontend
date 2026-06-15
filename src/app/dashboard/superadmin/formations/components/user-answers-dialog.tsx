@@ -73,9 +73,9 @@ export function UserAnswersDialog({ formationId, userId, userName }: UserAnswers
           Voir les réponses
         </Button>
       </DialogTrigger>
-      <DialogContent className="min-w-4xl max-h-[90vh] overflow-y-auto bg-[#0c1023] border-white/10">
+      <DialogContent className="min-w-4xl max-h-[90vh] overflow-y-auto bg-white dark:bg-[#0c1023] border-white/10">
         <DialogHeader>
-          <DialogTitle className="text-white text-xl">Réponses de {userName}</DialogTitle>
+          <DialogTitle className="text-gray-900 dark:text-white text-xl">Réponses de {userName}</DialogTitle>
           <DialogDescription className="text-gray-400">
             Détails des tentatives d'évaluation
           </DialogDescription>
@@ -90,26 +90,26 @@ export function UserAnswersDialog({ formationId, userId, userName }: UserAnswers
         ) : data ? (
           <div className="space-y-2">
             {/* Info utilisateur */}
-            <Card className="rounded-md border border-white/10 bg-slate-900/50">
+            <Card className="rounded-md border border-white/10 bg-gray-100 dark:bg-slate-900/50">
               <CardContent className="p-4">
                 <div className="grid grid-cols-2 gap-4 text-sm">
                   <div>
                     <p className="text-gray-400">Nom</p>
-                    <p className="text-white font-medium">{data.user.firstName} {data.user.lastName}</p>
+                    <p className="text-gray-900 dark:text-white font-medium">{data.user.firstName} {data.user.lastName}</p>
                   </div>
                   <div>
                     <p className="text-gray-400">Email</p>
-                    <p className="text-white">{data.user.email}</p>
+                    <p className="text-gray-900 dark:text-white">{data.user.email}</p>
                   </div>
                   {data.user.position && (
                     <div>
                       <p className="text-gray-400">Poste</p>
-                      <p className="text-white">{data.user.position}</p>
+                      <p className="text-gray-900 dark:text-white">{data.user.position}</p>
                     </div>
                   )}
                   <div>
                     <p className="text-gray-400">Nombre de tentatives</p>
-                    <p className="text-white font-medium">{data.attempts.length} / {data.evaluation.maxAttempts}</p>
+                    <p className="text-gray-900 dark:text-white font-medium">{data.attempts.length} / {data.evaluation.maxAttempts}</p>
                   </div>
                 </div>
               </CardContent>
@@ -117,19 +117,19 @@ export function UserAnswersDialog({ formationId, userId, userName }: UserAnswers
 
             {/* Tentatives */}
             {data.attempts.length === 0 ? (
-              <Card className="rounded-md border border-white/10 bg-slate-900/50">
+              <Card className="rounded-md border border-white/10 bg-gray-100 dark:bg-slate-900/50">
                 <CardContent className="p-8 text-center text-gray-400">
                   <p>Aucune tentative enregistrée</p>
                 </CardContent>
               </Card>
             ) : (
               data.attempts.map((attempt: any, attemptIndex: number) => (
-                <Card key={attempt.id} className="rounded-md border border-white/10 bg-slate-900/50">
+                <Card key={attempt.id} className="rounded-md border border-white/10 bg-gray-100 dark:bg-slate-900/50">
                   <CardContent className="p-6 space-y-4">
                     {/* En-tête tentative */}
                     <div className="flex items-center justify-between pb-4 border-b border-white/10">
                       <div className="flex items-center gap-3">
-                        <h3 className="text-white font-semibold text-lg">Tentative {attempt.attemptNumber}</h3>
+                        <h3 className="text-gray-900 dark:text-white font-semibold text-lg">Tentative {attempt.attemptNumber}</h3>
                         {getAttemptStatusBadge(attempt)}
                       </div>
                       <div className="text-right">
@@ -162,7 +162,7 @@ export function UserAnswersDialog({ formationId, userId, userName }: UserAnswers
                     {/* Réponses */}
                     {attempt.answers && attempt.answers.length > 0 ? (
                       <div className="space-y-4">
-                        <h4 className="text-white font-medium">Réponses détaillées</h4>
+                        <h4 className="text-gray-900 dark:text-white font-medium">Réponses détaillées</h4>
                         {attempt.answers.map((answer: any, answerIndex: number) => {
                           const question = data.evaluation.questions.find((q: any) => q.id === answer.questionId);
                           if (!question) return null;
@@ -189,7 +189,7 @@ export function UserAnswersDialog({ formationId, userId, userName }: UserAnswers
                                   )}
                                 </div>
                                 <div className="flex-1">
-                                  <p className="text-white font-medium mb-2">
+                                  <p className="text-gray-900 dark:text-white font-medium mb-2">
                                     {answerIndex + 1}. {question.question}
                                   </p>
                                   

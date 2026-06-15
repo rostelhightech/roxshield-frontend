@@ -261,7 +261,7 @@ export default function ViewFormationPage() {
     return (
       <>
         <DashboardTopbar title="Formation" description="Chargement..." />
-        <div className="min-h-screen bg-[#050816] px-6 pb-12">
+        <div className="min-h-screen bg-gray-50 dark:bg-[#050816] px-6 pb-12">
           <Skeleton className="h-64 w-full bg-gray-800/50 mb-6" />
           <Skeleton className="h-96 w-full bg-gray-800/50" />
         </div>
@@ -276,7 +276,7 @@ export default function ViewFormationPage() {
         description={`Module ${currentModuleIndex + 1} - Chapitre ${currentChapterIndex + 1}`}
       />
       
-      <div className="min-h-screen bg-[#050816] px-6 pb-12">
+      <div className="min-h-screen bg-gray-50 dark:bg-[#050816] px-6 pb-12">
         {/* Bandeau de résultat si formation terminée */}
         {selectedFormation.status === 'DRAFT' && (
           <Card className="rounded-md border border-yellow-500/30 bg-yellow-600/10 shadow-xl mb-6">
@@ -286,7 +286,7 @@ export default function ViewFormationPage() {
                   <AlertCircle className="w-5 h-5 text-yellow-400" />
                 </div>
                 <div>
-                  <p className="text-white font-medium">Formation en mode brouillon</p>
+                  <p className="text-gray-900 dark:text-white font-medium">Formation en mode brouillon</p>
                   <p className="text-sm text-gray-400">Cette formation n'est pas encore publiée</p>
                 </div>
               </div>
@@ -320,8 +320,8 @@ export default function ViewFormationPage() {
                   <p className={cn(
                     "font-semibold text-lg",
                     (finalScore || userFinalScore) >= selectedFormation.passingScore
-                      ? "text-white"
-                      : "text-white"
+                      ? "text-gray-900 dark:text-white"
+                      : "text-gray-900 dark:text-white"
                   )}>
                     {(finalScore || userFinalScore) >= selectedFormation.passingScore 
                       ? "✅ Formation réussie !" 
@@ -345,10 +345,10 @@ export default function ViewFormationPage() {
           {/* Sidebar - Table des matières */}
           {showSidebar && (
             <div className="w-80 flex-shrink-0">
-              <Card className="rounded-md border border-white/10 bg-[#0c1023]/90 shadow-xl sticky top-6">
+              <Card className="rounded-md border border-white/10 bg-white  dark:bg-[#0c1023]/90 shadow-xl sticky top-6">
                 <CardHeader className="pb-3">
                   <div className="flex items-center justify-between">
-                    <CardTitle className="text-white text-sm">Contenu de la formation</CardTitle>
+                    <CardTitle className="text-gray-900 dark:text-white text-sm">Contenu de la formation</CardTitle>
                     <Button
                       variant="ghost"
                       size="sm"
@@ -371,7 +371,7 @@ export default function ViewFormationPage() {
                     <div key={module.id} className="space-y-1">
                       <div className="flex items-center gap-2 px-2 py-1.5 rounded bg-slate-800/30">
                         <BookOpen className="w-3 h-3 text-orange-400" />
-                        <span className="text-sm font-medium text-white">{module.title}</span>
+                        <span className="text-sm font-medium text-gray-900 dark:text-white">{module.title}</span>
                       </div>
                       {module.chapters?.map((chapter, chapIndex) => {
                         const isActive = modIndex === currentModuleIndex && chapIndex === currentChapterIndex;
@@ -384,7 +384,7 @@ export default function ViewFormationPage() {
                               "w-full text-left px-3 py-2 rounded text-sm flex items-center gap-2 transition-colors",
                               isActive 
                                 ? "bg-orange-600/20 text-orange-400 border-l-2 border-orange-600" 
-                                : "text-slate-400 hover:bg-slate-800/50 hover:text-white"
+                                : "text-slate-400 hover:bg-slate-800/50 hover:text-gray-900 dark:text-white"
                             )}
                           >
                             {isCompleted && <CheckCircle2 className="w-3 h-3 text-green-400" />}
@@ -428,7 +428,7 @@ export default function ViewFormationPage() {
                             <Award className="w-5 h-5 text-orange-400" />
                           </div>
                           <div>
-                            <p className="text-white font-medium">
+                            <p className="text-gray-900 dark:text-white font-medium">
                               Tentative {attemptCount} / {selectedFormation.finalEvaluation.maxAttempts || 3}
                             </p>
                             <p className="text-sm text-gray-400">
@@ -457,14 +457,14 @@ export default function ViewFormationPage() {
               ) : null
             ) : evaluationFailed && !evaluationPassed ? (
               /* Afficher message d'échec et bouton réessayer */
-              <Card className="rounded-md border border-red-500/30 bg-[#0c1023]/90 shadow-xl">
+              <Card className="rounded-md border border-red-500/30 bg-white  dark:bg-[#0c1023]/90 shadow-xl">
                 <CardContent className="p-8 text-center space-y-6">
                   <div className="text-red-400">
                     <XCircle className="w-24 h-24 mx-auto mb-4" />
                   </div>
                   
                   <div>
-                    <h2 className="text-2xl font-bold text-white mb-2">
+                    <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">
                       Évaluation non réussie
                     </h2>
                     <p className="text-xl text-red-400 mb-4">
@@ -483,7 +483,7 @@ export default function ViewFormationPage() {
                       </p>
                       <div className="bg-slate-800/30 rounded-lg p-4 border border-slate-700">
                         <p className="text-sm text-gray-400 mb-1">Tentatives</p>
-                        <p className="text-lg font-semibold text-white">
+                        <p className="text-lg font-semibold text-gray-900 dark:text-white">
                           {attemptCount} / {selectedFormation?.finalEvaluation?.maxAttempts || 3} utilisées
                         </p>
                         <p className="text-sm text-orange-400 mt-1">
@@ -523,7 +523,7 @@ export default function ViewFormationPage() {
             ) : (
               <>
                 {/* En-tête du chapitre actuel */}
-                <Card className="rounded-md border border-white/10 bg-[#0c1023]/90 shadow-xl">
+                <Card className="rounded-md border border-white/10 bg-white  dark:bg-[#0c1023]/90 shadow-xl">
               <CardContent className="p-6">
                 <div className="flex items-start justify-between mb-4">
                   <div>
@@ -535,7 +535,7 @@ export default function ViewFormationPage() {
                         {getTypeIcon(currentChapter?.type || 'DOCUMENT')} {currentChapter?.type}
                       </Badge>
                     </div>
-                    <h1 className="text-2xl font-bold text-white mb-1">{currentChapter?.title}</h1>
+                    <h1 className="text-2xl font-bold text-gray-900 dark:text-white mb-1">{currentChapter?.title}</h1>
                     {currentChapter?.description && (
                       <p className="text-gray-400 text-sm">{currentChapter.description}</p>
                     )}
@@ -565,9 +565,9 @@ export default function ViewFormationPage() {
 
             {/* Vidéo (si type VIDEO) */}
             {currentChapter?.type === 'VIDEO' && currentChapter.metadata?.videoUrl && (
-              <Card className="rounded-md border border-white/10 bg-[#0c1023]/90 shadow-xl">
+              <Card className="rounded-md border border-white/10 bg-white  dark:bg-[#0c1023]/90 shadow-xl">
                 <CardHeader>
-                  <CardTitle className="text-white">Vidéo</CardTitle>
+                  <CardTitle className="text-gray-900 dark:text-white">Vidéo</CardTitle>
                 </CardHeader>
                 <CardContent>
                   <div className="aspect-video bg-black rounded-lg overflow-hidden">
@@ -583,9 +583,9 @@ export default function ViewFormationPage() {
             )}
 
             {/* Contenu du chapitre */}
-            <Card className="rounded-md border border-white/10 bg-[#0c1023]/90 shadow-xl">
+            <Card className="rounded-md border border-white/10 bg-white  dark:bg-[#0c1023]/90 shadow-xl">
               <CardHeader>
-                <CardTitle className="text-white">Contenu</CardTitle>
+                <CardTitle className="text-gray-900 dark:text-white">Contenu</CardTitle>
               </CardHeader>
               <CardContent>
                 <BlockNoteEditor

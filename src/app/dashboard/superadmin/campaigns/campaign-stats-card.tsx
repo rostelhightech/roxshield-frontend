@@ -11,28 +11,30 @@ interface CampaignStatsCardProps {
 
 export function CampaignStatsCard({ totalTargets, sentTargets, openedCount, clickedCount }: CampaignStatsCardProps) {
   return (
-    <Card className="rounded-md border border-white/10 bg-[#0c1023]/90 shadow-xl">
+    <Card className="rounded-sm   border-gray-200 dark:border-white/10 bg-white dark:bg-white dark:bg-white dark:bg-[#0c1023]/90 shadow-sm dark:shadow-xl">
       <CardHeader>
-        <CardTitle>Statistiques de campagne</CardTitle>
-        <CardDescription>Mesurez les ouvertures, clics et résultats par cible.</CardDescription>
+        <CardTitle className="text-gray-900 dark:text-white">Statistiques de campagne</CardTitle>
+        <CardDescription className="text-gray-500 dark:text-gray-400">
+          Mesurez les ouvertures, clics et résultats par cible.
+        </CardDescription>
       </CardHeader>
       <CardContent className="space-y-6">
         <div className="grid gap-3 sm:grid-cols-2">
-          <div className="rounded-md border border-white/10 bg-white/5 p-4">
-            <p className="text-sm text-gray-400">Cibles totales</p>
-            <p className="text-2xl font-semibold text-white">{totalTargets}</p>
+          <div className="rounded-md border border-gray-200 dark:border-white/10 bg-gray-50 dark:bg-white/5 p-4">
+            <p className="text-sm text-gray-500 dark:text-gray-400">Cibles totales</p>
+            <p className="text-2xl font-semibold text-gray-900 dark:text-white">{totalTargets}</p>
           </div>
-          <div className="rounded-md border border-white/10 bg-white/5 p-4">
-            <p className="text-sm text-gray-400">Envoyés</p>
-            <p className="text-2xl font-semibold text-white">{sentTargets}</p>
+          <div className="rounded-md border border-gray-200 dark:border-white/10 bg-gray-50 dark:bg-white/5 p-4">
+            <p className="text-sm text-gray-500 dark:text-gray-400">Envoyés</p>
+            <p className="text-2xl font-semibold text-gray-900 dark:text-white">{sentTargets}</p>
           </div>
-          <div className="rounded-md border border-white/10 bg-white/5 p-4">
-            <p className="text-sm text-gray-400">Ouvertures</p>
-            <p className="text-2xl font-semibold text-white">{openedCount}</p>
+          <div className="rounded-md border border-gray-200 dark:border-white/10 bg-gray-50 dark:bg-white/5 p-4">
+            <p className="text-sm text-gray-500 dark:text-gray-400">Ouvertures</p>
+            <p className="text-2xl font-semibold text-gray-900 dark:text-white">{openedCount}</p>
           </div>
-          <div className="rounded-md border border-white/10 bg-white/5 p-4">
-            <p className="text-sm text-gray-400">Clics</p>
-            <p className="text-2xl font-semibold text-white">{clickedCount}</p>
+          <div className="rounded-md border border-gray-200 dark:border-white/10 bg-gray-50 dark:bg-white/5 p-4">
+            <p className="text-sm text-gray-500 dark:text-gray-400">Clics</p>
+            <p className="text-2xl font-semibold text-gray-900 dark:text-white">{clickedCount}</p>
           </div>
         </div>
       </CardContent>

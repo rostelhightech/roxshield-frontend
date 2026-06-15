@@ -7,8 +7,6 @@
   --font-montserrat: 'Montserrat', system-ui, sans-serif;
 }
 
-
-
 @custom-variant dark (&:is(.dark *));
 
 @theme inline {
@@ -50,10 +48,9 @@
   --color-cyber-red: var(--cyber-red);
   --color-cyber-orange: var(--cyber-orange);
   --color-cyber-blue: var(--cyber-blue);
-  --color-rht-violet: #9c1e99;
-  --color-rht-violet-light: #c428c0;
-  --color-rht-orange: #fa990e;
-  --color-rht-orange-light: #ffb347;
+  --color-rox-purple: #5d2595;
+  --color-rox-purple-light: #7b3fc0;
+  --color-rox-purple-dark: #3d1866;
   --radius-sm: calc(var(--radius) * 0.6);
   --radius-md: calc(var(--radius) * 0.8);
   --radius-lg: var(--radius);
@@ -65,81 +62,81 @@
 
 /* ===== LIGHT MODE ===== */
 :root {
-  --background: #faf9fb;
-  --foreground: #1a1025;
+  --background: #faf9fc;
+  --foreground: #160d22;
   --card: #ffffff;
-  --card-foreground: #1a1025;
+  --card-foreground: #160d22;
   --popover: #ffffff;
-  --popover-foreground: #1a1025;
-  --primary: #9c1e99;
+  --popover-foreground: #160d22;
+  --primary: #5d2595;
   --primary-foreground: #ffffff;
-  --secondary: #f4f0f7;
-  --secondary-foreground: #1a1025;
-  --muted: #f4f0f7;
+  --secondary: #f3eef9;
+  --secondary-foreground: #160d22;
+  --muted: #f3eef9;
   --muted-foreground: #6b5f78;
-  --accent: #f0ebf5;
-  --accent-foreground: #1a1025;
+  --accent: #ede5f6;
+  --accent-foreground: #160d22;
   --destructive: #ef4444;
-  --border: #e8e2ee;
-  --input: #e8e2ee;
-  --ring: #9c1e99;
-  --chart-1: #9c1e99;
-  --chart-2: #fa990e;
-  --chart-3: #c428c0;
-  --chart-4: #ffb347;
+  --border: #e6ddf0;
+  --input: #e6ddf0;
+  --ring: #5d2595;
+  --chart-1: #5d2595;
+  --chart-2: #7b3fc0;
+  --chart-3: #9b60d8;
+  --chart-4: #3d1866;
   --chart-5: #25d366;
   --radius: 0.875rem;
-  --sidebar: #1a1025;
+  --sidebar: #160d22;
   --sidebar-foreground: rgba(255, 255, 255, 0.9);
-  --sidebar-primary: #9c1e99;
+  --sidebar-primary: #5d2595;
   --sidebar-primary-foreground: #ffffff;
-  --sidebar-accent: #2a1e38;
+  --sidebar-accent: #241538;
   --sidebar-accent-foreground: #ffffff;
   --sidebar-border: rgba(255, 255, 255, 0.06);
-  --sidebar-ring: #9c1e99;
+  --sidebar-ring: #5d2595;
   --cyber-green: #16a34a;
   --cyber-red: #dc2626;
   --cyber-orange: #ea8b0e;
-  --cyber-blue: #9c1e99;
+  --cyber-blue: #5d2595;
 }
 
 /* ===== DARK MODE ===== */
 .dark {
-  --background: #0d0a0e;
-  --foreground: #ffffff;
-  --card: #120e16;
-  --card-foreground: #ffffff;
-  --popover: #120e16;
-  --popover-foreground: #ffffff;
-  --primary: #9c1e99;
+  --background: #0d0a12;
+  --foreground: #f0eaf8;
+  --card: #120e1a;
+  --card-foreground: #f0eaf8;
+  --popover: #120e1a;
+  --popover-foreground: #f0eaf8;
+  --primary: #5d2595;
   --primary-foreground: #ffffff;
-  --secondary: #1a1520;
-  --secondary-foreground: #ffffff;
-  --muted: #1a1520;
-  --muted-foreground: rgba(255, 255, 255, 0.45);
-  --accent: #1e1828;
-  --accent-foreground: #ffffff;
+  --secondary: #1a1224;
+  --secondary-foreground: #f0eaf8;
+  --muted: #1a1224;
+  --muted-foreground: rgba(240, 234, 248, 0.45);
+  --accent: #1e1530;
+  --accent-foreground: #f0eaf8;
   --destructive: #ef4444;
-  --border: rgba(255, 255, 255, 0.08);
-  --input: rgba(255, 255, 255, 0.08);
-  --ring: #9c1e99;
-  --chart-1: #9c1e99;
-  --chart-2: #fa990e;
-  --chart-3: #c428c0;
-  --chart-4: #ffb347;
+  --border: rgba(255, 255, 255, 0.07);
+  --input: rgba(255, 255, 255, 0.07);
+  --ring: #7b3fc0;
+  --chart-1: #7b3fc0;
+  --chart-2: #9b60d8;
+  --chart-3: #5d2595;
+  --chart-4: #3d1866;
   --chart-5: #25d366;
-  --sidebar: #080508;
+  --sidebar: #070b18;
   --sidebar-foreground: rgba(255, 255, 255, 0.9);
-  --sidebar-primary: #9c1e99;
+  --sidebar-primary: #5d2595;
   --sidebar-primary-foreground: #ffffff;
-  --sidebar-accent: #1a1520;
+  --sidebar-accent: #1a1224;
   --sidebar-accent-foreground: #ffffff;
-  --sidebar-border: rgba(255, 255, 255, 0.06);
-  --sidebar-ring: #9c1e99;
+  --sidebar-border: rgba(255, 255, 255, 0.05);
+  --sidebar-ring: #5d2595;
   --cyber-green: #25d366;
   --cyber-red: #ef4444;
   --cyber-orange: #fa990e;
-  --cyber-blue: #c428c0;
+  --cyber-blue: #7b3fc0;
 }
 
 @layer base {
@@ -157,15 +154,11 @@
 }
 
 /* Glow effects */
-.glow-violet {
-  box-shadow: 0 6px 25px rgba(156, 30, 153, 0.3);
+.glow-purple {
+  box-shadow: 0 6px 25px rgba(93, 37, 149, 0.3);
 }
-.glow-orange {
-  box-shadow: 0 6px 25px rgba(250, 153, 14, 0.3);
-}
-
-.glow-orange-sm {
-  box-shadow: 0 4px 15px rgba(250, 153, 14, 0.2);
+.glow-purple-sm {
+  box-shadow: 0 4px 15px rgba(93, 37, 149, 0.2);
 }
 
 /* Animated gradient border */
@@ -180,8 +173,8 @@
 
 /* Pulse glow */
 @keyframes pulse-glow {
-  0%, 100% { box-shadow: 0 0 15px rgba(156, 30, 153, 0.2); }
-  50% { box-shadow: 0 0 30px rgba(156, 30, 153, 0.4); }
+  0%, 100% { box-shadow: 0 0 15px rgba(93, 37, 149, 0.2); }
+  50% { box-shadow: 0 0 30px rgba(93, 37, 149, 0.4); }
 }
 .animate-pulse-glow {
   animation: pulse-glow 2s ease-in-out infinite;
@@ -196,11 +189,10 @@
   animation: float 3s ease-in-out infinite;
 }
 
-/* ===== SCROLLBAR STYLES ===== */
-/* Light mode scrollbar */
+/* ===== SCROLLBAR ===== */
 ::-webkit-scrollbar {
-  width: 8px;
-  height: 8px;
+  width: 6px;
+  height: 6px;
 }
 
 ::-webkit-scrollbar-track {
@@ -208,42 +200,29 @@
 }
 
 ::-webkit-scrollbar-thumb {
-  background: linear-gradient(180deg, #9c1e99, #c428c0);
+  background: #5d2595;
   border-radius: 4px;
-  transition: background 0.3s ease;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: linear-gradient(180deg, #c428c0, #9c1e99);
-  box-shadow: 0 0 10px rgba(156, 30, 153, 0.4);
-}
-
-/* Dark mode scrollbar */
-.dark {
-  scrollbar-color: linear-gradient(180deg, #9c1e99, #c428c0) transparent;
+  background: #7b3fc0;
 }
 
 .dark::-webkit-scrollbar-thumb {
-  background: linear-gradient(180deg, #c428c0, #9c1e99);
+  background: #7b3fc0;
 }
 
 .dark::-webkit-scrollbar-thumb:hover {
-  background: linear-gradient(180deg, #fa990e, #ffb347);
-  box-shadow: 0 0 12px rgba(250, 153, 14, 0.5);
+  background: #9b60d8;
 }
 
-/* Firefox scrollbar */
 * {
   scrollbar-width: thin;
-  scrollbar-color: rgba(156, 30, 153, 0.6) transparent;
+  scrollbar-color: rgba(93, 37, 149, 0.5) transparent;
 }
 
 .dark * {
-  scrollbar-color: rgba(196, 40, 192, 0.7) transparent;
-}
-
-.dark *:hover {
-  scrollbar-color: rgba(250, 153, 14, 0.8) transparent;
+  scrollbar-color: rgba(123, 63, 192, 0.6) transparent;
 }
 
 @media print {
@@ -264,7 +243,6 @@
     print-color-adjust: exact;
   }
 }
-
 
 .blockbuilder-branding {
   display: none;

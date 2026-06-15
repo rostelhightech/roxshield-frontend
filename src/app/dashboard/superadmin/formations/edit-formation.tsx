@@ -26,7 +26,6 @@ export function EditFormationPage() {
   const formationId = (searchParams as any)?.id as string;
   
   const { user } = useAuthStore();
-  const { organizations, fetchAll: fetchOrganizations } = useOrganizationStore();
   const { selectedFormation, updateFormation, fetchById, isLoading } = useFormationStore();
 
   const [currentStep, setCurrentStep] = useState<'info' | 'modules' | 'evaluation'>('info');
@@ -39,12 +38,7 @@ export function EditFormationPage() {
     }
   }, [formationId, fetchById]);
 
-  // Charger les organisations
-  useEffect(() => {
-    if (user?.role === 'superadmin' && organizations.length === 0) {
-      fetchOrganizations();
-    }
-  }, [user, organizations.length, fetchOrganizations]);
+ 
 
   // Initialiser le formulaire avec les données de la formation
   useEffect(() => {
@@ -153,7 +147,7 @@ export function EditFormationPage() {
     return (
       <>
         <DashboardTopbar title="Chargement..." description="Chargement de la formation" />
-        <div className="min-h-screen bg-[#050816] px-6">
+        <div className="min-h-screen bg-gray-50 dark:bg-[#050816] px-6">
           <Skeleton className="h-12 w-full mb-6 bg-gray-800/50" />
           <div className="space-y-6">
             {Array.from({ length: 3 }).map((_, i) => (
@@ -171,7 +165,7 @@ export function EditFormationPage() {
         title="Modifier la formation"
         description="Modifiez la structure et le contenu de votre formation"
       />
-      <div className="min-h-screen bg-[#050816] px-6 pb-12">
+      <div className="min-h-screen bg-gray-50 dark:bg-[#050816] px-6 pb-12">
         {/* Header avec boutons de navigation */}
         <div className="flex items-center justify-between mb-6">
           <Button
@@ -197,13 +191,13 @@ export function EditFormationPage() {
         {/* Onglets de navigation */}
         <Tabs value={currentStep} onValueChange={(value: any) => setCurrentStep(value)} className="space-y-6">
           <TabsList className="grid w-full max-w-md mx-auto grid-cols-3 bg-slate-800/50">
-            <TabsTrigger value="info" className="data-[state=active]:bg-orange-600 text-white hover:text-gray-500">
+            <TabsTrigger value="info" className="data-[state=active]:bg-orange-600 text-gray-900 dark:text-white hover:text-gray-500">
               Informations
             </TabsTrigger>
-            <TabsTrigger value="modules" className="data-[state=active]:bg-orange-600 text-white hover:text-gray-500">
+            <TabsTrigger value="modules" className="data-[state=active]:bg-orange-600 text-gray-900 dark:text-white hover:text-gray-500">
               Modules & Chapitres
             </TabsTrigger>
-            <TabsTrigger value="evaluation" className="data-[state=active]:bg-orange-600 text-white hover:text-gray-500">
+            <TabsTrigger value="evaluation" className="data-[state=active]:bg-orange-600 text-gray-900 dark:text-white hover:text-gray-500">
               Évaluation finale
             </TabsTrigger>
           </TabsList>

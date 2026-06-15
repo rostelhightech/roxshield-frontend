@@ -45,30 +45,27 @@ class ApiService {
         const isAuthRoute = originalRequest.url?.includes('/auth/');
 
         // Gestion des erreurs avec affichage du message du backend
-        if (error.response) {
-          const { status, data } = error.response;
-          
-          // Afficher le message d'erreur du backend
-          if (data?.message) {
-            toast.error(data.message);
-          } else if (data?.error) {
-            toast.error(data.error);
-          } else if (typeof data === 'string') {
-            toast.error(data);
-          } else if (status === 500) {
-            toast.error('Une erreur serveur est survenue');
-          } else if (status === 404) {
-            toast.error('Ressource non trouvée');
-          } else if (status === 403) {
-            toast.error('Accès non autorisé');
-          } else {
-            toast.error('Une erreur est survenue');
-          }
-        } else if (error.request) {
-          toast.error('Impossible de contacter le serveur');
-        } else {
-          toast.error(error.message || 'Une erreur est survenue');
-        }
+      if (error.response) {
+  const { status, data } = error.response;
+
+  if (status !== 401) {
+    if (data?.message) {
+      toast.error(data.message);
+    } else if (data?.error) {
+      toast.error(data.error);
+    } else if (typeof data === 'string') {
+      toast.error(data);
+    } else if (status === 500) {
+      toast.error('Une erreur serveur est survenue');
+    } else if (status === 404) {
+      toast.error('Ressource non trouvée');
+    } else if (status === 403) {
+      toast.error('Accès non autorisé');
+    } else {
+      toast.error('Une erreur est survenue');
+    }
+  }
+}
 
         // Gestion du refresh token (401)
         if (error.response?.status === 401 && !originalRequest._retry && !isAuthRoute) {

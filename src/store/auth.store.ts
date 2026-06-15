@@ -10,6 +10,22 @@ interface User {
   name: string;
   role?: string;
   firstName?: string;
+  organizationId?: string;
+  organization?: {
+    id: string;
+    name: string;
+    planId: string;
+    plan?: {
+      id: string;
+      name: string;
+      label: string;
+      pricePerUser: number;
+      targetDescription: string;
+      minEmployees: number;
+      maxEmployees: number | null;
+      features: string[];
+    };
+  };
   lastName?: string;
   position?: string;
   department?: string;

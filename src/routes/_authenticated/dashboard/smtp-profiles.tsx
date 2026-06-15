@@ -11,7 +11,7 @@ function SmtpProfilesPage() {
     <>
       <DashboardTopbar
         title="SMTP"
-        description="Gérez les profils SMTP partagés avec les organisations et synchronisez-les avec Gophish."
+        description="Gérez les profils SMTP."
       />
       <SmtpProfiles />
     </>

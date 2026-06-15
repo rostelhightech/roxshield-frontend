@@ -19,7 +19,7 @@ const getStatusVariant = (status: string) => {
 
 export function CampaignTargetsList({ campaign }: CampaignTargetsListProps) {
   return (
-    <Card className="rounded-md border border-white/10 bg-[#0c1023]/90 shadow-xl mt-6">
+    <Card className="rounded-md border border-white/10 bg-white  dark:bg-[#0c1023]/90   mt-6">
       <CardHeader>
         <CardTitle>Liste des destinataires</CardTitle>
         <CardDescription>Visualisez chaque cible associée à la campagne.</CardDescription>
@@ -28,13 +28,13 @@ export function CampaignTargetsList({ campaign }: CampaignTargetsListProps) {
         {campaign.targets.length === 0 ? (
           <p className="text-sm text-gray-400">Aucune cible ajoutée pour cette campagne.</p>
         ) : (
-          <Table className="min-w-full text-white border-separate border-spacing-0">
+          <Table className="min-w-full text-gray-900 dark:text-white border-separate border-spacing-0">
             <TableHeader>
               <TableRow>
-                <TableHead className="text-white">Email</TableHead>
-                <TableHead className="text-white">Nom</TableHead>
-                <TableHead className="text-white">Groupes / Utilisateur</TableHead>
-                <TableHead className="text-white">Statut</TableHead>
+                <TableHead className="text-gray-900 dark:text-white">Email</TableHead>
+                <TableHead className="text-gray-900 dark:text-white">Nom</TableHead>
+                <TableHead className="text-gray-900 dark:text-white">Groupes / Utilisateur</TableHead>
+                <TableHead className="text-gray-900 dark:text-white">Statut</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -42,9 +42,9 @@ export function CampaignTargetsList({ campaign }: CampaignTargetsListProps) {
                 if (target.groupId && target.members?.length) {
                   return target.members.map((member: any) => (
                     <TableRow key={`${target.id}-${member.id}`}>
-                      <TableCell className="text-white">{member.email}</TableCell>
-                      <TableCell className="text-white">{`${member.firstName} ${member.lastName}`.trim()}</TableCell>
-                      <TableCell className="text-white">
+                      <TableCell className="text-gray-900 dark:text-white">{member.email}</TableCell>
+                      <TableCell className="text-gray-900 dark:text-white">{`${member.firstName} ${member.lastName}`.trim()}</TableCell>
+                      <TableCell className="text-gray-900 dark:text-white">
                         <span className="text-gray-400 text-xs">Groupe :</span> {target.group?.name ?? '—'}
                       </TableCell>
                       <TableCell>
@@ -56,11 +56,11 @@ export function CampaignTargetsList({ campaign }: CampaignTargetsListProps) {
 
                 return [
                   <TableRow key={target.id}>
-                    <TableCell className="text-white">{target.email}</TableCell>
-                    <TableCell className="text-white">
+                    <TableCell className="text-gray-900 dark:text-white">{target.email}</TableCell>
+                    <TableCell className="text-gray-900 dark:text-white">
                       {`${target.firstName ?? ''} ${target.lastName ?? ''}`.trim() || '—'}
                     </TableCell>
-                    <TableCell className="text-white">
+                    <TableCell className="text-gray-900 dark:text-white">
                       {target.user
                         ? `${target.user.firstName} ${target.user.lastName}`
                         : target.group?.name ?? '—'}

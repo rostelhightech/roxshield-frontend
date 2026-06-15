@@ -73,7 +73,7 @@ export default function UserFormationsPage() {
     return (
       <>
         <DashboardTopbar title="Mes Formations" description="Suivez votre progression" />
-        <div className="min-h-screen bg-[#050816] px-6 pb-12">
+        <div className="min-h-screen bg-gray-50 dark:bg-[#050816] px-6 pb-12">
           <div className="space-y-6">
             {Array.from({ length: 3 }).map((_, i) => (
               <Skeleton key={i} className="h-48 w-full bg-gray-800/50" />
@@ -88,23 +88,23 @@ export default function UserFormationsPage() {
     <>
       <DashboardTopbar title="Mes Formations" description="Suivez votre progression" />
       
-      <div className="min-h-screen bg-[#050816] px-6 pb-12">
+      <div className="min-h-screen bg-gray-50 dark:bg-[#050816] px-6 pb-12">
         <div className="space-y-6">
           {/* Statistiques */}
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-            <Card className="rounded-md border border-white/10 bg-[#0c1023]/90">
+            <Card className="rounded-md border border-white/10 bg-white  dark:bg-[#0c1023]/90">
               <CardContent className="p-4">
                 <div className="flex items-center justify-between">
                   <div>
                     <p className="text-sm text-gray-400">Total</p>
-                    <p className="text-2xl font-bold text-white">{stats.total}</p>
+                    <p className="text-2xl font-bold text-gray-900 dark:text-white">{stats.total}</p>
                   </div>
                   <TrendingUp className="w-8 h-8 text-blue-400" />
                 </div>
               </CardContent>
             </Card>
 
-            <Card className="rounded-md border border-white/10 bg-[#0c1023]/90">
+            <Card className="rounded-md border border-white/10 bg-white  dark:bg-[#0c1023]/90">
               <CardContent className="p-4">
                 <div className="flex items-center justify-between">
                   <div>
@@ -116,7 +116,7 @@ export default function UserFormationsPage() {
               </CardContent>
             </Card>
 
-            <Card className="rounded-md border border-white/10 bg-[#0c1023]/90">
+            <Card className="rounded-md border border-white/10 bg-white  dark:bg-[#0c1023]/90">
               <CardContent className="p-4">
                 <div className="flex items-center justify-between">
                   <div>
@@ -128,7 +128,7 @@ export default function UserFormationsPage() {
               </CardContent>
             </Card>
 
-            <Card className="rounded-md border border-white/10 bg-[#0c1023]/90">
+            <Card className="rounded-md border border-white/10 bg-white  dark:bg-[#0c1023]/90">
               <CardContent className="p-4">
                 <div className="flex items-center justify-between">
                   <div>
@@ -175,10 +175,10 @@ export default function UserFormationsPage() {
 
           {/* Liste des formations */}
           {filteredFormations.length === 0 ? (
-            <Card className="rounded-md border border-white/10 bg-[#0c1023]/90">
+            <Card className="rounded-md border border-white/10 bg-white  dark:bg-[#0c1023]/90">
               <CardContent className="p-12 text-center">
                 <div className="text-6xl mb-4">📚</div>
-                <p className="text-xl text-white mb-2">Aucune formation trouvée</p>
+                <p className="text-xl text-gray-900 dark:text-white mb-2">Aucune formation trouvée</p>
                 <p className="text-gray-400">
                   {filter === 'all' 
                     ? "Vous n'avez pas encore de formations assignées"
@@ -190,7 +190,7 @@ export default function UserFormationsPage() {
           ) : (
             <div className="grid gap-6">
               {filteredFormations.map((formation) => (
-                <Card key={formation.id} className="rounded-md border border-white/10 bg-[#0c1023]/90 shadow-xl hover:shadow-2xl transition-all">
+                <Card key={formation.id} className="rounded-md border border-white/10 bg-white  dark:bg-[#0c1023]/90 shadow-xl hover:shadow-2xl transition-all">
                   <CardContent className="px-6">
                     <div className="flex items-start justify-between mb-4">
                       <div className="flex items-center gap-4 flex-1">
@@ -198,7 +198,7 @@ export default function UserFormationsPage() {
                           {formation.progressPercentage >= 100 ? '✅' : formation.progressPercentage > 0 ? '📖' : '📚'}
                         </div>
                         <div className="flex-1">
-                          <h3 className="text-xl font-bold text-white mb-2">{formation.title}</h3>
+                          <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2">{formation.title}</h3>
                           <p className="text-gray-400 text-sm">{formation.description}</p>
                         </div>
                       </div>
@@ -211,7 +211,7 @@ export default function UserFormationsPage() {
                     <div className="space-y-3 mb-4">
                       <div className="flex items-center justify-between text-sm">
                         <span className="text-gray-400">Progression</span>
-                        <span className="text-white font-medium">{formation.progressPercentage || 0}%</span>
+                        <span className="text-gray-900 dark:text-white font-medium">{formation.progressPercentage || 0}%</span>
                       </div>
                       <div className="w-full bg-slate-700 rounded-full h-2">
                         <div

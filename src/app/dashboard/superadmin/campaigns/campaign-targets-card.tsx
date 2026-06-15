@@ -15,30 +15,32 @@ interface CampaignTargetsCardProps {
 
 export function CampaignTargetsCard({ pendingTargets, failedTargets, eventCounts }: CampaignTargetsCardProps) {
   return (
-    <Card className="rounded-md border border-white/10 bg-[#0c1023]/90 shadow-xl">
+    <Card className="rounded-sm border-gray-200 dark:border-white/10 bg-white dark:bg-white dark:bg-white dark:bg-[#0c1023]/90 shadow-sm dark:shadow-xl">
       <CardHeader>
-        <CardTitle>Cibles et statut</CardTitle>
-        <CardDescription>Suivez l’état des destinataires.</CardDescription>
+        <CardTitle className="text-gray-900 dark:text-white">Cibles et statut</CardTitle>
+        <CardDescription className="text-gray-500 dark:text-gray-400">
+          Suivez l’état des destinataires.
+        </CardDescription>
       </CardHeader>
       <CardContent className="space-y-3">
         <div className="grid gap-3 sm:grid-cols-2">
-          <div className="rounded-md border border-white/10 bg-white/5 p-4">
-            <p className="text-sm text-gray-400">En attente</p>
-            <p className="text-xl font-semibold text-white">{pendingTargets}</p>
+          <div className="rounded-md border border-gray-200 dark:border-white/10 bg-gray-50 dark:bg-white/5 p-4">
+            <p className="text-sm text-gray-500 dark:text-gray-400">En attente</p>
+            <p className="text-xl font-semibold text-gray-900 dark:text-white">{pendingTargets}</p>
           </div>
-          <div className="rounded-md border border-white/10 bg-white/5 p-4">
-            <p className="text-sm text-gray-400">Échecs</p>
-            <p className="text-xl font-semibold text-white">{failedTargets}</p>
+          <div className="rounded-md border border-gray-200 dark:border-white/10 bg-gray-50 dark:bg-white/5 p-4">
+            <p className="text-sm text-gray-500 dark:text-gray-400">Échecs</p>
+            <p className="text-xl font-semibold text-gray-900 dark:text-white">{failedTargets}</p>
           </div>
         </div>
         
-        <div className="rounded-md border border-white/10 bg-white/5 p-4">
-          <p className="text-sm text-gray-400">Événements de tracking</p>
+        <div className="rounded-md border border-gray-200 dark:border-white/10 bg-gray-50 dark:bg-white/5 p-4">
+          <p className="text-sm text-gray-500 dark:text-gray-400">Événements de tracking</p>
           <div className="mt-3 grid gap-2">
             {Object?.entries(eventCounts).map(([type, count]) => (
-              <div key={type} className="flex items-center justify-between text-sm text-white/80">
+              <div key={type} className="flex items-center justify-between text-sm text-gray-700 dark:text-white/80">
                 <span>{type.replace('_', ' ').toLowerCase()}</span>
-                <span>{count}</span>
+                <span className="font-medium text-gray-900 dark:text-white">{count}</span>
               </div>
             ))}
           </div>

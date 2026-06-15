@@ -69,7 +69,7 @@ export function CampaignTemplatePreview({ campaign }: CampaignTemplatePreviewPro
   return (
     <div className="grid gap-6 lg:grid-cols-2">
       {/* Email Template */}
-      <Card className="rounded-md border border-white/10 bg-[#0c1023]/90 shadow-xl">
+      <Card className="rounded-md border border-white/10 bg-white  dark:bg-[#0c1023]/90  ">
         <CardHeader>
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
@@ -77,7 +77,7 @@ export function CampaignTemplatePreview({ campaign }: CampaignTemplatePreviewPro
                 <Mail className="w-5 h-5 text-blue-400" />
               </div>
               <div>
-                <CardTitle className="text-white">Template Email</CardTitle>
+                <CardTitle className="text-gray-900 dark:text-white">Template Email</CardTitle>
                 <CardDescription className="text-sm text-zinc-400">
                   {campaign.emailTemplate?.name || 'N/A'}
                 </CardDescription>
@@ -87,7 +87,7 @@ export function CampaignTemplatePreview({ campaign }: CampaignTemplatePreviewPro
               onClick={() => setShowEmailPreview(!showEmailPreview)}
               size="sm"
               variant="outline"
-              className="border-blue-500/30 bg-blue-500/10 text-blue-400 hover:bg-blue-500/20"
+              className="border-blue-500/30 text-gray-900 dark:text-white hover:text-gray-900 dark:text-white bg-blue-500/10   hover:bg-blue-500/20"
             >
               <Eye className="w-4 h-4 mr-2" />
               {showEmailPreview ? 'Masquer' : 'Aperçu'}
@@ -97,15 +97,15 @@ export function CampaignTemplatePreview({ campaign }: CampaignTemplatePreviewPro
         <CardContent className="space-y-3">
           <div>
             <p className="text-xs text-zinc-500 mb-1">De</p>
-            <p className="text-sm text-white">
+            <p className="text-sm text-gray-900 dark:text-white">
               {campaign.smtpProfile?.fromName || 'N/A'} &lt;{campaign.smtpProfile?.fromAddress || 'N/A'}&gt;
             </p>
           </div>
           
           <div>
             <p className="text-xs text-zinc-500 mb-1">Sujet</p>
-            <p className="text-sm text-white font-medium">
-              {emailSubject || 'Chargement...'}
+            <p className="text-sm text-gray-900 dark:text-white font-medium">
+              {emailSubject || 'Cliquez sur apperçu'}
             </p>
           </div>
 
@@ -118,7 +118,7 @@ export function CampaignTemplatePreview({ campaign }: CampaignTemplatePreviewPro
             >
               <p className="text-xs text-zinc-500 mb-2">Aperçu HTML</p>
               {isLoadingEmail ? (
-                <div className="rounded-lg bg-slate-900/50 p-4 text-center">
+                <div className="rounded-lg bg-gray-100 dark:bg-slate-900/50 p-4 text-center">
                   <p className="text-sm text-zinc-400">Chargement...</p>
                 </div>
               ) : emailTemplateHtml ? (
@@ -131,7 +131,7 @@ export function CampaignTemplatePreview({ campaign }: CampaignTemplatePreviewPro
                   />
                 </div>
               ) : (
-                <div className="rounded-lg bg-slate-900/50 p-4 text-center">
+                <div className="rounded-lg bg-gray-100 dark:bg-slate-900/50 p-4 text-center">
                   <p className="text-sm text-zinc-400">Aucun contenu disponible</p>
                 </div>
               )}
@@ -141,7 +141,7 @@ export function CampaignTemplatePreview({ campaign }: CampaignTemplatePreviewPro
       </Card>
 
       {/* Landing Page Template */}
-      <Card className="rounded-md border border-white/10 bg-[#0c1023]/90 shadow-xl">
+      <Card className="rounded-md border border-white/10 bg-white  dark:bg-[#0c1023]/90  ">
         <CardHeader>
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
@@ -149,7 +149,7 @@ export function CampaignTemplatePreview({ campaign }: CampaignTemplatePreviewPro
                 <Globe className="w-5 h-5 text-purple-400" />
               </div>
               <div>
-                <CardTitle className="text-white">Landing Page</CardTitle>
+                <CardTitle className="text-gray-900 dark:text-white">Landing Page</CardTitle>
                 <CardDescription className="text-sm text-zinc-400">
                   {campaign.landingPageTemplate?.name || 'N/A'}
                 </CardDescription>
@@ -159,7 +159,7 @@ export function CampaignTemplatePreview({ campaign }: CampaignTemplatePreviewPro
               onClick={() => setShowLandingPreview(!showLandingPreview)}
               size="sm"
               variant="outline"
-              className="border-purple-500/30 bg-purple-500/10 text-purple-400 hover:bg-purple-500/20"
+              className="border-purple-500/30 bg-purple-500/10 text-gray-900 dark:text-white hover:text-gray-900 dark:text-white hover:bg-purple-500/20"
             >
               <Eye className="w-4 h-4 mr-2" />
               {showLandingPreview ? 'Masquer' : 'Aperçu'}
@@ -185,7 +185,7 @@ export function CampaignTemplatePreview({ campaign }: CampaignTemplatePreviewPro
           {campaign.landingPageTemplate && (
             <div>
               <p className="text-xs text-zinc-500 mb-1">Titre</p>
-              <p className="text-sm text-white font-medium">
+              <p className="text-sm text-gray-900 dark:text-white font-medium">
                 {(campaign.landingPageTemplate as any).title || 'N/A'}
               </p>
             </div>
@@ -200,7 +200,7 @@ export function CampaignTemplatePreview({ campaign }: CampaignTemplatePreviewPro
             >
               <p className="text-xs text-zinc-500 mb-2">Aperçu HTML</p>
               {isLoadingLanding ? (
-                <div className="rounded-lg bg-slate-900/50 p-4 text-center">
+                <div className="rounded-lg bg-gray-100 dark:bg-slate-900/50 p-4 text-center">
                   <p className="text-sm text-zinc-400">Chargement...</p>
                 </div>
               ) : landingTemplateHtml ? (
@@ -213,7 +213,7 @@ export function CampaignTemplatePreview({ campaign }: CampaignTemplatePreviewPro
                   />
                 </div>
               ) : (
-                <div className="rounded-lg bg-slate-900/50 p-4 text-center">
+                <div className="rounded-lg bg-gray-100 dark:bg-slate-900/50 p-4 text-center">
                   <p className="text-sm text-zinc-400">Aucun contenu disponible</p>
                 </div>
               )}

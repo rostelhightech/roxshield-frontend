@@ -60,7 +60,7 @@ export default function CampaignDetailPage() {
     fetchDetailedTargetAnalysis,
   } = useCampaignStore();
   
-  const { organizations, fetchAll: fetchOrganizations } = useOrganizationStore();
+  const { organizations } = useOrganizationStore();
   const { groups, fetchAll: fetchGroups } = useGroupStore();
   const { templateList, fetchTemplateList } = useTemplateStore();
   const { landingPageTemplates, fetchAll: fetchLandingPageTemplates } = useLandingPageTemplateStore();
@@ -112,13 +112,6 @@ export default function CampaignDetailPage() {
     }
   }, [campaignId, fetchById, fetchTimeline, fetchTimeAnalysis, fetchUserAgentAnalysis, fetchTargetsWithoutInteraction, fetchDetailedTargetAnalysis]);
 
-  useEffect(() => {
-    fetchOrganizations();
-    fetchGroups();
-    fetchTemplateList();
-    fetchLandingPageTemplates();
-    fetchSmtpProfiles();
-  }, [fetchOrganizations, fetchGroups, fetchTemplateList, fetchLandingPageTemplates, fetchSmtpProfiles]);
 
   // Délai de 1.5s avant d'afficher les graphiques
   useEffect(() => {
@@ -211,13 +204,13 @@ export default function CampaignDetailPage() {
   const pendingTargets = currentCampaign.targets.filter((target) => target.status === 'PENDING').length;
 
   return (
-    <div className="min-h-screen bg-[#050816] text-white">
+   <div className="min-h-screen bg-gray-50   dark:bg-[#050816] text-gray-900 dark:text-white">
       <DashboardTopbar
         title={currentCampaign.name}
         description="Détails complets de la campagne, y compris cibles et événements de tracking."
       />
       
-      <div className="mx-auto px-4">
+      <div className="mx-auto  mt-4">
         <CampaignActionsBar
           campaign={currentCampaign}
           onEdit={handleEdit}
@@ -245,25 +238,25 @@ export default function CampaignDetailPage() {
 
         <div className="pt-6">
           <Tabs defaultValue="overview" className="space-y-6">
-            <TabsList className="bg-slate-900/50 gap-4 border border-slate-700/50 p-1">
-              <TabsTrigger value="overview" className="data-[state=active]:bg-blue-600 text-gray-100 hover:text-gray-400">
-                <BarChart3 className="w-4 h-4 " />
+            <TabsList className="bg-gray-100 dark:bg-slate-900/50 gap-4 border border-gray-200 dark:border-slate-700/50 p-1">
+              <TabsTrigger value="overview" className="data-[state=active]:bg-blue-600 data-[state=active]:text-white text-gray-700 dark:text-gray-100 hover:text-gray-900 dark:hover:text-gray-400">
+                <BarChart3 className="w-4 h-4" />
                 Vue d'ensemble
               </TabsTrigger>
-              <TabsTrigger value="analysis" className="data-[state=active]:bg-purple-600 text-gray-100 hover:text-gray-400">
-                <Monitor className="w-4 h-4 " />
+              <TabsTrigger value="analysis" className="data-[state=active]:bg-purple-600 data-[state=active]:text-white text-gray-700 dark:text-gray-100 hover:text-gray-900 dark:hover:text-gray-400">
+                <Monitor className="w-4 h-4" />
                 Analyses
               </TabsTrigger>
-              <TabsTrigger value="targets" className="data-[state=active]:bg-green-600 text-gray-100 hover:text-gray-400">
-                <Users className="w-4 h-4 " />
+              <TabsTrigger value="targets" className="data-[state=active]:bg-green-600 data-[state=active]:text-white text-gray-700 dark:text-gray-100 hover:text-gray-900 dark:hover:text-gray-400">
+                <Users className="w-4 h-4" />
                 Cibles
               </TabsTrigger>
-              <TabsTrigger value="timeline" className="data-[state=active]:bg-orange-600 text-gray-100 hover:text-gray-400">
-                <Clock className="w-4 h-4 " />
+              <TabsTrigger value="timeline" className="data-[state=active]:bg-orange-600 data-[state=active]:text-white text-gray-700 dark:text-gray-100 hover:text-gray-900 dark:hover:text-gray-400">
+                <Clock className="w-4 h-4" />
                 Timeline
               </TabsTrigger>
-              <TabsTrigger value="templates" className="data-[state=active]:bg-pink-600 text-gray-100 hover:text-gray-400">
-                <Mail className="w-4 h-4 " />
+              <TabsTrigger value="templates" className="data-[state=active]:bg-pink-600 data-[state=active]:text-white text-gray-700 dark:text-gray-100 hover:text-gray-900 dark:hover:text-gray-400">
+                <Mail className="w-4 h-4" />
                 Templates
               </TabsTrigger>
             </TabsList>

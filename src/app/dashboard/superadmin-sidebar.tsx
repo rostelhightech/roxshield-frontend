@@ -4,7 +4,7 @@ import {
   LayoutDashboard, Users, GraduationCap, Crosshair, FileBarChart,
   Settings, LogOut, Shield, ShieldCheck, KeyRound, Mail,
   MessageSquareLock, Lock, ChevronLeft, ChevronRight, Menu, X, Building2,
-  Sheet, BookOpen,
+  Sheet, BookOpen, UserCheck,
 } from "lucide-react";
 import { useState, useEffect } from "react";
 import { Link, useRouterState } from "@tanstack/react-router";
@@ -33,7 +33,6 @@ export function SuperAdminSidebar() {
   const [mobileOpen, setMobileOpen] = useState(false);
   const { user, clearAuth } = useAuthStore();
 
-  // Derive active page from the current route path
   const routerState = useRouterState();
   const currentPath = routerState.location.pathname;
 
@@ -41,26 +40,21 @@ export function SuperAdminSidebar() {
   const userEmail = user?.email || "";
 
   const navItems: NavItem[] = [
-    { label: t("nav.dashboard"),      to: "/dashboard/overview",       icon: LayoutDashboard },
-    { label: "Campagnes",             to: "/dashboard/campaigns",      icon: Crosshair },
-    { label: "Formations",            to: "/dashboard/formations",     icon: BookOpen },
-    { label: t("nav.organization"),   to: "/dashboard/organizations",  icon: Building2 },
-    { label: "Utilisateurs",          to: "/dashboard/users",          icon: Users },
-    { label: "Groupes",               to: "/dashboard/groups",         icon: GraduationCap },
-    { label: "Templates",             to: "/dashboard/templates",      icon: Sheet },
-    { label: "Landing pages",         to: "/dashboard/landing-page-templates", icon: FileBarChart },
-    { label: "SMTP",                  to: "/dashboard/smtp-profiles", icon: Mail },
-    { label: "Plans",                 to: "/dashboard/plan",           icon: FileBarChart },
-    { label: "GRC",                   to: "/dashboard/grc",            icon: ShieldCheck },
-    { label: t("nav.emailSecurity"),  to: "/dashboard/email-security", icon: Mail },
-    { label: t("nav.passwords"),      to: "/dashboard/passwords",      icon: KeyRound },
-    { label: "Shadow IT",             to: "/dashboard/shadow-it",      icon: MessageSquareLock },
-    { label: t("nav.encryption"),     to: "/dashboard/encryption",     icon: Lock },
-    { label: t("nav.reports"),        to: "/dashboard/reports",        icon: FileBarChart },
-    { label: t("nav.settings"),       to: "/dashboard/settings",       icon: Settings },
+    { label: t("nav.dashboard"),    to: "/dashboard/overview",              icon: LayoutDashboard },
+    { label: "Demandes de démo",    to: "/dashboard/demos",                 icon: Mail },
+    { label: "Campagnes",           to: "/dashboard/campaigns",             icon: Crosshair },
+    { label: "Formations",          to: "/dashboard/formations",            icon: BookOpen },
+    { label: t("nav.organization"), to: "/dashboard/organizations",         icon: Building2 },
+    { label: "Utilisateurs",        to: "/dashboard/users",                 icon: Users },
+    { label: "Groupes",             to: "/dashboard/groups",                icon: GraduationCap },
+    { label: "Ambassadeurs",        to: "/dashboard/ambassadors",           icon: UserCheck },
+    { label: "Templates",           to: "/dashboard/templates",             icon: Sheet },
+    { label: "Landing pages",       to: "/dashboard/landing-page-templates",icon: FileBarChart },
+    { label: "SMTP",                to: "/dashboard/smtp-profiles",         icon: Mail },
+    { label: "Plans",               to: "/dashboard/plan",                  icon: FileBarChart },
+    { label: "GRC",                 to: "/dashboard/grc",                   icon: ShieldCheck },
   ];
 
-  // Close mobile menu on route change
   useEffect(() => {
     setMobileOpen(false);
   }, [currentPath]);
@@ -70,19 +64,19 @@ export function SuperAdminSidebar() {
   };
 
   return (
-    <div className=" ">
+    <div>
       {/* MOBILE HEADER */}
-      <div className="fixed   left-0 right-0 top-0 z-50 flex h-14 items-center gap-3 border-b border-white/[0.05] bg-[#070b18] px-4 text-white md:hidden">
+      <div className="fixed left-0 right-0 top-0 z-50 flex h-14 items-center gap-3 border-b border-gray-200 dark:border-white/[0.05] bg-white dark:bg-[#070b18] px-4 text-gray-900 dark:text-white md:hidden">
         <Button
           variant="ghost"
           size="icon"
-          className="h-9 w-9 hover:bg-white/5"
+          className="h-9 w-9 hover:bg-gray-100 dark:hover:bg-gray-50 dark:bg-white/5"
           onClick={() => setMobileOpen(true)}
         >
           <Menu className="h-5 w-5" />
         </Button>
         <div className="flex items-center gap-2">
-          <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-gradient-to-br from-[#5d2595] to-[#7b3fc0]">
+          <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-[#5d2595]">
             <Shield className="h-4 w-4 text-white" />
           </div>
           <span className="text-sm font-bold">
@@ -94,7 +88,7 @@ export function SuperAdminSidebar() {
       {/* MOBILE OVERLAY */}
       {mobileOpen && (
         <div
-          className="fixed inset-0 z-40 bg-black/60 backdrop-blur-sm md:hidden"
+          className="fixed inset-0 z-40 bg-black/20 dark:bg-black/60 backdrop-blur-sm md:hidden"
           onClick={() => setMobileOpen(false)}
         />
       )}
@@ -103,22 +97,19 @@ export function SuperAdminSidebar() {
       <aside
         className={`
           fixed left-0 top-0 z-50
-          
           flex h-screen flex-col
-          border-r border-white/[0.05]
-          text-white backdrop-blur-xl
+          bg-white dark:bg-[#070b18]
+          border-r border-gray-200 dark:border-white/[0.05]
+          text-gray-900 dark:text-white
           transition-all duration-300
           ${collapsed ? "w-[72px]" : "w-[260px]"}
           ${mobileOpen ? "translate-x-0" : "-translate-x-full"}
           md:translate-x-0
         `}
-        style={{
-          background: "radial-gradient(circle at top, rgba(93,37,149,.12), transparent 35%), #070b18",
-        }}
       >
         {/* HEADER */}
         <div className="flex items-center gap-3 px-4 py-5">
-          <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-[#5d2595] to-[#7b3fc0] shadow-[0_4px_20px_rgba(93,37,149,0.35)]">
+          <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-[#5d2595]">
             <Shield className="h-5 w-5 text-white" />
           </div>
           {!collapsed && (
@@ -126,13 +117,13 @@ export function SuperAdminSidebar() {
               <span className="text-sm font-bold tracking-tight">
                 <span className="font-normal opacity-60">Rox</span>Shield
               </span>
-              <span className="text-[11px] text-white/40">by Rostel High-Tech</span>
+              <span className="text-[11px] text-gray-400 dark:text-white/40">by Rostel High-Tech</span>
             </div>
           )}
           <Button
             variant="ghost"
             size="icon"
-            className="ml-auto hidden h-7 w-7 text-white/40 hover:bg-white/5 hover:text-white md:flex"
+            className="ml-auto hidden h-7 w-7 text-gray-400 dark:text-white/40 hover:bg-gray-100 dark:hover:bg-gray-50 dark:bg-white/5 hover:text-gray-900 dark:hover:text-white md:flex"
             onClick={() => setCollapsed(!collapsed)}
           >
             {collapsed ? <ChevronRight className="h-4 w-4" /> : <ChevronLeft className="h-4 w-4" />}
@@ -140,17 +131,17 @@ export function SuperAdminSidebar() {
           <Button
             variant="ghost"
             size="icon"
-            className="ml-auto h-7 w-7 text-white/40 hover:bg-white/5 hover:text-white md:hidden"
+            className="ml-auto h-7 w-7 text-gray-400 dark:text-white/40 hover:bg-gray-100 dark:hover:bg-gray-50 dark:bg-white/5 hover:text-gray-900 dark:hover:text-white md:hidden"
             onClick={() => setMobileOpen(false)}
           >
             <X className="h-4 w-4" />
           </Button>
         </div>
 
-        <Separator className="bg-white/[0.05]" />
+        <Separator className="bg-gray-200 /[0.05]" />
 
         {/* NAVIGATION */}
-        <nav className="flex-1 space-y-1 overflow-y-hidden px-3 py-3">
+        <nav className="flex-1 space-y-1 overflow-y-auto px-3 py-3">
           {navItems.map((item) => {
             const isActive = currentPath === item.to || currentPath.startsWith(item.to + "/");
             return (
@@ -160,12 +151,11 @@ export function SuperAdminSidebar() {
                 className={`
                   flex w-full items-center gap-3
                   rounded-xl px-3 py-2.5
-                  border-none
                   text-sm font-medium
                   transition-all duration-200
                   ${isActive
-                    ? "border border-[#5d2595]/30 bg-[#5d2595]/20 text-[#b27cff] shadow-[0_0_20px_rgba(93,37,149,0.15)]"
-                    : "text-white/50 hover:bg-white/[0.04] hover:text-white/80"
+                    ? "bg-[#5d2595]/10 dark:bg-[#5d2595]/20 text-[#5d2595] dark:text-[#b27cff] border border-[#5d2595]/20"
+                    : "text-gray-500 dark:text-white/50 hover:bg-gray-100 dark:hover:bg-white/[0.04] hover:text-gray-900 dark:hover:text-white/80 border border-transparent"
                   }
                   ${collapsed ? "justify-center" : ""}
                 `}
@@ -177,27 +167,26 @@ export function SuperAdminSidebar() {
           })}
         </nav>
 
-        <Separator className="bg-white/[0.05]" />
+        <Separator className="bg-gray-200 /[0.05]" />
 
         {/* USER */}
         <div className="p-3">
           <div className={`flex items-center gap-3 rounded-xl px-3 py-2 ${collapsed ? "justify-center" : ""}`}>
             <div className="shrink-0">
               <Avatar className="h-9 w-9 cursor-pointer transition-opacity hover:opacity-80">
-                <AvatarFallback className="bg-gradient-to-br from-[#5d2595] to-[#7b3fc0] text-xs text-white">
+                <AvatarFallback className="bg-[#5d2595] text-xs text-white">
                   {getInitials(user?.name, user?.email)}
                 </AvatarFallback>
               </Avatar>
             </div>
-
             {!collapsed && (
               <>
                 <div className="min-w-0 flex-1 text-left">
-                  <p className="truncate text-sm font-medium">{userName}</p>
-                  <p className="truncate text-xs text-white/40">{userEmail}</p>
+                  <p className="truncate text-sm font-medium text-gray-900 dark:text-white">{userName}</p>
+                  <p className="truncate text-xs text-gray-500 dark:text-white/40">{userEmail}</p>
                 </div>
                 <button onClick={handleLogout} aria-label="Se déconnecter">
-                  <LogOut className="h-4 w-4 text-white/30 transition-all hover:text-red-400" />
+                  <LogOut className="h-4 w-4 text-gray-400 dark:text-white/30 transition-all hover:text-red-500 dark:hover:text-red-400" />
                 </button>
               </>
             )}

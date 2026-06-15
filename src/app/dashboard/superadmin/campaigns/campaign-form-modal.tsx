@@ -35,10 +35,12 @@ export function CampaignFormModal({
   if (!isOpen) return null;
 
   return (
-    <Card className="rounded-md border border-white/10 bg-[#0c1023]/90 shadow-xl mt-6">
+    <Card className="rounded-md border border-gray-200 dark:border-white/10 bg-white   dark:bg-[#0c1023]/90 shadow-sm dark:shadow-xl mt-6">
       <CardHeader>
-        <CardTitle>{mode === 'edit' ? 'Modifier la campagne' : 'Remixer la campagne'}</CardTitle>
-        <CardDescription>
+        <CardTitle className="text-gray-900 dark:text-gray-900 dark:text-white">
+          {mode === 'edit' ? 'Modifier la campagne' : 'Remixer la campagne'}
+        </CardTitle>
+        <CardDescription className="text-gray-500 dark:text-gray-400">
           {mode === 'edit'
             ? 'Modifiez les paramètres de la campagne et enregistrez vos changements.'
             : 'Copiez cette campagne pour la personnaliser puis la relancer.'}

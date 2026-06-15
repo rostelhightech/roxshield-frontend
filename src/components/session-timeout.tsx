@@ -155,7 +155,7 @@ export function SessionTimeout() {
               {t("session.logout")}
             </Button>
             <Button
-              className="flex-1 bg-gradient-to-r from-rht-violet to-rht-violet-light text-white hover:opacity-90"
+              className="flex-1 bg-linear-to-r from-rht-violet to-rht-violet-light text-gray-900 dark:text-white hover:opacity-90"
               onClick={handleStayConnected}
               disabled={loggingOut}
             >

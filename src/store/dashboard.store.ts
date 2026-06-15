@@ -34,11 +34,66 @@ interface KeyMetrics {
   averageRiskScore: number;
 }
 
+// Admin-specific interfaces
+interface AdminStats {
+  averageRiskScore: number;
+  employeesAtRisk: number;
+  totalEmployees: number;
+  activeEmployees: number;
+  formationsCompletionRate: number;
+  completedFormations: number;
+  totalFormations: number;
+}
+
+interface AdminRiskEvolution {
+  department: string;
+  riskScore: number;
+}
+
+interface AdminRiskByDepartment {
+  name: string;
+  riskScore: number;
+}
+
+interface AdminRecentActivity {
+  type: string;
+  userName: string;
+  description: string;
+  timestamp: string;
+}
+
+interface AdminHighRiskEmployee {
+  initials: string;
+  name: string;
+  department: string;
+  position: string;
+  riskScore: number;
+  formationsCompleted: number;
+}
+
+interface AdminPhishingSimulation {
+  name: string;
+  category: string;
+  duration: string;
+  totalTargets: number;
+  clicked: number;
+  signaled: number;
+}
+
 interface DashboardState {
   stats: DashboardStats | null;
   recentOrganizations: RecentOrganization[];
   planDistribution: PlanDistribution[];
   keyMetrics: KeyMetrics | null;
+  
+  // Admin-specific state
+  adminStats: AdminStats | null;
+  adminRiskEvolution: AdminRiskEvolution[];
+  adminRiskByDepartment: AdminRiskByDepartment[];
+  adminRecentActivity: AdminRecentActivity[];
+  adminHighRiskEmployees: AdminHighRiskEmployee[];
+  adminPhishingSimulations: AdminPhishingSimulation[];
+  
   isLoading: boolean;
   error: string | null;
   
@@ -48,6 +103,15 @@ interface DashboardState {
   loadPlanDistribution: () => Promise<void>;
   loadKeyMetrics: () => Promise<void>;
   loadAll: () => Promise<void>;
+  
+  // Admin actions
+  fetchAdminStats: () => Promise<void>;
+  fetchAdminRiskEvolution: () => Promise<void>;
+  fetchAdminRiskByDepartment: () => Promise<void>;
+  fetchAdminRecentActivity: () => Promise<void>;
+  fetchAdminHighRiskEmployees: () => Promise<void>;
+  fetchAdminPhishingSimulations: () => Promise<void>;
+  
   reset: () => void;
 }
 
@@ -56,6 +120,12 @@ export const useDashboardStore = create<DashboardState>((set, get) => ({
   recentOrganizations: [],
   planDistribution: [],
   keyMetrics: null,
+  adminStats: null,
+  adminRiskEvolution: [],
+  adminRiskByDepartment: [],
+  adminRecentActivity: [],
+  adminHighRiskEmployees: [],
+  adminPhishingSimulations: [],
   isLoading: false,
   error: null,
 
@@ -127,12 +197,94 @@ export const useDashboardStore = create<DashboardState>((set, get) => ({
     }
   },
 
+  // Admin methods
+  fetchAdminStats: async () => {
+    try {
+      set({ isLoading: true, error: null });
+      const response = await apiService.get<{ success: boolean; data: AdminStats }>('/dashboard/admin/stats');
+      if ('success' in response && response.success) {
+        set({ adminStats: response.data });
+      }
+    } catch (error) {
+      console.error('Erreur lors du chargement des statistiques admin:', error);
+      set({ error: 'Erreur lors du chargement des statistiques' });
+    } finally {
+      set({ isLoading: false });
+    }
+  },
+
+  fetchAdminRiskEvolution: async () => {
+    try {
+      const response = await apiService.get<{ success: boolean; data: AdminRiskEvolution[] }>('/dashboard/admin/risk-evolution');
+      if ('success' in response && response.success) {
+        set({ adminRiskEvolution: response.data });
+      }
+    } catch (error) {
+      console.error('Erreur lors du chargement de l\'évolution du risque:', error);
+      set({ error: 'Erreur lors du chargement de l\'évolution du risque' });
+    }
+  },
+
+  fetchAdminRiskByDepartment: async () => {
+    try {
+      const response = await apiService.get<{ success: boolean; data: AdminRiskByDepartment[] }>('/dashboard/admin/risk-by-department');
+      if ('success' in response && response.success) {
+        set({ adminRiskByDepartment: response.data });
+      }
+    } catch (error) {
+      console.error('Erreur lors du chargement du risque par département:', error);
+      set({ error: 'Erreur lors du chargement du risque par département' });
+    }
+  },
+
+  fetchAdminRecentActivity: async () => {
+    try {
+      const response = await apiService.get<{ success: boolean; data: AdminRecentActivity[] }>('/dashboard/admin/recent-activity');
+      if ('success' in response && response.success) {
+        set({ adminRecentActivity: response.data });
+      }
+    } catch (error) {
+      console.error('Erreur lors du chargement de l\'activité récente:', error);
+      set({ error: 'Erreur lors du chargement de l\'activité récente' });
+    }
+  },
+
+  fetchAdminHighRiskEmployees: async () => {
+    try {
+      const response = await apiService.get<{ success: boolean; data: AdminHighRiskEmployee[] }>('/dashboard/admin/high-risk-employees');
+      if ('success' in response && response.success) {
+        set({ adminHighRiskEmployees: response.data });
+      }
+    } catch (error) {
+      console.error('Erreur lors du chargement des employés à risque:', error);
+      set({ error: 'Erreur lors du chargement des employés à risque' });
+    }
+  },
+
+  fetchAdminPhishingSimulations: async () => {
+    try {
+      const response = await apiService.get<{ success: boolean; data: AdminPhishingSimulation[] }>('/dashboard/admin/phishing-simulations');
+      if ('success' in response && response.success) {
+        set({ adminPhishingSimulations: response.data });
+      }
+    } catch (error) {
+      console.error('Erreur lors du chargement des simulations de phishing:', error);
+      set({ error: 'Erreur lors du chargement des simulations de phishing' });
+    }
+  },
+
   reset: () => {
     set({
       stats: null,
       recentOrganizations: [],
       planDistribution: [],
       keyMetrics: null,
+      adminStats: null,
+      adminRiskEvolution: [],
+      adminRiskByDepartment: [],
+      adminRecentActivity: [],
+      adminHighRiskEmployees: [],
+      adminPhishingSimulations: [],
       isLoading: false,
       error: null,
     });

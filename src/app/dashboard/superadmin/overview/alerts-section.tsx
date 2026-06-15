@@ -64,30 +64,30 @@ export function AlertsSection() {
             animate={{ opacity: 1, x: 0 }}
             exit={{ opacity: 0, x: 20 }}
             transition={{ delay: index * 0.1 }}
-            className="relative rounded-lg border border-red-500/30 bg-red-500/5 p-4"
+            className="relative rounded-lg border border-red-300 dark:border-red-500/30 bg-red-100 dark:bg-red-500/5 p-4"
           >
             <button
               onClick={() => handleDismiss(alert.id)}
-              className="absolute right-2 top-2 text-red-400/60 hover:text-red-400 transition-colors"
+              className="absolute right-2 top-2 text-red-400/60 hover:text-red-500 dark:text-red-400/60 dark:hover:text-red-400 transition-colors"
             >
               <X className="w-4 h-4" />
             </button>
             
             <div className="flex items-start gap-3 pr-8">
-              <div className="rounded-sm bg-red-500/20 p-2 mt-0.5">
-                <AlertTriangle className="h-4 w-4 text-red-400" />
+              <div className="rounded-sm bg-red-100 dark:bg-red-500/20 p-2 mt-0.5">
+                <AlertTriangle className="h-4 w-4 text-red-600 dark:text-red-400" />
               </div>
               <div className="flex-1">
                 <div className="flex items-center gap-2 mb-1">
-                  <Bell className="w-4 h-4 text-red-400" />
-                  <span className="text-xs px-2 py-0.5 rounded-full bg-red-500/20 text-red-400 font-medium">
+                  <Bell className="w-4 h-4 text-red-600 dark:text-red-400" />
+                  <span className="text-xs px-2 py-0.5 rounded-full bg-red-100 dark:bg-red-500/20 text-red-700 dark:text-red-400 font-medium">
                     CRITIQUE
                   </span>
                 </div>
-                <h4 className="text-sm font-medium text-white mb-1">
+                <h4 className="text-sm font-medium text-gray-900 dark:text-gray-900 dark:text-white mb-1">
                   {alert.title}
                 </h4>
-                <p className="text-xs text-slate-300 leading-relaxed">
+                <p className="text-xs text-gray-600 dark:text-slate-300 leading-relaxed">
                   {alert.message}
                 </p>
               </div>

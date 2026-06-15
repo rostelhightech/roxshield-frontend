@@ -49,7 +49,7 @@ export const OrganizationCard = ({ organization, onEdit, onDelete }: Organizatio
               <Building2 className="w-5 h-5 text-blue-400" />
             </div>
             <div>
-              <h3 className="font-semibold text-white">{organization.name}</h3>
+              <h3 className="font-semibold text-gray-900 dark:text-white">{organization.name}</h3>
               {organization.sector && (
                 <p className="text-xs text-gray-400">{organization.sector}</p>
               )}
@@ -118,7 +118,7 @@ export const OrganizationCard = ({ organization, onEdit, onDelete }: Organizatio
             <Users className="w-4 h-4 text-gray-400" />
             <div>
               <p className="text-xs text-gray-400">Employés</p>
-              <p className="text-sm font-semibold text-white">{organization.currentEmployees}</p>
+              <p className="text-sm font-semibold text-gray-900 dark:text-white">{organization.currentEmployees}</p>
             </div>
           </div>
           <div className="flex items-center gap-2">
@@ -136,11 +136,11 @@ export const OrganizationCard = ({ organization, onEdit, onDelete }: Organizatio
         <div className="grid grid-cols-2 gap-2 mt-2">
           <div className="text-center p-2 rounded bg-gray-800/30">
             <p className="text-xs text-gray-400">Formations</p>
-            <p className="text-sm font-semibold text-white">{organization.totalFormations}</p>
+            <p className="text-sm font-semibold text-gray-900 dark:text-white">{organization.totalFormations}</p>
           </div>
           <div className="text-center p-2 rounded bg-gray-800/30">
             <p className="text-xs text-gray-400">Campagnes</p>
-            <p className="text-sm font-semibold text-white">{organization.totalCampaigns}</p>
+            <p className="text-sm font-semibold text-gray-900 dark:text-white">{organization.totalCampaigns}</p>
           </div>
         </div>
       </div>

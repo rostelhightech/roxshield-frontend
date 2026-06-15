@@ -11,7 +11,7 @@ export const LoadingComponent = () => {
       </div>
 
       {/* Texte de chargement */}
-      <p className="text-white/50 animate-pulse text-sm">
+      <p className="text-gray-900 dark:text-white/50 animate-pulse text-sm">
         Chargement en cours...
       </p>
     </div>

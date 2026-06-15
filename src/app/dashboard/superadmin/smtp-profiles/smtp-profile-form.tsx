@@ -129,45 +129,45 @@ export const SmtpProfileForm = ({ organizations, profile, onCancel }: SmtpProfil
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
       <div className="grid grid-cols-2 gap-4">
         <div>
-          <Label htmlFor="name" className="text-gray-300">Nom</Label>
-          <Input id="name" {...register('name')} className="bg-gray-800/50 border-gray-700 text-white mt-1" />
-          {errors.name && <p className="text-red-400 text-sm mt-1">{errors.name.message}</p>}
+          <Label htmlFor="name" className="text-gray-700 dark:text-gray-300">Nom</Label>
+          <Input id="name" {...register('name')} className="bg-white dark:bg-gray-800/50 border-gray-300 dark:border-gray-700 text-gray-900 dark:text-white mt-1" />
+          {errors.name && <p className="text-red-600 dark:text-red-400 text-sm mt-1">{errors.name.message}</p>}
         </div>
 
         <div>
-          <Label htmlFor="organizationId" className="text-gray-300">Organisation</Label>
+          <Label htmlFor="organizationId" className="text-gray-700 dark:text-gray-300">Organisation</Label>
           <Select
             value={watch('organizationId') || ''}
             onValueChange={(value) => value && setValue('organizationId', value)}
           >
-            <SelectTrigger className="bg-gray-800/50 border-gray-700 text-white mt-1">
-            {selectedOrganization ? (
-              <span className="truncate">{selectedOrganization.name || selectedOrganization.id}</span>
-            ) : (
-              <SelectValue placeholder="Choisir une organisation" />
-            )}
-          </SelectTrigger>
-            <SelectContent className="bg-slate-200 border-gray-700">
+            <SelectTrigger className="bg-white dark:bg-gray-800/50 border-gray-300 dark:border-gray-700 text-gray-900 dark:text-white mt-1">
+              {selectedOrganization ? (
+                <span className="truncate">{selectedOrganization.name || selectedOrganization.id}</span>
+              ) : (
+                <SelectValue placeholder="Choisir une organisation" />
+              )}
+            </SelectTrigger>
+            <SelectContent className="bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700">
               {organizations.map((org) => (
                 <SelectItem key={org.id} value={org.id}>{org.name || org.id}</SelectItem>
               ))}
             </SelectContent>
           </Select>
-          {errors.organizationId && <p className="text-red-400 text-sm mt-1">{errors.organizationId.message}</p>}
+          {errors.organizationId && <p className="text-red-600 dark:text-red-400 text-sm mt-1">{errors.organizationId.message}</p>}
         </div>
       </div>
 
       <div className="grid grid-cols-2 gap-4">
         <div>
-          <Label htmlFor="interfaceType" className="text-gray-300">Interface</Label>
+          <Label htmlFor="interfaceType" className="text-gray-700 dark:text-gray-300">Interface</Label>
           <Select
             value={watch('interfaceType')}
             onValueChange={(value) => setValue('interfaceType', value as 'SMTP' | 'API')}
           >
-            <SelectTrigger className="bg-gray-800/50 border-gray-700 text-white mt-1">
+            <SelectTrigger className="bg-white dark:bg-gray-800/50 border-gray-300 dark:border-gray-700 text-gray-900 dark:text-white mt-1">
               <SelectValue placeholder="Sélectionnez le type" />
             </SelectTrigger>
-            <SelectContent className="bg-slate-200 border-gray-700">
+            <SelectContent className="bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700">
               <SelectItem value="SMTP">SMTP</SelectItem>
               <SelectItem value="API">API</SelectItem>
             </SelectContent>
@@ -175,50 +175,50 @@ export const SmtpProfileForm = ({ organizations, profile, onCancel }: SmtpProfil
         </div>
 
         <div>
-          <Label htmlFor="fromName" className="text-gray-300">Nom de l'expéditeur</Label>
-          <Input id="fromName" {...register('fromName')} className="bg-gray-800/50 border-gray-700 text-white mt-1" />
-          {errors.fromName && <p className="text-red-400 text-sm mt-1">{errors.fromName.message}</p>}
+          <Label htmlFor="fromName" className="text-gray-700 dark:text-gray-300">Nom de l'expéditeur</Label>
+          <Input id="fromName" {...register('fromName')} className="bg-white dark:bg-gray-800/50 border-gray-300 dark:border-gray-700 text-gray-900 dark:text-white mt-1" />
+          {errors.fromName && <p className="text-red-600 dark:text-red-400 text-sm mt-1">{errors.fromName.message}</p>}
         </div>
       </div>
 
       <div className="grid grid-cols-2 gap-4">
         <div>
-          <Label htmlFor="fromAddress" className="text-gray-300">Adresse de l'expéditeur</Label>
-          <Input id="fromAddress" {...register('fromAddress')} className="bg-gray-800/50 border-gray-700 text-white mt-1" />
-          {errors.fromAddress && <p className="text-red-400 text-sm mt-1">{errors.fromAddress.message}</p>}
+          <Label htmlFor="fromAddress" className="text-gray-700 dark:text-gray-300">Adresse de l'expéditeur</Label>
+          <Input id="fromAddress" {...register('fromAddress')} className="bg-white dark:bg-gray-800/50 border-gray-300 dark:border-gray-700 text-gray-900 dark:text-white mt-1" />
+          {errors.fromAddress && <p className="text-red-600 dark:text-red-400 text-sm mt-1">{errors.fromAddress.message}</p>}
         </div>
       </div>
 
       <div className="grid grid-cols-2 gap-4">
         <div>
-          <Label htmlFor="host" className="text-gray-300">Hôte SMTP</Label>
-          <Input id="host" {...register('host')} className="bg-gray-800/50 border-gray-700 text-white mt-1" />
-          {errors.host && <p className="text-red-400 text-sm mt-1">{errors.host.message}</p>}
+          <Label htmlFor="host" className="text-gray-700 dark:text-gray-300">Hôte SMTP</Label>
+          <Input id="host" {...register('host')} className="bg-white dark:bg-gray-800/50 border-gray-300 dark:border-gray-700 text-gray-900 dark:text-white mt-1" />
+          {errors.host && <p className="text-red-600 dark:text-red-400 text-sm mt-1">{errors.host.message}</p>}
         </div>
 
         <div>
-          <Label htmlFor="port" className="text-gray-300">Port</Label>
+          <Label htmlFor="port" className="text-gray-700 dark:text-gray-300">Port</Label>
           <Input
             id="port"
             type="number"
             {...register('port', { valueAsNumber: true })}
-            className="bg-gray-800/50 border-gray-700 text-white mt-1"
+            className="bg-white dark:bg-gray-800/50 border-gray-300 dark:border-gray-700 text-gray-900 dark:text-white mt-1"
           />
-          {errors.port && <p className="text-red-400 text-sm mt-1">{errors.port.message}</p>}
+          {errors.port && <p className="text-red-600 dark:text-red-400 text-sm mt-1">{errors.port.message}</p>}
         </div>
       </div>
 
       <div className="grid grid-cols-2 gap-4">
         <div>
-          <Label htmlFor="username" className="text-gray-300">Nom d'utilisateur</Label>
-          <Input id="username" {...register('username')} className="bg-gray-800/50 border-gray-700 text-white mt-1" />
-          {errors.username && <p className="text-red-400 text-sm mt-1">{errors.username.message}</p>}
+          <Label htmlFor="username" className="text-gray-700 dark:text-gray-300">Nom d'utilisateur</Label>
+          <Input id="username" {...register('username')} className="bg-white dark:bg-gray-800/50 border-gray-300 dark:border-gray-700 text-gray-900 dark:text-white mt-1" />
+          {errors.username && <p className="text-red-600 dark:text-red-400 text-sm mt-1">{errors.username.message}</p>}
         </div>
 
         <div>
-          <Label htmlFor="password" className="text-gray-300">Mot de passe{profile ? ' (laisser vide pour ne pas modifier)' : ''}</Label>
-          <Input id="password" type="password" {...register('password')} className="bg-gray-800/50 border-gray-700 text-white mt-1" />
-          {errors.password && <p className="text-red-400 text-sm mt-1">{errors.password.message}</p>}
+          <Label htmlFor="password" className="text-gray-700 dark:text-gray-300">Mot de passe{profile ? ' (laisser vide pour ne pas modifier)' : ''}</Label>
+          <Input id="password" type="password" {...register('password')} className="bg-white dark:bg-gray-800/50 border-gray-300 dark:border-gray-700 text-gray-900 dark:text-white mt-1" />
+          {errors.password && <p className="text-red-600 dark:text-red-400 text-sm mt-1">{errors.password.message}</p>}
         </div>
       </div>
 
@@ -227,28 +227,27 @@ export const SmtpProfileForm = ({ organizations, profile, onCancel }: SmtpProfil
           id="ignoreCertificateErrors"
           type="checkbox"
           {...register('ignoreCertificateErrors')}
-          className="h-4 w-4 rounded border-white/10 bg-white/5 text-sky-400 focus:ring-sky-500"
+          className="h-4 w-4 rounded border-gray-300 dark:border-white/10 bg-white dark:bg-white/5 text-sky-400 focus:ring-sky-500"
         />
-        <Label htmlFor="ignoreCertificateErrors" className="text-gray-300">
+        <Label htmlFor="ignoreCertificateErrors" className="text-gray-700 dark:text-gray-300">
           Ignorer les erreurs de certificat
         </Label>
       </div>
 
       <div>
-        <Label htmlFor="emailHeaders" className="text-gray-300">En-têtes SMTP (JSON)</Label>
+        <Label htmlFor="emailHeaders" className="text-gray-700 dark:text-gray-300">En-têtes SMTP (JSON)</Label>
         <Textarea
           id="emailHeaders"
           {...register('emailHeaders')}
           rows={5}
-          className="bg-gray-800/50 border-gray-700 text-white mt-1"
+          className="bg-white dark:bg-gray-800/50 border-gray-300 dark:border-gray-700 text-gray-900 dark:text-white mt-1"
           placeholder='{"X-Mailer":"RoxShield"}'
         />
-        {errors.emailHeaders && <p className="text-red-400 text-sm mt-1">{errors.emailHeaders.message}</p>}
+        {errors.emailHeaders && <p className="text-red-600 dark:text-red-400 text-sm mt-1">{errors.emailHeaders.message}</p>}
       </div>
 
       <div className="flex justify-end gap-3">
         <Button
-          className="text-gray-700"
           type="button"
           variant="outline"
           onClick={() => {

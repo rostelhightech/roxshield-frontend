@@ -33,11 +33,11 @@ const customBadgeVariants = cva(
     variants: {
       color: {
         default: "bg-primary text-primary-foreground border-transparent",
-        success: "bg-emerald-500/15 text-emerald-200 border-emerald-500/20",
-        warning: "bg-amber-500/15 text-amber-200 border-amber-500/20",
-        danger: "bg-destructive/15 text-destructive border-destructive/20",
-        info: "bg-sky-500/15 text-sky-200 border-sky-500/20",
-        muted: "bg-white/10 text-white border-white/15",
+        success: "bg-emerald-100 dark:bg-emerald-500/15 text-emerald-700 dark:text-emerald-200 border-emerald-300 dark:border-emerald-500/20",
+        warning: "bg-amber-100 dark:bg-amber-500/15 text-amber-700 dark:text-amber-200 border-amber-300 dark:border-amber-500/20",
+        danger: "bg-red-100 dark:bg-destructive/15 text-red-700 dark:text-destructive border-red-300 dark:border-destructive/20",
+        info: "bg-sky-100 dark:bg-sky-500/15 text-sky-700 dark:text-sky-200 border-sky-300 dark:border-sky-500/20",
+        muted: "bg-gray-100 /10 text-gray-700 dark:text-gray-900 dark:text-white border-gray-300 dark:border-white/15",
       },
     },
     defaultVariants: {

@@ -115,16 +115,16 @@ Règles :
 
     return (
       <div className={cn(
-        'flex flex-col border rounded-lg overflow-hidden bg-background transition-all',
+        'flex flex-col border rounded-sm overflow-hidden bg-white dark:bg-background transition-all',
         fullscreen
           ? 'fixed inset-0 z-50 rounded-none border-0'
           : 'h-full',
       )}>
 
         {/* ── Toolbar ── */}
-        <div className="flex items-center gap-1.5 px-3 h-12 border-b bg-muted/30 shrink-0">
+        <div className="flex items-center gap-1.5 px-3 h-12 border-b bg-gray-50 dark:bg-muted/30 shrink-0">
           {/* Mode tabs */}
-          <div className="flex items-center gap-0.5 bg-muted rounded-md p-0.5">
+          <div className="flex items-center gap-0.5 bg-gray-100 dark:bg-muted rounded-md p-0.5">
             {MODES.map(({ id, icon: Icon, label }) => (
               <button
                 key={id}
@@ -133,8 +133,8 @@ Règles :
                 className={cn(
                   'flex items-center gap-1.5 text-xs px-2.5 py-1.5 rounded transition-all',
                   mode === id
-                    ? 'bg-background shadow-sm font-medium text-foreground'
-                    : 'text-muted-foreground hover:text-foreground',
+                    ? 'bg-white dark:bg-background shadow-sm font-medium text-gray-900 dark:text-foreground'
+                    : 'text-gray-500 dark:text-muted-foreground hover:text-gray-900 dark:hover:text-foreground',
                 )}
               >
                 <Icon size={13} />
@@ -150,7 +150,7 @@ Règles :
             type="button"
             variant="outline"
             size="sm"
-            className="h-7 gap-1.5 text-xs text-gray-700"
+            className="h-7 gap-1.5 text-xs border-gray-300 dark:border-gray-700 text-gray-700 dark:text-gray-300"
             onClick={() => setAiOpen(o => !o)}
           >
             <Sparkles size={12} />
@@ -162,10 +162,10 @@ Règles :
             type="button"
             variant="outline"
             size="sm"
-            className="h-7 gap-1.5 text-xs text-gray-700"
+            className="h-7 gap-1.5 text-xs border-gray-300 dark:border-gray-700 text-gray-700 dark:text-gray-300"
             onClick={handleCopy}
           >
-            {copied ? <Check size={12} className="text-green-500" /> : <Copy size={12} />}
+            {copied ? <Check size={12} className="text-green-600 dark:text-green-500" /> : <Copy size={12} />}
             {copied ? 'Copié' : 'Copier'}
           </Button>
 
@@ -174,7 +174,7 @@ Règles :
             type="button"
             variant="ghost"
             size="icon"
-            className="h-7 w-7 text-gray-700"
+            className="h-7 w-7 text-gray-700 dark:text-gray-300"
             onClick={() => setFullscreen(f => !f)}
           >
             {fullscreen ? <Minimize2 size={13} /> : <Maximize2 size={13} />}
@@ -184,14 +184,14 @@ Règles :
         {/* ── AI Panel ── */}
         {aiOpen && (
           <div className="flex items-center gap-2 px-3 py-2 border-b bg-violet-50 dark:bg-violet-950/30 shrink-0">
-            <Sparkles size={14} className="text-violet-500 shrink-0" />
+            <Sparkles size={14} className="text-violet-600 dark:text-violet-500 shrink-0" />
             <Input
               type="text"
               placeholder="Ex: faux email Microsoft demandant de réinitialiser le mot de passe..."
               value={aiPrompt}
               onChange={e => setAiPrompt(e.target.value)}
               onKeyDown={e => e.key === 'Enter' && handleAiGenerate()}
-              className="h-7 text-xs flex-1 bg-background"
+              className="h-7 text-xs flex-1 bg-white dark:bg-background border-gray-300 dark:border-gray-700"
             />
             <Button
               type="button"
@@ -205,7 +205,7 @@ Règles :
             <button
               type="button"
               onClick={() => setAiOpen(false)}
-              className="text-muted-foreground hover:text-foreground"
+              className="text-gray-500 dark:text-muted-foreground hover:text-gray-900 dark:hover:text-foreground"
             >
               <X size={14} />
             </button>
@@ -214,8 +214,8 @@ Règles :
 
         {/* ── Variables bar ── */}
         {showVariables && (
-          <div className="flex items-center gap-1.5 px-3 py-1.5 border-b bg-background shrink-0 flex-wrap">
-            <span className="text-xs text-muted-foreground mr-1">Variables :</span>
+          <div className="flex items-center gap-1.5 px-3 py-1.5 border-b bg-white dark:bg-background shrink-0 flex-wrap">
+            <span className="text-xs text-gray-500 dark:text-muted-foreground mr-1">Variables :</span>
             {GOPHISH_VARS.map(v => (
               <button
                 key={v}
@@ -235,14 +235,14 @@ Règles :
           {/* Text mode */}
           {mode === 'text' && (
             <div className="flex-1 flex flex-col p-4 gap-3">
-              <p className="text-xs text-muted-foreground">
+              <p className="text-xs text-gray-500 dark:text-muted-foreground">
                 Version texte brut de l'email — envoyée aux clients qui ne supportent pas le HTML.
               </p>
               <Textarea
                 value={text}
                 onChange={e => setText(e.target.value)}
                 placeholder={`Bonjour {{.FirstName}},\n\nVeuillez cliquer sur le lien suivant : {{.URL}}\n\nCordialement,\n{{.From}}`}
-                className="flex-1 font-mono text-sm resize-none"
+                className="flex-1 font-mono text-sm resize-none bg-white dark:bg-gray-900 border-gray-300 dark:border-gray-700"
               />
             </div>
           )}
@@ -261,14 +261,13 @@ Règles :
             </div>
           )}
 
-          {mode === 'split' && <div className="w-px bg-border shrink-0" />}
+          {mode === 'split' && <div className="w-px bg-gray-200 dark:bg-border shrink-0" />}
 
 
           {/* Preview panel */}
           {(mode === 'preview' || mode === 'split') && (
             <iframe
               ref={iframeRef}
-              
               className={cn('border-none bg-white', mode === 'split' ? 'w-1/2' : 'flex-1')}
               title="Prévisualisation"
               sandbox="allow-same-origin"
@@ -277,17 +276,17 @@ Règles :
         </div>
 
         {/* ── Status bar ── */}
-        <div className="flex items-center gap-3 px-3 h-7 border-t bg-muted/20 shrink-0">
-          <span className="text-[11px] text-muted-foreground">
+        <div className="flex items-center gap-3 px-3 h-7 border-t bg-gray-50 dark:bg-muted/20 shrink-0">
+          <span className="text-[11px] text-gray-500 dark:text-muted-foreground">
             {code.length.toLocaleString()} chars
           </span>
           {showVariables && (
-            <span className="text-[11px] text-muted-foreground">
+            <span className="text-[11px] text-gray-500 dark:text-muted-foreground">
               {new Set(code.match(/\{\{\.[\w]+\}\}/g) ?? []).size} variables
             </span>
           )}
           <div className="flex-1" />
-          <Badge variant="outline" className="text-[10px] h-4 px-1.5 text-green-600 border-green-300">
+          <Badge variant="outline" className="text-[10px] h-4 px-1.5 text-green-700 dark:text-green-600 border-green-400 dark:border-green-300">
             Live
           </Badge>
         </div>

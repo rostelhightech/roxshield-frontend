@@ -403,7 +403,7 @@ export const useFormationStore = create<FormationState>((set, get) => ({
       if (organizationId) params.append('organizationId', organizationId);
 
       const response = await apiService.get(`/formations/stats?${params}`);
-      set({ stats: response.data as FormationStats, isLoading: false });
+      set({ stats: response as FormationStats, isLoading: false });
     } catch (error) {
       const message = error instanceof Error ? error.message : 'Erreur inconnue';
       set({ error: message, isLoading: false });

@@ -9,6 +9,7 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as RegisterRouteImport } from './routes/register'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as AuthenticatedRouteImport } from './routes/_authenticated'
 import { Route as IndexRouteImport } from './routes/index'
@@ -30,7 +31,9 @@ import { Route as AuthenticatedDashboardGrcRouteImport } from './routes/_authent
 import { Route as AuthenticatedDashboardFormationsRouteImport } from './routes/_authenticated/dashboard/formations'
 import { Route as AuthenticatedDashboardEncryptionRouteImport } from './routes/_authenticated/dashboard/encryption'
 import { Route as AuthenticatedDashboardEmailSecurityRouteImport } from './routes/_authenticated/dashboard/email-security'
+import { Route as AuthenticatedDashboardDemosRouteImport } from './routes/_authenticated/dashboard/demos'
 import { Route as AuthenticatedDashboardCampaignsRouteImport } from './routes/_authenticated/dashboard/campaigns'
+import { Route as AuthenticatedDashboardAmbassadorsRouteImport } from './routes/_authenticated/dashboard/ambassadors'
 import { Route as AuthenticatedDashboardUserIndexRouteImport } from './routes/_authenticated/dashboard/user/index'
 import { Route as AuthenticatedDashboardOrganizationsIndexRouteImport } from './routes/_authenticated/dashboard/organizations/index'
 import { Route as AuthenticatedDashboardFormationsIndexRouteImport } from './routes/_authenticated/dashboard/formations/index'
@@ -44,6 +47,11 @@ import { Route as AuthenticatedDashboardFormationsCreateRouteImport } from './ro
 import { Route as AuthenticatedDashboardFormationsFormationIdRouteImport } from './routes/_authenticated/dashboard/formations/$formationId'
 import { Route as AuthenticatedDashboardCampaignsCampaignIdRouteImport } from './routes/_authenticated/dashboard/campaigns/$campaignId'
 
+const RegisterRoute = RegisterRouteImport.update({
+  id: '/register',
+  path: '/register',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const LoginRoute = LoginRouteImport.update({
   id: '/login',
   path: '/login',
@@ -165,10 +173,22 @@ const AuthenticatedDashboardEmailSecurityRoute =
     path: '/email-security',
     getParentRoute: () => AuthenticatedDashboardRoute,
   } as any)
+const AuthenticatedDashboardDemosRoute =
+  AuthenticatedDashboardDemosRouteImport.update({
+    id: '/demos',
+    path: '/demos',
+    getParentRoute: () => AuthenticatedDashboardRoute,
+  } as any)
 const AuthenticatedDashboardCampaignsRoute =
   AuthenticatedDashboardCampaignsRouteImport.update({
     id: '/campaigns',
     path: '/campaigns',
+    getParentRoute: () => AuthenticatedDashboardRoute,
+  } as any)
+const AuthenticatedDashboardAmbassadorsRoute =
+  AuthenticatedDashboardAmbassadorsRouteImport.update({
+    id: '/ambassadors',
+    path: '/ambassadors',
     getParentRoute: () => AuthenticatedDashboardRoute,
   } as any)
 const AuthenticatedDashboardUserIndexRoute =
@@ -247,8 +267,11 @@ const AuthenticatedDashboardCampaignsCampaignIdRoute =
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/login': typeof LoginRoute
+  '/register': typeof RegisterRoute
   '/dashboard': typeof AuthenticatedDashboardRouteWithChildren
+  '/dashboard/ambassadors': typeof AuthenticatedDashboardAmbassadorsRoute
   '/dashboard/campaigns': typeof AuthenticatedDashboardCampaignsRouteWithChildren
+  '/dashboard/demos': typeof AuthenticatedDashboardDemosRoute
   '/dashboard/email-security': typeof AuthenticatedDashboardEmailSecurityRoute
   '/dashboard/encryption': typeof AuthenticatedDashboardEncryptionRoute
   '/dashboard/formations': typeof AuthenticatedDashboardFormationsRouteWithChildren
@@ -282,6 +305,9 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/login': typeof LoginRoute
+  '/register': typeof RegisterRoute
+  '/dashboard/ambassadors': typeof AuthenticatedDashboardAmbassadorsRoute
+  '/dashboard/demos': typeof AuthenticatedDashboardDemosRoute
   '/dashboard/email-security': typeof AuthenticatedDashboardEmailSecurityRoute
   '/dashboard/encryption': typeof AuthenticatedDashboardEncryptionRoute
   '/dashboard/grc': typeof AuthenticatedDashboardGrcRoute
@@ -315,8 +341,11 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/_authenticated': typeof AuthenticatedRouteWithChildren
   '/login': typeof LoginRoute
+  '/register': typeof RegisterRoute
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRouteWithChildren
+  '/_authenticated/dashboard/ambassadors': typeof AuthenticatedDashboardAmbassadorsRoute
   '/_authenticated/dashboard/campaigns': typeof AuthenticatedDashboardCampaignsRouteWithChildren
+  '/_authenticated/dashboard/demos': typeof AuthenticatedDashboardDemosRoute
   '/_authenticated/dashboard/email-security': typeof AuthenticatedDashboardEmailSecurityRoute
   '/_authenticated/dashboard/encryption': typeof AuthenticatedDashboardEncryptionRoute
   '/_authenticated/dashboard/formations': typeof AuthenticatedDashboardFormationsRouteWithChildren
@@ -352,8 +381,11 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/login'
+    | '/register'
     | '/dashboard'
+    | '/dashboard/ambassadors'
     | '/dashboard/campaigns'
+    | '/dashboard/demos'
     | '/dashboard/email-security'
     | '/dashboard/encryption'
     | '/dashboard/formations'
@@ -387,6 +419,9 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/login'
+    | '/register'
+    | '/dashboard/ambassadors'
+    | '/dashboard/demos'
     | '/dashboard/email-security'
     | '/dashboard/encryption'
     | '/dashboard/grc'
@@ -419,8 +454,11 @@ export interface FileRouteTypes {
     | '/'
     | '/_authenticated'
     | '/login'
+    | '/register'
     | '/_authenticated/dashboard'
+    | '/_authenticated/dashboard/ambassadors'
     | '/_authenticated/dashboard/campaigns'
+    | '/_authenticated/dashboard/demos'
     | '/_authenticated/dashboard/email-security'
     | '/_authenticated/dashboard/encryption'
     | '/_authenticated/dashboard/formations'
@@ -456,10 +494,18 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AuthenticatedRoute: typeof AuthenticatedRouteWithChildren
   LoginRoute: typeof LoginRoute
+  RegisterRoute: typeof RegisterRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/register': {
+      id: '/register'
+      path: '/register'
+      fullPath: '/register'
+      preLoaderRoute: typeof RegisterRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/login': {
       id: '/login'
       path: '/login'
@@ -607,11 +653,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedDashboardEmailSecurityRouteImport
       parentRoute: typeof AuthenticatedDashboardRoute
     }
+    '/_authenticated/dashboard/demos': {
+      id: '/_authenticated/dashboard/demos'
+      path: '/demos'
+      fullPath: '/dashboard/demos'
+      preLoaderRoute: typeof AuthenticatedDashboardDemosRouteImport
+      parentRoute: typeof AuthenticatedDashboardRoute
+    }
     '/_authenticated/dashboard/campaigns': {
       id: '/_authenticated/dashboard/campaigns'
       path: '/campaigns'
       fullPath: '/dashboard/campaigns'
       preLoaderRoute: typeof AuthenticatedDashboardCampaignsRouteImport
+      parentRoute: typeof AuthenticatedDashboardRoute
+    }
+    '/_authenticated/dashboard/ambassadors': {
+      id: '/_authenticated/dashboard/ambassadors'
+      path: '/ambassadors'
+      fullPath: '/dashboard/ambassadors'
+      preLoaderRoute: typeof AuthenticatedDashboardAmbassadorsRouteImport
       parentRoute: typeof AuthenticatedDashboardRoute
     }
     '/_authenticated/dashboard/user/': {
@@ -762,7 +822,9 @@ const AuthenticatedDashboardOrganizationsRouteWithChildren =
   )
 
 interface AuthenticatedDashboardRouteChildren {
+  AuthenticatedDashboardAmbassadorsRoute: typeof AuthenticatedDashboardAmbassadorsRoute
   AuthenticatedDashboardCampaignsRoute: typeof AuthenticatedDashboardCampaignsRouteWithChildren
+  AuthenticatedDashboardDemosRoute: typeof AuthenticatedDashboardDemosRoute
   AuthenticatedDashboardEmailSecurityRoute: typeof AuthenticatedDashboardEmailSecurityRoute
   AuthenticatedDashboardEncryptionRoute: typeof AuthenticatedDashboardEncryptionRoute
   AuthenticatedDashboardFormationsRoute: typeof AuthenticatedDashboardFormationsRouteWithChildren
@@ -788,8 +850,11 @@ interface AuthenticatedDashboardRouteChildren {
 
 const AuthenticatedDashboardRouteChildren: AuthenticatedDashboardRouteChildren =
   {
+    AuthenticatedDashboardAmbassadorsRoute:
+      AuthenticatedDashboardAmbassadorsRoute,
     AuthenticatedDashboardCampaignsRoute:
       AuthenticatedDashboardCampaignsRouteWithChildren,
+    AuthenticatedDashboardDemosRoute: AuthenticatedDashboardDemosRoute,
     AuthenticatedDashboardEmailSecurityRoute:
       AuthenticatedDashboardEmailSecurityRoute,
     AuthenticatedDashboardEncryptionRoute:
@@ -843,6 +908,7 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AuthenticatedRoute: AuthenticatedRouteWithChildren,
   LoginRoute: LoginRoute,
+  RegisterRoute: RegisterRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

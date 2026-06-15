@@ -48,9 +48,9 @@ export function PlansChart() {
   }));
 
   return (
-    <Card className="border-white/5 bg-[#0c1023]">
+    <Card className="rounded-sm border border-gray-200 dark:border-white/5 bg-white  dark:bg-[#0c1023] shadow-xs dark:shadow-xs">
       <CardHeader>
-        <CardTitle>
+        <CardTitle className="text-gray-900 dark:text-gray-900 dark:text-white">
           Répartition des plans
         </CardTitle>
       </CardHeader>
@@ -58,7 +58,7 @@ export function PlansChart() {
       <CardContent>
         {isLoading ? (
           <div className="flex items-center justify-center h-48">
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-white"></div>
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900 dark:border-white"></div>
           </div>
         ) : distribution.length > 0 ? (
           <>
@@ -79,10 +79,10 @@ export function PlansChart() {
                 </Pie>
                 <Tooltip
                   contentStyle={{
-                    backgroundColor: '#1e293b',
-                    border: '1px solid #334155',
-                    borderRadius: '8px',
-                    color: '#fff',
+                    backgroundColor: '#ffffff',
+                    border: '1px solid #e5e7eb',
+                    borderRadius: '4px',
+                    color: '#111827',
                   }}
                   formatter={(value, name) => [`${value} organisations`, name]}
                 />
@@ -97,9 +97,9 @@ export function PlansChart() {
                       className="w-3 h-3 rounded-full"
                       style={{ backgroundColor: chartData[index].color }}
                     ></div>
-                    <span className="text-sm text-white">{plan.label}</span>
+                    <span className="text-sm text-gray-700 dark:text-gray-900 dark:text-white">{plan.label}</span>
                   </div>
-                  <div className="text-sm text-slate-400">
+                  <div className="text-sm text-gray-500 dark:text-slate-400">
                     {plan.count} ({plan.percentage}%)
                   </div>
                 </div>
@@ -107,7 +107,7 @@ export function PlansChart() {
             </div>
           </>
         ) : (
-          <div className="text-center py-8 text-slate-400">
+          <div className="text-center py-8 text-gray-400 dark:text-slate-400">
             Aucune donnée disponible
           </div>
         )}

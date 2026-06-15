@@ -27,7 +27,7 @@ export function LanguageSwitcher() {
       title={locale === "fr" ? "Switch to English" : "Passer en français"}
     >
       <Globe className="h-4 w-4" />
-      <span className="absolute -bottom-0.5 -right-0.5 flex h-4 w-4 items-center justify-center rounded-full bg-rht-violet text-[8px] font-bold text-white uppercase">
+      <span className="absolute -bottom-0.5 -right-0.5 flex h-4 w-4 items-center justify-center rounded-full bg-rht-violet text-[8px] font-bold text-gray-900 dark:text-white uppercase">
         {locale}
       </span>
     </Button>

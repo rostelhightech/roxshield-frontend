@@ -28,10 +28,14 @@ const TargetStatusChart = memo(({ data }: { data: any[] }) => (
       </Pie>
       <Tooltip
         formatter={(value) => value}
-        contentStyle={{ backgroundColor: '#1a1f35', border: '1px solid #ffffff1a' }}
-        labelStyle={{ color: '#fff' }}
+        contentStyle={{ 
+          backgroundColor: '#ffffff', 
+          border: '1px solid #e5e7eb',
+          borderRadius: '8px'
+        }}
+        labelStyle={{ color: '#111827' }}
       />
-      <Legend wrapperStyle={{ color: '#fff' }} />
+      <Legend wrapperStyle={{ color: '#111827' }} />
     </PieChart>
   </ResponsiveContainer>
 ));
@@ -39,12 +43,16 @@ const TargetStatusChart = memo(({ data }: { data: any[] }) => (
 const TrackingEventsChart = memo(({ data }: { data: any[] }) => (
   <ResponsiveContainer width="100%" height={300}>
     <BarChart data={data}>
-      <CartesianGrid strokeDasharray="3 3" stroke="#ffffff1a" />
-      <XAxis dataKey="name" stroke="#9ca3af" />
-      <YAxis stroke="#9ca3af" />
+      <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
+      <XAxis dataKey="name" stroke="#6b7280" />
+      <YAxis stroke="#6b7280" />
       <Tooltip
-        contentStyle={{ backgroundColor: '#1a1f35', border: '1px solid #ffffff1a' }}
-        labelStyle={{ color: '#fff' }}
+        contentStyle={{ 
+          backgroundColor: '#ffffff', 
+          border: '1px solid #e5e7eb',
+          borderRadius: '8px'
+        }}
+        labelStyle={{ color: '#111827' }}
       />
       <Bar dataKey="count" fill="#8b5cf6" radius={[8, 8, 0, 0]} />
     </BarChart>
@@ -53,21 +61,21 @@ const TrackingEventsChart = memo(({ data }: { data: any[] }) => (
 
 const StatsSkeleton = memo(() => (
   <div className="space-y-3">
-    <Skeleton className="h-[300px] w-full" />
-    <Skeleton className="h-8 w-1/3" />
+    <Skeleton className="h-[300px] w-full bg-gray-200 dark:bg-gray-700" />
+    <Skeleton className="h-8 w-1/3 bg-gray-200 dark:bg-gray-700" />
   </div>
 ));
 
 export function CampaignChartsSection({ showCharts, targetStatusData, trackingEventsData }: CampaignChartsSectionProps) {
   return (
-    <div className="grid grid-cols-2 gap-6 mt-6">
-      <div className="border-t border-white/10 pt-6">
-        <h4 className="text-sm font-semibold text-white mb-4">Événements de tracking</h4>
+    <div className="grid grid-cols-2 gap-6 mt-6 bg-gray-100 dark:bg-slate-900 px-2">
+      <div className="border-t border-gray-200 dark:border-white/10 pt-6">
+        <h4 className="text-sm font-semibold text-gray-900 dark:text-gray-900 dark:text-white mb-4">Événements de tracking</h4>
         {!showCharts ? <StatsSkeleton /> : <TrackingEventsChart data={trackingEventsData} />}
       </div>
 
-      <div className="border-t border-white/10 pt-6">
-        <h4 className="text-sm font-semibold text-white mb-4">Distribution des cibles</h4>
+      <div className="border-t border-gray-200 dark:border-white/10 pt-6">
+        <h4 className="text-sm font-semibold text-gray-900 dark:text-gray-900 dark:text-white mb-4">Distribution des cibles</h4>
         {!showCharts ? <StatsSkeleton /> : <TargetStatusChart data={targetStatusData} />}
       </div>
     </div>

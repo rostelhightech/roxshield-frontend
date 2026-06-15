@@ -146,7 +146,7 @@ export function Header({ title }: { title: string }) {
           >
             <Bell className="h-4 w-4" />
             {unreadCount > 0 && (
-              <Badge className="absolute -right-0.5 -top-0.5 flex h-4 w-4 items-center justify-center rounded-full bg-rht-orange p-0 text-[10px] text-white">
+              <Badge className="absolute -right-0.5 -top-0.5 flex h-4 w-4 items-center justify-center rounded-full bg-rht-orange p-0 text-[10px] text-gray-900 dark:text-white">
                 {unreadCount}
               </Badge>
             )}

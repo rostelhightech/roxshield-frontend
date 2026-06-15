@@ -50,14 +50,13 @@ export const useLogin = () => {
         );
 
         router.navigate({ to: "/dashboard" });
-        toast.success("Connexion réussie");
         
         return response;
       }
-
       return null;
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : "An unknown error occurred";
+      toast.error("Identifiants invalides")
       setError(errorMessage);
       return null;
     } finally {

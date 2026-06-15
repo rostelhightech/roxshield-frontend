@@ -124,11 +124,11 @@ export function Sidebar() {
   return (
     <>
       {/* MOBILE HEADER */}
-      <div className="fixed left-0 right-0 top-0 z-50 flex h-14 items-center gap-3 border-b border-white/[0.05] bg-[#070b18] px-4 text-white md:hidden">
+      <div className="fixed left-0 right-0 top-0 z-50 flex h-14 items-center gap-3 border-b border-white/[0.05] bg-[#070b18] px-4 text-gray-900 dark:text-white md:hidden">
         <Button
           variant="ghost"
           size="icon"
-          className="h-9 w-9 hover:bg-white/5"
+          className="h-9 w-9 hover:bg-gray-50 dark:bg-white/5"
           onClick={() => setMobileOpen(true)}
         >
           <Menu className="h-5 w-5" />
@@ -136,7 +136,7 @@ export function Sidebar() {
 
         <div className="flex items-center gap-2">
           <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-gradient-to-br from-[#5d2595] to-[#7b3fc0]">
-            <Shield className="h-4 w-4 text-white" />
+            <Shield className="h-4 w-4 text-gray-900 dark:text-white" />
           </div>
 
           <span className="text-sm font-bold">
@@ -160,7 +160,7 @@ export function Sidebar() {
           fixed left-0 top-0 z-50
           flex h-screen flex-col
           border-r border-white/[0.05]
-          text-white
+          text-gray-900 dark:text-white
           backdrop-blur-xl
           transition-all duration-300
           ${collapsed ? "w-[72px]" : "w-[260px]"}
@@ -175,7 +175,7 @@ export function Sidebar() {
         {/* HEADER */}
         <div className="flex items-center gap-3 px-4 py-5">
           <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-[#5d2595] to-[#7b3fc0] shadow-[0_4px_20px_rgba(93,37,149,0.35)]">
-            <Shield className="h-5 w-5 text-white" />
+            <Shield className="h-5 w-5 text-gray-900 dark:text-white" />
           </div>
 
           {!collapsed && (
@@ -185,7 +185,7 @@ export function Sidebar() {
                 Shield
               </span>
 
-              <span className="text-[11px] text-white/40">
+              <span className="text-[11px] text-gray-900 dark:text-white/40">
                 by Rostel High-Tech
               </span>
             </div>
@@ -194,7 +194,7 @@ export function Sidebar() {
           <Button
             variant="ghost"
             size="icon"
-            className="ml-auto hidden h-7 w-7 text-white/40 hover:bg-white/5 hover:text-white md:flex"
+            className="ml-auto hidden h-7 w-7 text-gray-900 dark:text-white/40 hover:bg-gray-50 dark:bg-white/5 hover:text-gray-900 dark:text-white md:flex"
             onClick={() => setCollapsed(!collapsed)}
           >
             {collapsed ? (
@@ -207,7 +207,7 @@ export function Sidebar() {
           <Button
             variant="ghost"
             size="icon"
-            className="ml-auto h-7 w-7 text-white/40 hover:bg-white/5 hover:text-white md:hidden"
+            className="ml-auto h-7 w-7 text-gray-900 dark:text-white/40 hover:bg-gray-50 dark:bg-white/5 hover:text-gray-900 dark:text-white md:hidden"
             onClick={() => setMobileOpen(false)}
           >
             <X className="h-4 w-4" />
@@ -242,9 +242,9 @@ export function Sidebar() {
                         shadow-[0_0_20px_rgba(93,37,149,0.15)]
                       `
                       : `
-                        text-white/50
+                        text-gray-900 dark:text-white/50
                         hover:bg-white/[0.04]
-                        hover:text-white/80
+                        hover:text-gray-900 dark:text-white/80
                       `
                   }
                   ${collapsed ? "justify-center" : ""}
@@ -278,7 +278,7 @@ export function Sidebar() {
                   />
                 )} */}
 
-                <AvatarFallback className="bg-gradient-to-br from-[#5d2595] to-[#7b3fc0] text-xs text-white">
+                <AvatarFallback className="bg-gradient-to-br from-[#5d2595] to-[#7b3fc0] text-xs text-gray-900 dark:text-white">
                   {getInitials(user?.name, user?.email)}
                 </AvatarFallback>
               </Avatar>
@@ -294,13 +294,13 @@ export function Sidebar() {
                     {userName}
                   </p>
 
-                  <p className="truncate text-xs text-white/40">
+                  <p className="truncate text-xs text-gray-900 dark:text-white/40">
                     {userEmail}
                   </p>
                 </Link>
 
                 <button>
-                  <LogOut className="h-4 w-4 text-white/30 transition-all hover:text-red-400" />
+                  <LogOut className="h-4 w-4 text-gray-900 dark:text-white/30 transition-all hover:text-red-400" />
                 </button>
               </>
             )}

@@ -220,7 +220,7 @@ export default function PricingPage() {
         <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-4">
           <Link href="/" className="flex items-center gap-2">
             <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-rht-violet to-rht-violet-light">
-              <Shield className="h-4 w-4 text-white" />
+              <Shield className="h-4 w-4 text-gray-900 dark:text-white" />
             </div>
             <span className="font-bold">
               <span className="font-normal opacity-60">Rox</span>Shield
@@ -228,7 +228,7 @@ export default function PricingPage() {
           </Link>
           <div className="flex items-center gap-3">
             <Link href="/demo">
-              <Button size="sm" className="rounded-full bg-gradient-to-r from-rht-orange to-rht-orange-light text-white hover:opacity-90">
+              <Button size="sm" className="rounded-full bg-linear-to-r from-rht-orange to-rht-orange-light text-gray-900 dark:text-white hover:opacity-90">
                 {isFr ? "Demander une demo" : "Request a demo"}
                 <ArrowRight className="ml-1.5 h-3.5 w-3.5" />
               </Button>
@@ -253,7 +253,7 @@ export default function PricingPage() {
             </Badge>
             <h1 className="text-3xl font-bold tracking-tight sm:text-4xl lg:text-5xl">
               {isFr ? "Protegez vos equipes." : "Protect your teams."}{" "}
-              <span className="bg-gradient-to-r from-rht-violet-light to-rht-orange bg-clip-text text-transparent">
+              <span className="bg-linear-to-r from-rht-violet-light to-rht-orange bg-clip-text text-transparent">
                 {isFr ? "Choisissez votre plan." : "Choose your plan."}
               </span>
             </h1>
@@ -329,7 +329,7 @@ export default function PricingPage() {
                     >
                       {plan.highlighted && (
                         <div className="absolute -top-3.5 left-1/2 z-10 -translate-x-1/2">
-                          <Badge className="bg-gradient-to-r from-rht-orange to-rht-orange-light px-3 py-1 text-white">
+                          <Badge className="bg-linear-to-r from-rht-orange to-rht-orange-light px-3 py-1 text-gray-900 dark:text-white">
                             {isFr ? "Recommande" : "Recommended"}
                           </Badge>
                         </div>
@@ -342,7 +342,7 @@ export default function PricingPage() {
                           <div
                             className={`mb-3 flex h-11 w-11 items-center justify-center rounded-xl bg-gradient-to-br ${plan.color}`}
                           >
-                            <Icon className="h-5 w-5 text-white" />
+                            <Icon className="h-5 w-5 text-gray-900 dark:text-white" />
                           </div>
                           <h3 className="text-lg font-bold">{plan.name}</h3>
                           <p className="text-xs text-muted-foreground">
@@ -424,7 +424,7 @@ export default function PricingPage() {
                             <Button
                               className={`w-full rounded-full ${
                                 plan.highlighted
-                                  ? "bg-gradient-to-r from-rht-orange to-rht-orange-light text-white hover:opacity-90"
+                                  ? "bg-linear-to-r from-rht-orange to-rht-orange-light text-gray-900 dark:text-white hover:opacity-90"
                                   : ""
                               }`}
                               variant={plan.highlighted ? "default" : "outline"}
@@ -537,7 +537,7 @@ export default function PricingPage() {
                 >
                   <Button
                     size="lg"
-                    className="rounded-full bg-gradient-to-r from-rht-orange to-rht-orange-light px-8 text-white hover:opacity-90"
+                    className="rounded-full bg-linear-to-r from-rht-orange to-rht-orange-light px-8 text-gray-900 dark:text-white hover:opacity-90"
                   >
                     {isFr ? "Demander une demo" : "Request a demo"}
                     <ArrowRight className="ml-2 h-4 w-4" />

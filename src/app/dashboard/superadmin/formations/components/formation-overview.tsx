@@ -15,15 +15,15 @@ export function FormationOverview({ formation }: FormationOverviewProps) {
 
   return (
     <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-      <Card className="rounded-md border border-white/10 bg-[#0c1023]/90 shadow-xl">
+      <Card className="rounded-md border border-white/10 bg-white  dark:bg-[#0c1023]/90 ">
         <CardHeader>
-          <CardTitle className="text-white">Taux de complétion</CardTitle>
+          <CardTitle className="text-gray-900 dark:text-white">Taux de complétion</CardTitle>
         </CardHeader>
         <CardContent>
           <div className="space-y-4">
             <div className="flex justify-between text-sm">
               <span className="text-gray-400">Progression globale</span>
-              <span className="text-white">{completionRate}%</span>
+              <span className="text-gray-900 dark:text-white">{completionRate}%</span>
             </div>
             <Progress value={completionRate} className="h-2" />
             <div className="flex justify-between text-xs text-gray-500">
@@ -34,42 +34,42 @@ export function FormationOverview({ formation }: FormationOverviewProps) {
         </CardContent>
       </Card>
 
-      <Card className="rounded-md border border-white/10 bg-[#0c1023]/90 shadow-xl">
+      <Card className="rounded-md border border-white/10 bg-white  dark:bg-[#0c1023]/90  ">
         <CardHeader>
-          <CardTitle className="text-white">Informations générales</CardTitle>
+          <CardTitle className="text-gray-900 dark:text-white">Informations générales</CardTitle>
         </CardHeader>
         <CardContent className="space-y-3">
           <div className="flex justify-between">
             <span className="text-gray-400">Structure</span>
-            <span className="text-white">
+            <span className="text-gray-900 dark:text-white">
               {formation.modules?.length || 0} module(s), {' '}
               {formation.modules?.reduce((total, mod) => total + (mod.chapters?.length || 0), 0) || 0} chapitre(s)
             </span>
           </div>
           <div className="flex justify-between">
             <span className="text-gray-400">Durée estimée</span>
-            <span className="text-white">{formation.estimatedDuration} minutes</span>
+            <span className="text-gray-900 dark:text-white">{formation.estimatedDuration} minutes</span>
           </div>
           <div className="flex justify-between">
             <span className="text-gray-400">Score requis</span>
-            <span className="text-white">{formation.passingScore}%</span>
+            <span className="text-gray-900 dark:text-white">{formation.passingScore}%</span>
           </div>
           <div className="flex justify-between">
             <span className="text-gray-400">Tentatives max</span>
-            <span className="text-white">{formation.allowRetries ? formation.maxAttempts : '1'}</span>
+            <span className="text-gray-900 dark:text-white">{formation.allowRetries ? formation.maxAttempts : '1'}</span>
           </div>
           <div className="flex justify-between">
             <span className="text-gray-400">Formation obligatoire</span>
-            <span className="text-white">{formation.isRequired ? 'Oui' : 'Non'}</span>
+            <span className="text-gray-900 dark:text-white">{formation.isRequired ? 'Oui' : 'Non'}</span>
           </div>
           <div className="flex justify-between">
             <span className="text-gray-400">Créé le</span>
-            <span className="text-white">{new Date(formation.createdAt).toLocaleDateString('fr-FR')}</span>
+            <span className="text-gray-900 dark:text-white">{new Date(formation.createdAt).toLocaleDateString('fr-FR')}</span>
           </div>
           {formation.publishedAt && (
             <div className="flex justify-between">
               <span className="text-gray-400">Publié le</span>
-              <span className="text-white">{new Date(formation.publishedAt).toLocaleDateString('fr-FR')}</span>
+              <span className="text-gray-900 dark:text-white">{new Date(formation.publishedAt).toLocaleDateString('fr-FR')}</span>
             </div>
           )}
         </CardContent>

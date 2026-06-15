@@ -40,15 +40,15 @@ export const Organizations = () => {
   const hasFilters = filters.search || filters.type || filters.planId || filters.status;
 
   return (
-    <div className="min-h-screen bg-[#050816] -mt-2">
+    <div className="min-h-screen bg-gray-50 dark:bg-[#050816] -mt-2">
       {/* Header */}
-      <div className="border-b border-gray-800/50 bg-[#0a0f1e]/50 backdrop-blur-sm sticky top-0 z-10">
-        <div className=" mx-auto  py-2">
+      <div className="border-b border-gray-200 dark:border-gray-800/50 bg-white dark:bg-[#0a0f1e]/50 backdrop-blur-sm sticky top-0 z-10">
+        <div className="mx-auto py-2">
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         
             <Button
               onClick={() => setDialogOpen(true)}
-              className="bg-slate-600 hover:bg-slate-700 text-white shadow-lg cursor-pointer transition-all duration-300"
+              className="bg-gray-200 hover:bg-gray-300 dark:bg-slate-600 dark:hover:bg-slate-700 ml-2 text-gray-900 dark:text-white   cursor-pointer transition-all duration-300"
             >
               <Plus className="w-4 h-4 mr-2" />
               Nouvelle organisation
@@ -60,32 +60,32 @@ export const Organizations = () => {
       <div className="mx-auto py-6">
         {/* Stats */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
-          <Card className="rounded-md hover:bg-[#1a1f36] cursor-pointer transition-colors duration-200 border border-white/5 bg-[#0c1023] p-4 shadow-xl">
+          <Card className="rounded-sm hover:bg-gray-100 dark:hover:bg-[#1a1f36] cursor-pointer transition-colors duration-200 border border-gray-200 dark:border-white/5 bg-white dark:bg-[#0c1023] p-4">
             <div className="p-4">
-              <p className="text-gray-400 text-sm">Total organisations</p>
-              <p className="text-2xl font-bold text-white">{organizations.length}</p>
+              <p className="text-gray-500 dark:text-gray-400 text-sm">Total organisations</p>
+              <p className="text-2xl font-bold text-gray-900 dark:text-white">{organizations.length}</p>
             </div>
           </Card>
-          <Card className="rounded-md hover:bg-[#1a1f36] cursor-pointer transition-colors duration-200 border border-white/5 bg-[#0c1023] p-4 shadow-xl">
+          <Card className="rounded-sm hover:bg-gray-100 dark:hover:bg-[#1a1f36] cursor-pointer transition-colors duration-200 border border-gray-200 dark:border-white/5 bg-white dark:bg-[#0c1023] p-4">
             <div className="p-4">
-              <p className="text-gray-400 text-sm">Actives</p>
-              <p className="text-2xl font-bold text-white">
+              <p className="text-gray-500 dark:text-gray-400 text-sm">Actives</p>
+              <p className="text-2xl font-bold text-gray-900 dark:text-white">
                 {organizations.filter(o => o.isActive).length}
               </p>
             </div>
           </Card>
-          <Card className="rounded-md hover:bg-[#1a1f36] cursor-pointer transition-colors duration-200 border border-white/5 bg-[#0c1023] p-4 shadow-xl">
+          <Card className="rounded-sm hover:bg-gray-100 dark:hover:bg-[#1a1f36] cursor-pointer transition-colors duration-200 border border-gray-200 dark:border-white/5 bg-white dark:bg-[#0c1023] p-4">
             <div className="p-4">
-              <p className="text-gray-400 text-sm">Entreprises</p>
-              <p className="text-2xl font-bold text-white">
+              <p className="text-gray-500 dark:text-gray-400 text-sm">Entreprises</p>
+              <p className="text-2xl font-bold text-gray-900 dark:text-white">
                 {organizations.filter(o => o.type === 'enterprise').length}
               </p>
             </div>
           </Card>
-          <Card className="rounded-md hover:bg-[#1a1f36] cursor-pointer transition-colors duration-200 border border-white/5 bg-[#0c1023] p-4 shadow-xl">
+          <Card className="rounded-sm hover:bg-gray-100 dark:hover:bg-[#1a1f36] cursor-pointer transition-colors duration-200 border border-gray-200 dark:border-white/5 bg-white dark:bg-[#0c1023] p-4">
             <div className="p-4">
-              <p className="text-gray-400 text-sm">Campus</p>
-              <p className="text-2xl font-bold text-white">
+              <p className="text-gray-500 dark:text-gray-400 text-sm">Campus</p>
+              <p className="text-2xl font-bold text-gray-900 dark:text-white">
                 {organizations.filter(o => o.type === 'campus').length}
               </p>
             </div>
@@ -105,33 +105,15 @@ export const Organizations = () => {
                 variant="ghost"
                 size="sm"
                 onClick={() => useOrganizationStore.getState().resetFilters()}
-                className="text-gray-400 hover:text-white"
+                className="text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white"
               >
                 <Filter className="w-4 h-4 mr-2" />
                 Réinitialiser les filtres
               </Button>
             )}
-            <p className="text-sm text-gray-400">
+            <p className="text-sm text-gray-500 dark:text-gray-400">
               {filteredOrganizations.length} organisation(s) trouvée(s)
             </p>
-          </div>
-          <div className="flex items-center gap-2 bg-gray-800/30 rounded-lg p-1">
-            <Button
-              variant={viewMode === 'table' ? 'default' : 'ghost'}
-              size="sm"
-              onClick={() => setViewMode('table')}
-              className={viewMode === 'table' ? 'bg-gray-700' : ''}
-            >
-              <List className="w-4 h-4" />
-            </Button>
-            <Button
-              variant={viewMode === 'cards' ? 'default' : 'ghost'}
-              size="sm"
-              onClick={() => setViewMode('cards')}
-              className={viewMode === 'cards' ? 'bg-gray-700' : ''}
-            >
-              <LayoutGrid className="w-4 h-4" />
-            </Button>
           </div>
         </div>
 
@@ -139,15 +121,15 @@ export const Organizations = () => {
         {isLoading ? (
           <div className="space-y-4">
             {[...Array(5)].map((_, i) => (
-              <Skeleton key={i} className="h-16 bg-gray-800/50" />
+              <Skeleton key={i} className="h-16 bg-gray-200 dark:bg-gray-800/50" />
             ))}
           </div>
         ) : filteredOrganizations.length === 0 ? (
-          <Card className="bg-gray-800/30 border-gray-700/50">
+          <Card className="bg-white dark:bg-gray-800/30 border-gray-200 dark:border-gray-700/50">
             <div className="p-12 text-center">
-              <Building2 className="w-12 h-12 text-gray-600 mx-auto mb-4" />
-              <h3 className="text-lg font-medium text-white mb-2">Aucune organisation</h3>
-              <p className="text-gray-400">
+              <Building2 className="w-12 h-12 text-gray-400 dark:text-gray-600 mx-auto mb-4" />
+              <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-2">Aucune organisation</h3>
+              <p className="text-gray-500 dark:text-gray-400">
                 {hasFilters ? "Aucune organisation ne correspond aux filtres" : "Commencez par créer votre première organisation"}
               </p>
               {!hasFilters && (

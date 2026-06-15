@@ -153,17 +153,17 @@ const stepsByRole: Record<OnboardingRole, StepMeta[]> = {
 const roleTheme: Record<OnboardingRole, { gradient: string; buttonBg: string; progressColor: string }> = {
   "super-admin": {
     gradient: "from-rht-orange to-rht-orange-light",
-    buttonBg: "bg-gradient-to-r from-rht-orange to-rht-orange-light",
+    buttonBg: "bg-linear-to-r from-rht-orange to-rht-orange-light",
     progressColor: "rht-orange",
   },
   "admin-client": {
     gradient: "from-rht-violet to-rht-violet-light",
-    buttonBg: "bg-gradient-to-r from-rht-violet to-rht-violet-light",
+    buttonBg: "bg-linear-to-r from-rht-violet to-rht-violet-light",
     progressColor: "rht-violet",
   },
   employee: {
     gradient: "from-cyber-green/80 to-cyber-green",
-    buttonBg: "bg-gradient-to-r from-cyber-green/90 to-cyber-green",
+    buttonBg: "bg-linear-to-r from-cyber-green/90 to-cyber-green",
     progressColor: "cyber-green",
   },
 };
@@ -213,7 +213,7 @@ export function Onboarding({
         <div className="mb-6 flex items-center justify-between">
           <div className="flex items-center gap-2">
             <div className={`flex h-8 w-8 items-center justify-center rounded-lg ${theme.buttonBg}`}>
-              <Shield className="h-4 w-4 text-white" />
+              <Shield className="h-4 w-4 text-gray-900 dark:text-white" />
             </div>
             <span className="text-sm font-bold">RoxShield</span>
           </div>
@@ -287,7 +287,7 @@ export function Onboarding({
                 <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
                   <Button
                     onClick={isLast ? onComplete : () => setStep(step + 1)}
-                    className={`gap-2 ${theme.buttonBg} text-white hover:opacity-90`}
+                    className={`gap-2 ${theme.buttonBg} text-gray-900 dark:text-white hover:opacity-90`}
                   >
                     {isLast ? (
                       <>

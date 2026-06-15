@@ -111,7 +111,7 @@ export function GlowCard({
       whileHover={{ y: -4, transition: { duration: 0.2 } }}
       className={`group relative ${className}`}
     >
-      <div className="absolute -inset-[1px] rounded-2xl bg-gradient-to-r from-rht-violet/0 via-rht-violet/0 to-rht-orange/0 opacity-0 blur-sm transition-all duration-500 group-hover:from-rht-violet/20 group-hover:via-rht-violet-light/10 group-hover:to-rht-orange/20 group-hover:opacity-100" />
+      <div className="absolute -inset-[1px] rounded-2xl bg-linear-to-r from-rht-violet/0 via-rht-violet/0 to-rht-orange/0 opacity-0 blur-sm transition-all duration-500 group-hover:from-rht-violet/20 group-hover:via-rht-violet-light/10 group-hover:to-rht-orange/20 group-hover:opacity-100" />
       <div className="relative">{children}</div>
     </motion.div>
   );

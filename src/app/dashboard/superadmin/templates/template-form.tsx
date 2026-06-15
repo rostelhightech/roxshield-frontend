@@ -86,25 +86,25 @@ export const TemplateForm = ({ organizations, template, onCancel }: TemplateForm
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
       <div className="grid grid-cols-2 gap-4">
         <div>
-          <Label htmlFor="name" className="text-gray-300">Nom</Label>
-          <Input id="name" {...register('name')} className="bg-gray-800/50 border-gray-700 text-white mt-1" />
-          {errors.name && <p className="text-red-400 text-sm">{errors.name.message}</p>}
+          <Label htmlFor="name" className="text-gray-700 dark:text-gray-300">Nom</Label>
+          <Input id="name" {...register('name')} className="bg-white dark:bg-gray-800/50 border-gray-300 dark:border-gray-700 text-gray-900 dark:text-white mt-1" />
+          {errors.name && <p className="text-red-600 dark:text-red-400 text-sm">{errors.name.message}</p>}
         </div>
 
         <div>
-          <Label htmlFor="organizationId" className="text-gray-300">Organisation</Label>
+          <Label htmlFor="organizationId" className="text-gray-700 dark:text-gray-300">Organisation</Label>
           <Select
             value={watch('organizationId') || ''}
             onValueChange={(value) => value && setValue('organizationId', value)}
           >
-            <SelectTrigger className="bg-gray-800/50 border-gray-700 text-white mt-1">
+            <SelectTrigger className="bg-white dark:bg-gray-800/50 border-gray-300 dark:border-gray-700 text-gray-900 dark:text-white mt-1">
               {selectedOrganization ? (
                 <span className="truncate">{selectedOrganization.name}</span>
               ) : (
-                <span className="text-gray-400">Sélectionner une organisation</span>
+                <span className="text-gray-500 dark:text-gray-400">Sélectionner une organisation</span>
               )}
             </SelectTrigger>
-            <SelectContent className="bg-slate-200 border-gray-700">
+            <SelectContent className="bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700">
               {organizations?.map(org => (
                 <SelectItem key={org.id} value={org.id}>{org.name || org.id}</SelectItem>
               ))}
@@ -115,20 +115,20 @@ export const TemplateForm = ({ organizations, template, onCancel }: TemplateForm
 
       <div className="grid grid-cols-2 gap-4">
         <div>
-          <Label htmlFor="subject" className="text-gray-300">Sujet</Label>
-          <Input id="subject" {...register('subject')} className="bg-gray-800/50 border-gray-700 text-white mt-1" />
-          {errors.subject && <p className="text-red-400 text-sm">{errors.subject.message}</p>}
+          <Label htmlFor="subject" className="text-gray-700 dark:text-gray-300">Sujet</Label>
+          <Input id="subject" {...register('subject')} className="bg-white dark:bg-gray-800/50 border-gray-300 dark:border-gray-700 text-gray-900 dark:text-white mt-1" />
+          {errors.subject && <p className="text-red-600 dark:text-red-400 text-sm">{errors.subject.message}</p>}
         </div>
 
         <div>
-          <Label htmlFor="category" className="text-gray-300">Catégorie</Label>
-          <Input id="category" {...register('category')} className="bg-gray-800/50 border-gray-700 text-white mt-1" />
+          <Label htmlFor="category" className="text-gray-700 dark:text-gray-300">Catégorie</Label>
+          <Input id="category" {...register('category')} className="bg-white dark:bg-gray-800/50 border-gray-300 dark:border-gray-700 text-gray-900 dark:text-white mt-1" />
         </div>
       </div>
 
       <div>
-        <Label className="text-gray-300">Éditeur</Label>
-        <div className="h-[600px] bg-white/5 mt-2 rounded-md overflow-hidden">
+        <Label className="text-gray-700 dark:text-gray-300">Éditeur</Label>
+        <div className="h-[600px] bg-gray-50 dark:bg-white/5 mt-2 rounded-sm overflow-hidden">
           <EmailEditorWrapper
             ref={editorRef}
             defaultHtml={template?.html}
@@ -139,7 +139,6 @@ export const TemplateForm = ({ organizations, template, onCancel }: TemplateForm
 
       <div className="flex justify-end gap-3">
         <Button
-          className="text-gray-700"
           type="button"
           variant="outline"
           onClick={() => {

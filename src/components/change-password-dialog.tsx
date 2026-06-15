@@ -74,27 +74,27 @@ export function ChangePasswordDialog({ open, onOpenChange }: ChangePasswordDialo
 
   return (
     <Dialog open={open} onOpenChange={handleClose}>
-      <DialogContent className="bg-[#0c1023] border-white/10 text-white">
+      <DialogContent className="bg-white dark:bg-[#0c1023] border border-gray-200 dark:border-white/10 text-gray-900 dark:text-white rounded-sm">
         <DialogHeader>
-          <DialogTitle className="flex items-center gap-2">
+          <DialogTitle className="flex items-center gap-2 text-gray-900 dark:text-white">
             <Lock className="w-5 h-5" />
             Changer mon mot de passe
           </DialogTitle>
-          <DialogDescription className="text-gray-400">
+          <DialogDescription className="text-gray-500 dark:text-gray-400">
             Entrez votre mot de passe actuel et choisissez un nouveau mot de passe sécurisé
           </DialogDescription>
         </DialogHeader>
 
         <form onSubmit={handleSubmit} className="space-y-4 pb-2">
           {error && (
-            <div className="bg-red-500/10 border border-red-500/30 rounded-lg p-3 text-sm text-red-400">
+            <div className="bg-red-50 dark:bg-red-500/10 border border-red-300 dark:border-red-500/30 rounded-lg p-3 text-sm text-red-700 dark:text-red-400">
               {error}
             </div>
           )}
 
           {/* Mot de passe actuel */}
           <div className="space-y-2">
-            <Label htmlFor="currentPassword" className="text-white">
+            <Label htmlFor="currentPassword" className="text-gray-700 dark:text-white">
               Mot de passe actuel *
             </Label>
             <div className="relative">
@@ -103,14 +103,14 @@ export function ChangePasswordDialog({ open, onOpenChange }: ChangePasswordDialo
                 type={showCurrentPassword ? 'text' : 'password'}
                 value={currentPassword}
                 onChange={(e) => setCurrentPassword(e.target.value)}
-                className="bg-slate-800/50 border-slate-600 text-white pr-10"
+                className="bg-white dark:bg-slate-800/50 border-gray-300 dark:border-slate-600 text-gray-900 dark:text-white pr-10"
                 placeholder="Entrez votre mot de passe actuel"
                 disabled={isLoading}
               />
               <button
                 type="button"
                 onClick={() => setShowCurrentPassword(!showCurrentPassword)}
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-white"
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-white"
               >
                 {showCurrentPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
               </button>
@@ -119,7 +119,7 @@ export function ChangePasswordDialog({ open, onOpenChange }: ChangePasswordDialo
 
           {/* Nouveau mot de passe */}
           <div className="space-y-2">
-            <Label htmlFor="newPassword" className="text-white">
+            <Label htmlFor="newPassword" className="text-gray-700 dark:text-white">
               Nouveau mot de passe *
             </Label>
             <div className="relative">
@@ -128,24 +128,24 @@ export function ChangePasswordDialog({ open, onOpenChange }: ChangePasswordDialo
                 type={showNewPassword ? 'text' : 'password'}
                 value={newPassword}
                 onChange={(e) => setNewPassword(e.target.value)}
-                className="bg-slate-800/50 border-slate-600 text-white pr-10"
+                className="bg-white dark:bg-slate-800/50 border-gray-300 dark:border-slate-600 text-gray-900 dark:text-white pr-10"
                 placeholder="Entrez votre nouveau mot de passe"
                 disabled={isLoading}
               />
               <button
                 type="button"
                 onClick={() => setShowNewPassword(!showNewPassword)}
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-white"
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-white"
               >
                 {showNewPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
               </button>
             </div>
-            <p className="text-xs text-gray-400">Au moins 6 caractères</p>
+            <p className="text-xs text-gray-500 dark:text-gray-400">Au moins 6 caractères</p>
           </div>
 
           {/* Confirmation */}
           <div className="space-y-2">
-            <Label htmlFor="confirmPassword" className="text-white">
+            <Label htmlFor="confirmPassword" className="text-gray-700 dark:text-white">
               Confirmer le nouveau mot de passe *
             </Label>
             <div className="relative">
@@ -154,27 +154,27 @@ export function ChangePasswordDialog({ open, onOpenChange }: ChangePasswordDialo
                 type={showConfirmPassword ? 'text' : 'password'}
                 value={confirmPassword}
                 onChange={(e) => setConfirmPassword(e.target.value)}
-                className="bg-slate-800/50 border-slate-600 text-white pr-10"
+                className="bg-white dark:bg-slate-800/50 border-gray-300 dark:border-slate-600 text-gray-900 dark:text-white pr-10"
                 placeholder="Confirmez votre nouveau mot de passe"
                 disabled={isLoading}
               />
               <button
                 type="button"
                 onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-white"
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-white"
               >
                 {showConfirmPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
               </button>
             </div>
           </div>
 
-          <DialogFooter className='bg-[#0c1023]'>
+          <DialogFooter className="bg-white dark:bg-[#0c1023]">
             <Button
               type="button"
               variant="outline"
               onClick={handleClose}
               disabled={isLoading}
-              className="text-gray-700 border-slate-600 "
+              className="border-gray-300 dark:border-slate-600 text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white"
             >
               Annuler
             </Button>

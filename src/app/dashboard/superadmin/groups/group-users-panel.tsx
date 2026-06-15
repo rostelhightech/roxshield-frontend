@@ -62,23 +62,23 @@ export const GroupUsersPanel = ({ group, users, onClose }: GroupUsersPanelProps)
   };
 
   return (
-    <Card className="mb-6 overflow-hidden border border-blue-500/20 bg-[#0c1023] shadow-xl">
-      <div className="border-b border-gray-800 p-4">
+    <Card className="mb-6 overflow-hidden border border-blue-200 dark:border-blue-500/20 bg-white dark:bg-[#0c1023] shadow-sm dark:shadow-xl">
+      <div className="border-b border-gray-200 dark:border-gray-800 p-4">
         <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
           <div className="min-w-0">
             <div className="flex items-center gap-2">
-              <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-blue-500/10">
-                <Users className="h-5 w-5 text-blue-400" />
+              <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-blue-100 dark:bg-blue-500/10">
+                <Users className="h-5 w-5 text-blue-600 dark:text-blue-400" />
               </div>
               <div>
-                <h3 className="text-lg font-semibold text-white">{group.name}</h3>
-                <p className="text-sm text-gray-400">
+                <h3 className="text-lg font-semibold text-gray-900 dark:text-white">{group.name}</h3>
+                <p className="text-sm text-gray-500 dark:text-gray-400">
                   {group.organization?.name || 'Organisation'} · {groupUsersCount} membre(s)
                 </p>
               </div>
             </div>
           </div>
-          <Button variant="ghost" size="sm" onClick={onClose} className="text-gray-400 hover:text-white">
+          <Button variant="ghost" size="sm" onClick={onClose} className="text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white">
             <X className="h-4 w-4 mr-2" />
             Fermer
           </Button>
@@ -91,15 +91,15 @@ export const GroupUsersPanel = ({ group, users, onClose }: GroupUsersPanelProps)
               value={search}
               onChange={(event) => setSearch(event.target.value)}
               placeholder="Rechercher un utilisateur..."
-              className="pl-9 bg-gray-800/50 border-gray-700 text-white"
+              className="pl-9 bg-white dark:bg-gray-800/50 border-gray-300 dark:border-gray-700 text-gray-900 dark:text-white"
             />
           </div>
 
           <Select value={position} onValueChange={setPosition}>
-            <SelectTrigger className="bg-gray-800/50 border-gray-700 text-white">
+            <SelectTrigger className="bg-white dark:bg-gray-800/50 border-gray-300 dark:border-gray-700 text-gray-900 dark:text-white">
               <SelectValue placeholder="Toutes les positions" />
             </SelectTrigger>
-            <SelectContent className="bg-slate-200 border-gray-700">
+            <SelectContent className="bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700">
               <SelectItem value="">Toutes les positions</SelectItem>
               {positions.map((position) => (
                 <SelectItem key={position} value={position}>
@@ -114,9 +114,9 @@ export const GroupUsersPanel = ({ group, users, onClose }: GroupUsersPanelProps)
       <div className="max-h-[420px] overflow-y-auto p-4">
         {filteredUsers.length === 0 ? (
           <div className="py-10 text-center">
-            <Users className="mx-auto mb-3 h-10 w-10 text-gray-600" />
-            <p className="font-medium text-white">Aucun utilisateur trouvé</p>
-            <p className="text-sm text-gray-400">Vérifiez la recherche, la position ou l'organisation du groupe.</p>
+            <Users className="mx-auto mb-3 h-10 w-10 text-gray-400 dark:text-gray-600" />
+            <p className="font-medium text-gray-900 dark:text-white">Aucun utilisateur trouvé</p>
+            <p className="text-sm text-gray-500 dark:text-gray-400">Vérifiez la recherche, la position ou l'organisation du groupe.</p>
           </div>
         ) : (
           <div className="grid grid-cols-1 gap-3 lg:grid-cols-2">
@@ -127,28 +127,28 @@ export const GroupUsersPanel = ({ group, users, onClose }: GroupUsersPanelProps)
               return (
                 <div
                   key={user.id}
-                  className="flex items-center justify-between gap-3 rounded-lg border border-gray-800 bg-gray-900/30 p-3"
+                  className="flex items-center justify-between gap-3 rounded-lg border border-gray-200 dark:border-gray-800 bg-gray-50 dark:bg-gray-900/30 p-3"
                 >
                   <div className="flex min-w-0 items-center gap-3">
                     <Avatar className="h-10 w-10">
-                      <AvatarFallback className="bg-blue-500/15 text-blue-300 text-xs">
+                      <AvatarFallback className="bg-blue-100 dark:bg-blue-500/15 text-blue-700 dark:text-blue-300 text-xs">
                         {getInitials(user)}
                       </AvatarFallback>
                     </Avatar>
                     <div className="min-w-0">
-                      <p className="truncate text-sm font-medium text-white">
+                      <p className="truncate text-sm font-medium text-gray-900 dark:text-white">
                         {user.firstName} {user.lastName}
                       </p>
-                      <div className="flex items-center gap-1 text-xs text-gray-400">
+                      <div className="flex items-center gap-1 text-xs text-gray-500 dark:text-gray-400">
                         <Mail className="h-3 w-3" />
                         <span className="truncate">{user.email}</span>
                       </div>
                       <div className="mt-1 flex flex-wrap gap-1">
-                        <Badge className="bg-gray-700/50 text-gray-300">
+                        <Badge className="bg-gray-200 dark:bg-gray-700/50 text-gray-700 dark:text-gray-300">
                           {user.position || 'Sans position'}
                         </Badge>
                         {isInAnotherGroup && (
-                          <Badge className="bg-yellow-500/20 text-yellow-300 border-yellow-500/30">
+                          <Badge className="bg-yellow-100 dark:bg-yellow-500/20 text-yellow-700 dark:text-yellow-300 border-yellow-300 dark:border-yellow-500/30">
                             {user.group?.name || 'Autre groupe'}
                           </Badge>
                         )}
@@ -160,7 +160,7 @@ export const GroupUsersPanel = ({ group, users, onClose }: GroupUsersPanelProps)
                     size="sm"
                     disabled={isLoading}
                     onClick={() => handleAssign(user)}
-                    className={isInGroup ? 'bg-red-500/20 text-red-300 hover:bg-red-500/30' : 'bg-blue-600 hover:bg-blue-700'}
+                    className={isInGroup ? 'bg-red-100 dark:bg-red-500/20 text-red-700 dark:text-red-300 hover:bg-red-200 dark:hover:bg-red-500/30' : '  text-white'}
                   >
                     {isInGroup ? (
                       <>
