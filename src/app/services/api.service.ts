@@ -14,12 +14,12 @@ class ApiService {
 
   constructor() {
     this.api = axios.create({
-      baseURL: 'http://localhost:3000/api/v1',
-      timeout: 30000,
-      headers: {
-        'Content-Type': 'application/json',
-      },
-    });
+  baseURL: 'https://dev.roxshield.com/api/v1',
+  timeout: 30000,
+  headers: {
+    'Content-Type': 'application/json',
+  },
+});
 
     this.api.interceptors.request.use(
       (config: InternalAxiosRequestConfig) => {
