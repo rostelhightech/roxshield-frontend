@@ -14,7 +14,7 @@ class ApiService {
 
   constructor() {
     this.api = axios.create({
-  baseURL: 'https://dev.roxshield.com/api/v1',
+  baseURL: import.meta.env.VITE_API_URL,
   timeout: 30000,
   headers: {
     'Content-Type': 'application/json',
