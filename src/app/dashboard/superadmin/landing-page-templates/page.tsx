@@ -2,7 +2,6 @@
 
 import { useEffect, useMemo, useState } from 'react';
 import { Button } from '@/components/ui/button';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useOrganizationStore } from '@/store/organization.store';
 import { useLandingPageTemplateStore } from '@/store/landing-page-template.store';
 import { LandingPageTemplateForm } from './landing-page-template-form';
@@ -16,8 +15,13 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
+import { Combobox } from '@/components/ui/combobox';
+import { roleEnum } from '@/constants/roleEnum';
+import { useAuthStore } from '@/store/auth.store';
+import { useTranslation } from 'react-i18next';
 
 export default function LandingPageTemplates() {
+  const { t: tCommon } = useTranslation('common');
   const { organizations, fetchAll } = useOrganizationStore();
   const {
     landingPageTemplates,
@@ -35,7 +39,8 @@ export default function LandingPageTemplates() {
   const [sortBy, setSortBy] = useState<'createdAt' | 'name' | 'organization'>('createdAt');
   const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc');
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
-  const [templateToDelete, setTemplateToDelete] = useState<{ id: string; name: string } | null>(null);
+  // ✅ Ajout de isDefault dans le type
+  const [templateToDelete, setTemplateToDelete] = useState<{ id: string; name: string; isDefault: boolean } | null>(null);
 
   useEffect(() => {
     fetchAll();
@@ -46,17 +51,21 @@ export default function LandingPageTemplates() {
     setFilters({ search, sortBy, sortOrder });
   }, [search]);
 
+  const {user} = useAuthStore()
+
   const displayedTemplates = filteredLandingPageTemplates;
 
-  const handleDelete = (id: string, name: string) => {
-    setTemplateToDelete({ id, name });
+  // ✅ Mise à jour de handleDelete pour inclure isDefault
+  const handleDelete = (id: string, name: string, isDefault: boolean) => {
+    setTemplateToDelete({ id, name, isDefault });
     setDeleteDialogOpen(true);
   };
 
+  // ✅ Mise à jour de confirmDelete pour utiliser isDefault
   const confirmDelete = async () => {
     if (!templateToDelete) return;
 
-    await deleteLandingPageTemplate(templateToDelete.id);
+    await deleteLandingPageTemplate(templateToDelete.id, templateToDelete.isDefault);
     if (currentLandingPageTemplate?.id === templateToDelete.id) {
       setCurrentLandingPageTemplate(null);
     }
@@ -76,28 +85,24 @@ export default function LandingPageTemplates() {
                   type="text"
                   value={search}
                   onChange={(event) => setSearch(event.target.value)}
-                  placeholder="Rechercher un template..."
+                  placeholder={tCommon('admin.landing_templates.search_placeholder')}
                   className="w-full rounded-sm border border-gray-300 dark:border-slate-800 bg-white dark:bg-slate-900 px-4 py-3 text-sm text-gray-900 dark:text-white placeholder:text-gray-400 dark:placeholder:text-slate-500 focus:border-gray-400 dark:focus:border-slate-700 focus:outline-none"
                 />
               </div>
 
               <div className="flex gap-2">
-                <Select
+               <Combobox
+                  options={[
+                    { value: 'createdAt', label: tCommon('admin.campaigns.tracking_date')},
+                    { value: 'name', label: tCommon('user.profile.last_name')},
+                    { value: 'organization', label: tCommon('admin.grc.org_name')},
+                  ]}
                   value={sortBy}
-                  onValueChange={(value) =>
-                    setSortBy(value as typeof sortBy)
-                  }
-                >
-                  <SelectTrigger className="w-[180px] border-gray-300 dark:border-slate-800 bg-white dark:bg-slate-900 text-gray-900 dark:text-white">
-                    <SelectValue placeholder="Trier par" />
-                  </SelectTrigger>
-
-                  <SelectContent className="bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700">
-                    <SelectItem value="createdAt">Date</SelectItem>
-                    <SelectItem value="name">Nom</SelectItem>
-                    <SelectItem value="organization">Organisation</SelectItem>
-                  </SelectContent>
-                </Select>
+                  onChange={(value) => setSortBy(value as typeof sortBy)}
+                  placeholder={tCommon('admin.campaigns.page_sort_by')}
+                  searchPlaceholder={tCommon('admin.templates.search_criteria')}
+                  className="w-[180px] border-gray-300 dark:border-slate-800 bg-white dark:bg-slate-900 text-gray-900 dark:text-white"
+                />
 
                 <Button
                   variant="outline"
@@ -116,13 +121,13 @@ export default function LandingPageTemplates() {
             {isLoading && landingPageTemplates.length === 0 ? (
               <div className="rounded-sm border border-gray-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-8 text-center">
                 <p className="text-sm text-gray-500 dark:text-slate-400">
-                  Chargement des landing page templates...
+                  {tCommon('admin.landing_templates.loading')}
                 </p>
               </div>
             ) : displayedTemplates.length === 0 ? (
               <div className="rounded-sm border border-gray-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-8 text-center">
                 <p className="text-sm text-gray-500 dark:text-slate-400">
-                  Aucun landing page template trouvé.
+                  {tCommon('admin.landing_templates.no_templates')}
                 </p>
               </div>
             ) : (
@@ -150,13 +155,13 @@ export default function LandingPageTemplates() {
                           </h3>
 
                           <p className="mt-1 truncate text-sm text-gray-500 dark:text-slate-400">
-                            {template.title ?? "Sans titre"}
+                            {template.title ?? tCommon('admin.landing_templates.no_title')}
                           </p>
                         </div>
 
                         {isSelected && (
                           <span className="rounded-full bg-cyan-500/10 px-2 py-1 text-xs font-medium text-cyan-400">
-                            Actif
+                            {tCommon('common.active')}
                           </span>
                         )}
                       </div>
@@ -164,7 +169,7 @@ export default function LandingPageTemplates() {
                       <div className="mb-4">
                         <span className="inline-flex rounded-full border border-gray-300 dark:border-slate-700 px-2.5 py-1 text-xs text-gray-600 dark:text-slate-300">
                           {template.organization?.name ??
-                            "Organisation inconnue"}
+                            "Roxshield Default"}
                         </span>
                       </div>
 
@@ -180,16 +185,19 @@ export default function LandingPageTemplates() {
                           variant={isSelected ? "secondary" : "outline"}
                           onClick={() => fetchById(template.id)}
                         >
-                          {isSelected ? "Ouvert" : "Ouvrir"}
+                          {isSelected ? tCommon('admin.landing_templates.opened') : tCommon('admin.landing_templates.open')}
                         </Button>
 
-                        <Button
-                          size="sm"
-                          variant="destructive"
-                          onClick={() => handleDelete(template.id, template.name)}
-                        >
-                          Supprimer
-                        </Button>
+                        {/* ✅ Logique isDefault appliquée ici */}
+                        {(user?.role === roleEnum.SUPERADMIN || !template?.isDefault) && (
+                          <Button
+                            size="sm"
+                            variant="destructive"
+                            onClick={() => handleDelete(template.id, template.name, template.isDefault)}
+                          >
+                            {tCommon('admin.ambassadors.delete')}
+                          </Button>
+                        )}
                       </div>
                     </div>
                   );
@@ -211,20 +219,20 @@ export default function LandingPageTemplates() {
       <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
         <AlertDialogContent className="bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-800">
           <AlertDialogHeader>
-            <AlertDialogTitle className="text-gray-900 dark:text-white">Supprimer le template de landing page?</AlertDialogTitle>
+            <AlertDialogTitle className="text-gray-900 dark:text-white">{tCommon('admin.landing_templates.delete_confirm_title')}</AlertDialogTitle>
             <AlertDialogDescription className="text-gray-600 dark:text-gray-400">
-              Êtes-vous sûr de vouloir supprimer le template <span className="font-semibold text-gray-900 dark:text-white">"{templateToDelete?.name}"</span> ? Cette action est irréversible.
+              {tCommon('admin.templates.delete_confirm_desc')} <span className="font-semibold text-gray-900 dark:text-white">"{templateToDelete?.name}"</span> {tCommon('admin.campaigns.page_delete_confirm_desc2')}
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter className='bg-white dark:bg-gray-900'>
             <AlertDialogCancel className="bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 border-gray-300 dark:border-gray-700 text-gray-700 dark:text-white hover:text-gray-900 dark:hover:text-white">
-              Annuler
+              {tCommon('user.formations.cancel')}
             </AlertDialogCancel>
             <AlertDialogAction
               onClick={confirmDelete}
               className="bg-red-600 hover:bg-red-700 text-white"
             >
-              Supprimer
+              {tCommon('admin.ambassadors.delete')}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>

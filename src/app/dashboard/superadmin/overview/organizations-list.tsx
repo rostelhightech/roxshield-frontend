@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { OrganizationItem } from "./organizations-item";
 import { apiService } from "@/app/services/api.service";
 import { useNavigate } from "@tanstack/react-router";
+import { useTranslation } from 'react-i18next';
 
 interface RecentOrganization {
   id: string;
@@ -15,6 +16,7 @@ interface RecentOrganization {
 }
 
 export function OrganizationsList() {
+  const { t: tCommon } = useTranslation('common');
   const [organizations, setOrganizations] = useState<RecentOrganization[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const navigate = useNavigate();
@@ -44,9 +46,9 @@ export function OrganizationsList() {
   }, []);
 
   return (
-    <div className="rounded-sm border border-gray-200 dark:border-white/5 bg-white  dark:bg-[#0c1023] p-6 shadow-xs dark:shadow-xl">
+    <div className="rounded-sm border border-gray-200 dark:border-white/5 bg-white  dark:bg-[#0c1023] px-2 py-2 md:p-6 shadow-xs dark:shadow-xl">
       <h2 className="mb-5 text-md font-semibold text-gray-900  dark:text-white">
-        Organisations récentes
+        {tCommon('admin.page_overview.recent_orgs')}
       </h2>
 
       {isLoading ? (
@@ -76,7 +78,7 @@ export function OrganizationsList() {
         ))
       ) : (
         <div className="text-center py-8 text-gray-400 dark:text-slate-400">
-          Aucune organisation trouvée
+          {tCommon('admin.page_overview.no_orgs')}
         </div>
       )}
     </div>

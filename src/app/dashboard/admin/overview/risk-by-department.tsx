@@ -11,25 +11,26 @@ import {
   ResponsiveContainer,
   Cell,
 } from "recharts";
+import { useTranslation } from "react-i18next";
 
 const COLORS = ['#ea580c', '#f59e0b', '#dc2626', '#10b981', '#f97316', '#eab308', '#f59e0b'];
 
 export function RiskByDepartment() {
   const { adminRiskByDepartment, fetchAdminRiskByDepartment, isLoading } = useDashboardStore();
-
+const { t: tCommon } = useTranslation('common');
   useEffect(() => {
     fetchAdminRiskByDepartment();
-  }, [fetchAdminRiskByDepartment]);
+  }, [ ]);
 
   if (isLoading) {
     return (
       <Card className="rounded-sm border border-gray-200 dark:border-white/5 bg-white dark:bg-[#0c1023] shadow-sm dark:shadow-xl">
         <CardHeader>
-          <CardTitle className="text-gray-900 dark:text-white">Risque par département</CardTitle>
+          <CardTitle className="text-gray-900 dark:text-white">{tCommon('admin.page_overview.risk_by_dept_title')}</CardTitle>
         </CardHeader>
         <CardContent>
           <div className="h-[300px] flex items-center justify-center">
-            <p className="text-gray-500 dark:text-gray-400">Chargement...</p>
+            <p className="text-gray-500 dark:text-gray-400">{tCommon('admin.page_overview.risk_by_dept_loading')}</p>
           </div>
         </CardContent>
       </Card>
@@ -39,7 +40,7 @@ export function RiskByDepartment() {
   return (
     <Card className="rounded-sm border border-gray-200 dark:border-white/5 bg-white dark:bg-[#0c1023] shadow-sm dark:shadow-xl">
       <CardHeader>
-        <CardTitle className="text-gray-900 dark:text-white">Risque par groupe</CardTitle>
+        <CardTitle className="text-gray-900 dark:text-white">{tCommon('admin.page_overview.risk_by_group_title')}</CardTitle>
       </CardHeader>
       <CardContent>
         <ResponsiveContainer width="100%" height={300}>

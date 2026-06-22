@@ -9,7 +9,8 @@ import {
 } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Download, Copy, ExternalLink } from 'lucide-react';
-import { toast } from 'sonner';
+import toast from 'react-hot-toast';
+import { useTranslation } from 'react-i18next';
 
 interface QRCodeDialogProps {
   open: boolean;
@@ -23,6 +24,7 @@ export function QRCodeDialog({
   ambassadorId,
 }: QRCodeDialogProps) {
   const { qrCodeData, generateQRCode, clearQRCode, isLoading } = useAmbassadorStore();
+const { t: tCommon } = useTranslation('common');
 
   useEffect(() => {
     if (open && ambassadorId) {
@@ -33,7 +35,7 @@ export function QRCodeDialog({
         clearQRCode();
       }
     };
-  }, [open, ambassadorId, generateQRCode, clearQRCode]);
+  }, [open, ambassadorId]);
 
   const handleDownload = () => {
     if (!qrCodeData) return;
@@ -43,13 +45,12 @@ export function QRCodeDialog({
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
-    toast.success('✅ QR Code téléchargé');
   };
 
   const handleCopyUrl = () => {
     if (!qrCodeData) return;
     navigator.clipboard.writeText(qrCodeData.referralUrl);
-    toast.success('✅ URL de parrainage copiée');
+    toast.success(' URL de parrainage copiée');
   };
 
   const handleOpenUrl = () => {
@@ -61,7 +62,7 @@ export function QRCodeDialog({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="bg-white dark:bg-[#070b18] border border-gray-200 dark:border-white/[0.08] text-gray-900 dark:text-white sm:max-w-md px-6 space-y-4 max-h-[90vh] overflow-y-auto">
         <DialogHeader>
-          <DialogTitle className="text-gray-900 dark:text-white text-xl">QR Code de parrainage</DialogTitle>
+          <DialogTitle className="text-gray-900 dark:text-white text-xl">{tCommon('admin.ambassadors.qr_title')}</DialogTitle>
           <DialogDescription className="text-gray-500 dark:text-gray-400">
             {qrCodeData
               ? `Code pour ${qrCodeData.ambassadorName}`
@@ -73,7 +74,7 @@ export function QRCodeDialog({
           <div className="flex items-center justify-center py-12">
             <div className="text-center">
               <div className="inline-block h-8 w-8 animate-spin rounded-full border-4 border-solid border-current border-r-transparent align-[-0.125em] motion-reduce:animate-[spin_1.5s_linear_infinite] text-gray-500 dark:text-gray-400"></div>
-              <p className="mt-4 text-sm text-gray-500 dark:text-gray-400">Génération en cours...</p>
+              <p className="mt-4 text-sm text-gray-500 dark:text-gray-400">{tCommon('admin.ambassadors.qr_generating')}</p>
             </div>
           </div>
         ) : qrCodeData ? (
@@ -92,7 +93,7 @@ export function QRCodeDialog({
             {/* URL de parrainage */}
             <div className="space-y-2">
               <label className="text-sm font-medium text-gray-700 dark:text-white">
-                URL de parrainage
+                {tCommon('admin.ambassadors.qr_url_label')}
               </label>
               <div className="flex gap-2">
                 <input
@@ -127,14 +128,14 @@ export function QRCodeDialog({
             <div className="flex gap-2 pt-2">
               <Button onClick={handleDownload} className="flex-1 gap-2">
                 <Download className="w-4 h-4" />
-                Télécharger QR Code
+                {tCommon('admin.ambassadors.qr_download')}
               </Button>
               <Button
                 variant="outline"
                 onClick={() => onOpenChange(false)}
                 className="flex-1 border-gray-300 dark:border-gray-700 text-gray-600 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300"
               >
-                Fermer
+                {tCommon('login.close')}
               </Button>
             </div>
 
@@ -146,7 +147,7 @@ export function QRCodeDialog({
           </div>
         ) : (
           <div className="py-12 text-center text-gray-500 dark:text-gray-400">
-            Erreur lors de la génération du QR code
+            {tCommon('admin.ambassadors.qr_error')}
           </div>
         )}
       </DialogContent>

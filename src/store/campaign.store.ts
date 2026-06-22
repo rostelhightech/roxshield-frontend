@@ -73,12 +73,17 @@ export interface Campaign {
   name: string;
   description: string | null;
   smtpProfileId: string;
+  targetGroupId: string | null;
+  targetEmails: string | null;
+  startedAt: string | null;
+  fromName: string | null;
   emailTemplateId: string;
   landingPageTemplateId: string;
   status: string;
   scheduledAt: string | null;
   endAt: string | null;
   createdAt: string;
+  targets: CampaignTargetDetail[];
   updatedAt: string;
   organization?: {
     id: string;
@@ -101,6 +106,7 @@ export interface Campaign {
 
 export interface CampaignDetail extends Campaign {
   targets: CampaignTargetDetail[];
+  landingPageUrl: string | null;
   trackingEvents: TrackingEventDetail[];
 }
 
@@ -164,6 +170,7 @@ export interface CreateCampaignPayload {
   organizationId: string;
   name: string;
   description?: string | null;
+  fromName?: string | null;
   smtpProfileId: string;
   emailTemplateId: string;
   landingPageTemplateId: string;
@@ -191,6 +198,7 @@ interface CampaignState {
   archiveCampaign: (id: string) => Promise<void>;
   restoreCampaign: (id: string) => Promise<void>;
   setCurrentCampaign: (campaign: CampaignDetail | null) => void;
+  duplicate:(id: string) => Promise<void>;
   launchCampaign: (id: string) => Promise<void>;
   fetchTimeline: (id: string) => Promise<void>;
   fetchTimeAnalysis: (id: string) => Promise<void>;
@@ -223,6 +231,18 @@ export const useCampaignStore = create<CampaignState>((set, get) => ({
     }
   },
 
+  duplicate: async (id) => {
+    set({ isSaving: true, error: null });
+    try {
+      await apiService.post<{ success: boolean; message: string }>(`/campaigns/${id}/duplicate`);
+      set({ isSaving: false });
+      get().fetchAll();
+    } catch (error) {
+      const message = error instanceof Error ? error.message : 'Erreur inconnue';
+      set({ error: message, isSaving: false });
+    }
+  },
+
   launchCampaign: async (id) => {
     set({ isSaving: true, error: null });
     try {
@@ -237,6 +257,7 @@ export const useCampaignStore = create<CampaignState>((set, get) => ({
             : state.currentCampaign,  
         isSaving: false,
       }));
+      get().fetchAll();
     } catch (error) {
       const message = error instanceof Error ? error.message : 'Erreur inconnue';
       set({ error: message, isSaving: false });
@@ -246,7 +267,13 @@ export const useCampaignStore = create<CampaignState>((set, get) => ({
   fetchById: async (id: string) => {
     set({ isLoading: true, error: null });
     try {
-      const response = await apiService.get<any>(`/campaigns/${id}`);
+      type CampaignByIdResponse = {
+        data?: { campaign?: Campaign; targets?: CampaignTargetDetail[]; trackingEvents?: unknown[] };
+        campaign?: Campaign;
+        targets?: CampaignTargetDetail[];
+        trackingEvents?: unknown[];
+      };
+      const response = await apiService.get<CampaignByIdResponse>(`/campaigns/${id}`);
 
       const campaign = response.data?.campaign ?? response.campaign ?? null;
       const targets = response.data?.targets ?? response.targets ?? [];
@@ -260,7 +287,7 @@ export const useCampaignStore = create<CampaignState>((set, get) => ({
           }
         : null;
 
-      set({ currentCampaign: campaignDetail, isLoading: false });
+      set({ currentCampaign: campaignDetail as CampaignDetail, isLoading: false });
     } catch (error) {
       const message = error instanceof Error ? error.message : 'Erreur inconnue';
       set({ error: message, isLoading: false });
@@ -276,6 +303,7 @@ export const useCampaignStore = create<CampaignState>((set, get) => ({
         campaigns: [campaign, ...state.campaigns],
         isSaving: false,
       }));
+      get().fetchById(campaign.id as string);
     } catch (error) {
       const message = error instanceof Error ? error.message : 'Erreur inconnue';
       set({ error: message, isSaving: false });
@@ -295,6 +323,7 @@ export const useCampaignStore = create<CampaignState>((set, get) => ({
           state.currentCampaign?.id === id ? { ...state.currentCampaign, ...data } : state.currentCampaign,
         isSaving: false,
       }));
+      get().fetchAll();
     } catch (error) {
       const message = error instanceof Error ? error.message : 'Erreur inconnue';
       set({ error: message, isSaving: false });
@@ -311,6 +340,7 @@ export const useCampaignStore = create<CampaignState>((set, get) => ({
         currentCampaign: state.currentCampaign?.id === id ? null : state.currentCampaign,
         isSaving: false,
       }));
+      get().fetchAll();
     } catch (error) {
       const message = error instanceof Error ? error.message : 'Erreur inconnue';
       set({ error: message, isSaving: false });
@@ -334,6 +364,7 @@ export const useCampaignStore = create<CampaignState>((set, get) => ({
             : state.currentCampaign,
         isSaving: false,
       }));
+      get().fetchAll();
     } catch (error) {
       const message = error instanceof Error ? error.message : 'Erreur inconnue';
       set({ error: message, isSaving: false });
@@ -357,6 +388,7 @@ export const useCampaignStore = create<CampaignState>((set, get) => ({
             : state.currentCampaign,
         isSaving: false,
       }));
+      get().fetchAll();
     } catch (error) {
       const message = error instanceof Error ? error.message : 'Erreur inconnue';
       set({ error: message, isSaving: false });

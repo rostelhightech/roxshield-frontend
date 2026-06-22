@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { MetricProgress } from "./metric-progress";
 import { apiService } from "@/app/services/api.service";
+import { useTranslation } from 'react-i18next';
 
 interface KeyMetrics {
   churnRate: number;
@@ -9,6 +10,7 @@ interface KeyMetrics {
 }
 
 export function MetricsSection() {
+  const { t: tCommon } = useTranslation('common');
   const [metrics, setMetrics] = useState<KeyMetrics | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
@@ -32,7 +34,7 @@ export function MetricsSection() {
   if (isLoading) {
     return (
       <div className="rounded-3xl border border-gray-200 dark:border-white/5 bg-white  dark:bg-[#0c1023] p-6 shadow-lg dark:shadow-xl">
-        <h2 className="mb-6 text-lg font-semibold text-gray-900 dark:text-gray-900 dark:text-white">Métriques clés</h2>
+        <h2 className="mb-6 text-lg font-semibold text-gray-900 dark:text-gray-900 dark:text-white">{tCommon('admin.page_overview.key_metrics')}</h2>
         <div className="space-y-8">
           {Array.from({ length: 3 }).map((_, i) => (
             <div key={i} className="animate-pulse">
@@ -48,22 +50,22 @@ export function MetricsSection() {
   return (
     <div className="rounded-sm border border-gray-200 dark:border-white/5 bg-white  dark:bg-[#0c1023] p-6 shadow-xs dark:shadow-xl">
       <h2 className="mb-6 text-lg font-semibold text-gray-900 dark:text-gray-900 dark:text-white">
-        Métriques clés
+        {tCommon('admin.page_overview.key_metrics')}
       </h2>
 
       <div className="space-y-8">
         <MetricProgress
-          title="Taux de churn"
+          title={tCommon('admin.page_overview.churn_rate')}
           value={metrics?.churnRate || 0}
         />
 
         <MetricProgress
-          title="Formations complétées"
+          title={tCommon('admin.page_overview.stats_trainings')}
           value={metrics?.formationsCompleted || 0}
         />
 
         <MetricProgress
-          title="Score de risque moyen"
+          title={tCommon('admin.page_overview.stats_avg_risk')}
           value={metrics?.averageRiskScore || 0}
         />
       </div>

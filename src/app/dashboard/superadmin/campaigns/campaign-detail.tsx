@@ -29,9 +29,11 @@ import { CampaignAdvancedKPIs } from './campaign-advanced-kpis';
 import { useCampaignFormHandlers } from '@/hooks/use-campaign-form-handlers';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { BarChart3, Users, Clock, Monitor, FileText, Mail } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 
 
 export default function CampaignDetailPage() {
+  const { t: tCommon } = useTranslation('common');
   const { campaignId } = useParams({ 
     from: '/_authenticated/dashboard/campaigns/$campaignId' 
   });
@@ -58,6 +60,7 @@ export default function CampaignDetailPage() {
     fetchUserAgentAnalysis,
     fetchTargetsWithoutInteraction,
     fetchDetailedTargetAnalysis,
+    duplicate
   } = useCampaignStore();
   
   const { organizations } = useOrganizationStore();
@@ -77,9 +80,9 @@ export default function CampaignDetailPage() {
       const failedTargets = currentCampaign.targets.filter((target) => target.status === 'FAILED').length;
       
       return [
-        { name: 'Envoyés', value: sentTargets, color: '#10b981' },
-        { name: 'En attente', value: pendingTargets, color: '#f59e0b' },
-        { name: 'Échecs', value: failedTargets, color: '#ef4444' },
+        { name: tCommon('admin.campaigns.stats_sent'), value: sentTargets, color: '#10b981' },
+        { name: tCommon('admin.campaigns.targets_pending'), value: pendingTargets, color: '#f59e0b' },
+        { name: tCommon('admin.campaigns.targets_failed'), value: failedTargets, color: '#ef4444' },
       ];
     },
     [currentCampaign]
@@ -110,7 +113,7 @@ export default function CampaignDetailPage() {
       fetchTargetsWithoutInteraction(campaignId);
       fetchDetailedTargetAnalysis(campaignId);
     }
-  }, [campaignId, fetchById, fetchTimeline, fetchTimeAnalysis, fetchUserAgentAnalysis, fetchTargetsWithoutInteraction, fetchDetailedTargetAnalysis]);
+  }, [campaignId]);
 
 
   // Délai de 1.5s avant d'afficher les graphiques
@@ -140,21 +143,8 @@ export default function CampaignDetailPage() {
 
   const handleDuplicateCampaign = async () => {
     if (!currentCampaign) return;
-    const targets = currentCampaign.targets.map((target) =>
-      target.groupId ? { groupId: target.groupId } : { email: target.email }
-    );
-
-    await createCampaign({
-      organizationId: currentCampaign.organizationId,
-      name: `${currentCampaign.name} (dupliquée)`,
-      description: currentCampaign.description ?? null,
-      smtpProfileId: currentCampaign.smtpProfileId,
-      emailTemplateId: currentCampaign.emailTemplateId,
-      landingPageTemplateId: currentCampaign.landingPageTemplateId,
-      scheduledAt: currentCampaign.scheduledAt ?? null,
-      endAt: currentCampaign.endAt ?? null,
-      targets,
-    });
+    await duplicate(currentCampaign?.id)
+    
   };
 
   const handleUpdateCampaign = async (data: any) => {
@@ -207,7 +197,7 @@ export default function CampaignDetailPage() {
    <div className="min-h-screen bg-gray-50   dark:bg-[#050816] text-gray-900 dark:text-white">
       <DashboardTopbar
         title={currentCampaign.name}
-        description="Détails complets de la campagne, y compris cibles et événements de tracking."
+        description={tCommon('admin.campaigns.detail_description')}
       />
       
       <div className="mx-auto  mt-4">
@@ -241,23 +231,23 @@ export default function CampaignDetailPage() {
             <TabsList className="bg-gray-100 dark:bg-slate-900/50 gap-4 border border-gray-200 dark:border-slate-700/50 p-1">
               <TabsTrigger value="overview" className="data-[state=active]:bg-blue-600 data-[state=active]:text-white text-gray-700 dark:text-gray-100 hover:text-gray-900 dark:hover:text-gray-400">
                 <BarChart3 className="w-4 h-4" />
-                Vue d'ensemble
+                {tCommon('admin.campaigns.tab_overview')}
               </TabsTrigger>
               <TabsTrigger value="analysis" className="data-[state=active]:bg-purple-600 data-[state=active]:text-white text-gray-700 dark:text-gray-100 hover:text-gray-900 dark:hover:text-gray-400">
                 <Monitor className="w-4 h-4" />
-                Analyses
+                {tCommon('admin.campaigns.tab_analysis')}
               </TabsTrigger>
               <TabsTrigger value="targets" className="data-[state=active]:bg-green-600 data-[state=active]:text-white text-gray-700 dark:text-gray-100 hover:text-gray-900 dark:hover:text-gray-400">
                 <Users className="w-4 h-4" />
-                Cibles
+                {tCommon('admin.campaigns.tab_targets')}
               </TabsTrigger>
               <TabsTrigger value="timeline" className="data-[state=active]:bg-orange-600 data-[state=active]:text-white text-gray-700 dark:text-gray-100 hover:text-gray-900 dark:hover:text-gray-400">
                 <Clock className="w-4 h-4" />
-                Timeline
+                {tCommon('admin.campaigns.tab_timeline')}
               </TabsTrigger>
               <TabsTrigger value="templates" className="data-[state=active]:bg-pink-600 data-[state=active]:text-white text-gray-700 dark:text-gray-100 hover:text-gray-900 dark:hover:text-gray-400">
                 <Mail className="w-4 h-4" />
-                Templates
+                {tCommon('admin.campaigns.tab_templates')}
               </TabsTrigger>
             </TabsList>
 

@@ -2,8 +2,7 @@
 
 import {
   LayoutDashboard, Users, GraduationCap, Crosshair, FileBarChart,
-  Settings, LogOut, Shield, ShieldCheck, KeyRound, Mail,
-  MessageSquareLock, Lock, ChevronLeft, ChevronRight, Menu, X, Building2,
+  Settings, LogOut, ShieldCheck, Mail, ChevronLeft, ChevronRight, Menu, X, Building2,
   Sheet, BookOpen,
 } from "lucide-react";
 import { useState, useEffect } from "react";
@@ -28,7 +27,7 @@ interface NavItem {
 }
 
 export function AdminSidebar() {
-  const { t } = useTranslation();
+  const { t, t: tCommon } = useTranslation();
   const { collapsed, setCollapsed } = useSidebarStore();
   const [mobileOpen, setMobileOpen] = useState(false);
   const { user, clearAuth } = useAuthStore();
@@ -40,17 +39,18 @@ export function AdminSidebar() {
   const userEmail = user?.email || "";
 
   const navItems: NavItem[] = [
-    { label: t("nav.dashboard"),      to: "/dashboard/overview",              icon: LayoutDashboard },
-    { label: "Campagnes",             to: "/dashboard/campaigns",             icon: Crosshair },
-    { label: "Formations",            to: "/dashboard/formations",            icon: BookOpen },
-    { label: t("nav.organization"),   to: "/dashboard/organizations",         icon: Building2 },
-    { label: "Utilisateurs",          to: "/dashboard/users",                 icon: Users },
-    { label: "Groupes",               to: "/dashboard/groups",                icon: GraduationCap },
-    { label: "Templates",             to: "/dashboard/templates",             icon: Sheet },
-    { label: "Landing pages",         to: "/dashboard/landing-page-templates", icon: FileBarChart },
-    { label: "SMTP",                  to: "/dashboard/smtp-profiles",         icon: Mail },
-    { label: "Plans",                 to: "/dashboard/plan",                  icon: FileBarChart },
-    { label: "GRC",                   to: "/dashboard/grc",                   icon: ShieldCheck },
+    { label: tCommon('nav.topbar.overview_title'),          to: "/dashboard/overview",               icon: LayoutDashboard },
+    { label: tCommon('nav.topbar.campaigns_title'),         to: "/dashboard/campaigns",              icon: Crosshair },
+    { label: tCommon('nav.topbar.formations_title'),        to: "/dashboard/formations",             icon: BookOpen },
+    { label: tCommon('nav.topbar.organizations_title'),     to: "/dashboard/organizations",          icon: Building2 },
+    { label: tCommon('nav.topbar.users_title'),             to: "/dashboard/users",                  icon: Users },
+    { label: tCommon('nav.topbar.groups_title'),            to: "/dashboard/groups",                 icon: GraduationCap },
+    { label: tCommon('nav.topbar.templates_title'),         to: "/dashboard/templates",              icon: Sheet },
+    { label: tCommon('nav.topbar.landing_templates_title'), to: "/dashboard/landing-page-templates", icon: FileBarChart },
+    { label: tCommon('nav.topbar.smtp_title'),              to: "/dashboard/smtp-profiles",          icon: Mail },
+    { label: tCommon('nav.topbar.plan_title'),              to: "/dashboard/plan",                   icon: FileBarChart },
+    { label: tCommon('nav.topbar.grc_title'),               to: "/dashboard/grc",                    icon: ShieldCheck },
+    { label: tCommon('nav.topbar.settings_title'),          to: "/dashboard/settings",               icon: Settings },
   ];
 
   useEffect(() => {
@@ -74,8 +74,8 @@ export function AdminSidebar() {
           <Menu className="h-5 w-5" />
         </Button>
         <div className="flex items-center gap-2">
-          <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-[#5d2595]">
-            <Shield className="h-4 w-4 text-white" />
+          <div className="flex h-7 w-7 items-center justify-center rounded-lg ">
+            <img src="/logowhite.png" className="h-4 w-4 text-white" />
           </div>
           <span className="text-sm font-bold text-gray-900 dark:text-white">
             <span className="font-normal opacity-60">Rox</span>Shield
@@ -107,8 +107,8 @@ export function AdminSidebar() {
       >
         {/* HEADER */}
         <div className="flex items-center gap-3 px-4 py-5">
-          <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-[#5d2595]">
-            <Shield className="h-5 w-5 text-white" />
+          <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl ">
+            <img src="/logowhite.png" className=" text-white" />
           </div>
           {!collapsed && (
             <div className="flex flex-col">
@@ -183,7 +183,7 @@ export function AdminSidebar() {
                   <p className="truncate text-sm font-medium text-gray-900 dark:text-white">{userName}</p>
                   <p className="truncate text-xs text-gray-500 dark:text-white/40">{userEmail}</p>
                 </div>
-                <button onClick={handleLogout} aria-label="Se déconnecter">
+                <button onClick={handleLogout} aria-label={tCommon('user.sidebar.logout')}>
                   <LogOut className="h-4 w-4 text-gray-400 dark:text-white/30 transition-all hover:text-red-500 dark:hover:text-red-400" />
                 </button>
               </>

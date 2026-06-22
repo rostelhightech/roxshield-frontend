@@ -21,6 +21,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog';
+
 import {
   AlertDialog,
   AlertDialogAction,
@@ -31,6 +32,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
+import { useTranslation } from 'react-i18next';
 
 export const Demos = () => {
   const { demoRequests, isLoading, fetchAll, updateDemoStatus, deleteDemoRequest } = useDemoStore();
@@ -42,26 +44,29 @@ export const Demos = () => {
     fetchAll();
   }, []);
 
+    const { t: tCommon } = useTranslation('common');
+
+
   const getStatusBadge = (status: DemoRequest['demoStatus']) => {
     const badges = {
       pending: (
         <Badge className="bg-yellow-100 dark:bg-yellow-500/10 text-yellow-700 dark:text-yellow-400 border border-yellow-300 dark:border-yellow-500/20 font-normal">
-          En attente
+          {tCommon('admin.campaigns.targets_pending')}
         </Badge>
       ),
       scheduled: (
         <Badge className="bg-blue-100 dark:bg-blue-500/10 text-blue-700 dark:text-blue-400 border border-blue-300 dark:border-blue-500/20 font-normal">
-          Planifiée
+          {tCommon('admin.demos.scheduled')}
         </Badge>
       ),
       completed: (
         <Badge className="bg-green-100 dark:bg-green-500/10 text-green-700 dark:text-green-400 border border-green-300 dark:border-green-500/20 font-normal">
-          Terminée
+          {tCommon('admin.page_overview.phishing_completed')}
         </Badge>
       ),
       cancelled: (
         <Badge className="bg-red-100 dark:bg-red-500/10 text-red-700 dark:text-red-400 border border-red-300 dark:border-red-500/20 font-normal">
-          Annulée
+          {tCommon('admin.demos.cancelled')}
         </Badge>
       ),
     };
@@ -95,10 +100,10 @@ export const Demos = () => {
         {/* Stats */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
           {[
-            { label: "Total demandes", value: demoRequests.length, valueClass: "text-gray-900 dark:text-white" },
-            { label: "En attente",     value: pendingCount,        valueClass: "text-yellow-700 dark:text-yellow-400" },
-            { label: "Planifiées",     value: scheduledCount,      valueClass: "text-blue-700 dark:text-blue-400" },
-            { label: "Terminées",      value: completedCount,      valueClass: "text-green-700 dark:text-green-400" },
+            { label: tCommon('admin.demos.total_requests'), value: demoRequests.length, valueClass: "text-gray-900 dark:text-white" },
+            { label: tCommon('admin.campaigns.targets_pending'),     value: pendingCount,        valueClass: "text-yellow-700 dark:text-yellow-400" },
+            { label: tCommon('admin.demos.scheduled'),     value: scheduledCount,      valueClass: "text-blue-700 dark:text-blue-400" },
+            { label: tCommon('user.formations.completed_status'),      value: completedCount,      valueClass: "text-green-700 dark:text-green-400" },
           ].map(({ label, value, valueClass }) => (
             <Card
               key={label}
@@ -113,14 +118,14 @@ export const Demos = () => {
         {/* Liste */}
         {isLoading ? (
           <div className="text-center py-12">
-            <p className="text-gray-400">Chargement...</p>
+            <p className="text-gray-400">{tCommon('admin.page_overview.risk_by_dept_loading')}</p>
           </div>
         ) : demoRequests.length === 0 ? (
           <Card className="bg-white dark:bg-white/[0.03] border border-gray-200 dark:border-white/[0.05] rounded-sm shadow-none">
             <div className="p-12 text-center">
               <Calendar className="w-10 h-10 text-gray-300 dark:text-gray-600 mx-auto mb-4" />
-              <h3 className="text-base font-medium text-gray-900 dark:text-white mb-1">Aucune demande</h3>
-              <p className="text-sm text-gray-400">Les demandes de démo apparaîtront ici</p>
+              <h3 className="text-base font-medium text-gray-900 dark:text-white mb-1">{tCommon('admin.demos.no_requests')}</h3>
+              <p className="text-sm text-gray-400">{tCommon('admin.demos.no_requests_desc')}</p>
             </div>
           </Card>
         ) : (
@@ -140,14 +145,14 @@ export const Demos = () => {
                         </h3>
                         {demo.referredByAmbassador && (
                           <Badge className="bg-blue-100 dark:bg-blue-500/10 text-blue-700 dark:text-blue-400 border border-blue-300 dark:border-blue-500/20 text-[11px] font-normal">
-                            Parrainé
+                            {tCommon('admin.demos.sponsored')}
                           </Badge>
                         )}
                       </div>
                       <p className="text-sm text-gray-400">{demo.adminName}</p>
                     </div>
                     <DropdownMenu>
-                      <DropdownMenuTrigger onClick={(e) => e.stopPropagation()} asChild>
+                      <DropdownMenuTrigger onClick={(e) => e.stopPropagation()} >
                         <Button
                           variant="ghost"
                           size="sm"
@@ -165,28 +170,28 @@ export const Demos = () => {
                           className="text-sm text-gray-700 dark:text-gray-300"
                         >
                           <CheckCircle className="w-4 h-4 mr-2 text-blue-500" />
-                          Marquer comme planifiée
+                          {tCommon('admin.demos.mark_scheduled')}
                         </DropdownMenuItem>
                         <DropdownMenuItem
                           onClick={(e) => { e.stopPropagation(); handleStatusChange(demo.id, 'completed'); }}
                           className="text-sm text-gray-700 dark:text-gray-300"
                         >
                           <CheckCircle className="w-4 h-4 mr-2 text-green-500" />
-                          Marquer comme terminée
+                          {tCommon('admin.demos.mark_completed')}
                         </DropdownMenuItem>
                         <DropdownMenuItem
                           onClick={(e) => { e.stopPropagation(); handleStatusChange(demo.id, 'cancelled'); }}
                           className="text-sm text-gray-700 dark:text-gray-300"
                         >
                           <XCircle className="w-4 h-4 mr-2 text-gray-400" />
-                          Annuler
+                          {tCommon('user.formations.cancel')}
                         </DropdownMenuItem>
                         <DropdownMenuItem
                           onClick={(e) => { e.stopPropagation(); handleDelete(demo.id, demo.name); }}
                           className="text-sm text-red-600 dark:text-red-400"
                         >
                           <XCircle className="w-4 h-4 mr-2" />
-                          Supprimer
+                          {tCommon('admin.ambassadors.delete')}
                         </DropdownMenuItem>
                       </DropdownMenuContent>
                     </DropdownMenu>
@@ -208,7 +213,7 @@ export const Demos = () => {
                     {demo.companySize && (
                       <div className="flex items-center gap-2">
                         <Users className="w-3.5 h-3.5 shrink-0" />
-                        <span>{demo.companySize} employés</span>
+                        <span>{demo.companySize} {tCommon('common.employes')}</span>
                       </div>
                     )}
                     <div className="flex items-center gap-2">
@@ -231,30 +236,30 @@ export const Demos = () => {
               {selectedDemo?.name}
             </DialogTitle>
             <DialogDescription className="text-gray-500 dark:text-gray-400 text-sm">
-              Détails de la demande de démo
+              {tCommon('admin.demos.detail_title')}
             </DialogDescription>
           </DialogHeader>
           {selectedDemo && (
             <div className="space-y-4 text-sm">
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <p className="text-gray-500 dark:text-gray-400 mb-0.5">Contact</p>
+                  <p className="text-gray-500 dark:text-gray-400 mb-0.5">{tCommon('admin.demos.contact')}</p>
                   <p className="text-gray-900 dark:text-white font-medium">{selectedDemo.adminName}</p>
                 </div>
                 <div>
-                  <p className="text-gray-500 dark:text-gray-400 mb-0.5">Statut</p>
+                  <p className="text-gray-500 dark:text-gray-400 mb-0.5">{tCommon('admin.ambassadors.status_placeholder')}</p>
                   {getStatusBadge(selectedDemo.demoStatus)}
                 </div>
               </div>
 
               <div>
-                <p className="text-gray-500 dark:text-gray-400 mb-0.5">Email</p>
+                <p className="text-gray-500 dark:text-gray-400 mb-0.5">{tCommon('user.profile.email')}</p>
                 <p className="text-gray-900 dark:text-white">{selectedDemo.adminEmail}</p>
               </div>
 
               {selectedDemo.adminPhone && (
                 <div>
-                  <p className="text-gray-500 dark:text-gray-400 mb-0.5">Téléphone</p>
+                  <p className="text-gray-500 dark:text-gray-400 mb-0.5">{tCommon('admin.ambassadors.table_phone')}</p>
                   <p className="text-gray-900 dark:text-white">{selectedDemo.adminPhone}</p>
                 </div>
               )}
@@ -262,13 +267,13 @@ export const Demos = () => {
               <div className="grid grid-cols-2 gap-4">
                 {selectedDemo.sector && (
                   <div>
-                    <p className="text-gray-500 dark:text-gray-400 mb-0.5">Secteur</p>
+                    <p className="text-gray-500 dark:text-gray-400 mb-0.5">{tCommon('admin.demos.sector')}</p>
                     <p className="text-gray-900 dark:text-white">{selectedDemo.sector}</p>
                   </div>
                 )}
                 {selectedDemo.companySize && (
                   <div>
-                    <p className="text-gray-500 dark:text-gray-400 mb-0.5">Taille</p>
+                    <p className="text-gray-500 dark:text-gray-400 mb-0.5">{tCommon('admin.demos.company_size')}</p>
                     <p className="text-gray-900 dark:text-white">{selectedDemo.companySize}</p>
                   </div>
                 )}
@@ -276,14 +281,14 @@ export const Demos = () => {
 
               {selectedDemo.country && (
                 <div>
-                  <p className="text-gray-500 dark:text-gray-400 mb-0.5">Pays</p>
+                  <p className="text-gray-500 dark:text-gray-400 mb-0.5">{tCommon('admin.demos.country')}</p>
                   <p className="text-gray-900 dark:text-white">{selectedDemo.country}</p>
                 </div>
               )}
 
               {selectedDemo.referredByAmbassador && (
                 <div className="rounded-lg border border-blue-300 dark:border-blue-500/20 bg-blue-50 dark:bg-blue-500/5 p-3">
-                  <p className="text-gray-500 dark:text-gray-400 mb-1">Parrainé par</p>
+                  <p className="text-gray-500 dark:text-gray-400 mb-1">{tCommon('admin.demos.detail_sponsored_by')}</p>
                   <p className="text-gray-900 dark:text-white font-medium">
                     {selectedDemo.referredByAmbassador.firstName} {selectedDemo.referredByAmbassador.lastName}
                   </p>
@@ -293,7 +298,7 @@ export const Demos = () => {
 
               {selectedDemo.message && (
                 <div>
-                  <p className="text-gray-500 dark:text-gray-400 mb-2">Message</p>
+                  <p className="text-gray-500 dark:text-gray-400 mb-2">{tCommon('admin.demos.detail_message')}</p>
                   <div className="bg-gray-50 dark:bg-gray-800/50 border border-gray-200 dark:border-gray-700/50 rounded-lg p-3 text-gray-900 dark:text-white">
                     {selectedDemo.message}
                   </div>
@@ -301,7 +306,7 @@ export const Demos = () => {
               )}
 
               <div>
-                <p className="text-gray-500 dark:text-gray-400 mb-0.5">Date de demande</p>
+                <p className="text-gray-500 dark:text-gray-400 mb-0.5">{tCommon('admin.demos.detail_date')}</p>
                 <p className="text-gray-900 dark:text-white">
                   {format(new Date(selectedDemo.createdAt), "dd MMMM yyyy 'à' HH:mm", { locale: fr })}
                 </p>
@@ -316,23 +321,23 @@ export const Demos = () => {
         <AlertDialogContent className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 shadow-none rounded-sm">
           <AlertDialogHeader>
             <AlertDialogTitle className="text-gray-900 dark:text-white font-medium">
-              Supprimer la demande ?
+              {tCommon('admin.demos.delete_confirm_title')}
             </AlertDialogTitle>
             <AlertDialogDescription className="text-gray-600 dark:text-gray-400">
-              Êtes-vous sûr de vouloir supprimer la demande de{" "}
-              <span className="font-medium text-gray-900 dark:text-white">"{demoToDelete?.name}"</span> ?
-              Cette action est irréversible.
+              {tCommon('admin.demos.delete_confirm_desc')}{" "}
+              <span className="font-medium text-gray-900 dark:text-white">"{demoToDelete?.name}"</span> ?{" "}
+              {tCommon('admin.demos.delete_irreversible')}
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel className="bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 border-0 text-gray-700 dark:text-gray-300">
-              Annuler
+              {tCommon('user.formations.cancel')}
             </AlertDialogCancel>
             <AlertDialogAction
               onClick={confirmDelete}
               className="bg-red-600 hover:bg-red-700 text-white border-0"
             >
-              Supprimer
+              {tCommon('admin.ambassadors.delete')}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>

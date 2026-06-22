@@ -1,5 +1,6 @@
 import Templates from '@/app/dashboard/superadmin/templates/page';
-import { DashboardTopbar } from '@/components/layout/topbar';
+import { DashboardTopbar } from "@/components/layout/topbar";
+import { useTranslation } from 'react-i18next';
 import { createFileRoute } from '@tanstack/react-router'
 
 export const Route = createFileRoute('/_authenticated/dashboard/templates')({
@@ -8,11 +9,12 @@ export const Route = createFileRoute('/_authenticated/dashboard/templates')({
 
 
 function TemplatesPage() {
+  const { t } = useTranslation();
   return (
     <>
       <DashboardTopbar
-        title="Templates"
-        description="Gérez les templates de votre organisation pour une configuration rapide et cohérente."
+        title={t('nav.topbar.templates_title')}
+        description={t('nav.topbar.templates_desc')}
       />
       <Templates />
     </>

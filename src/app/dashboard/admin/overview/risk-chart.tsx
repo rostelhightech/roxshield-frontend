@@ -10,23 +10,25 @@ import {
   Tooltip,
   ResponsiveContainer,
 } from "recharts";
+import { useTranslation } from "react-i18next";
 
 export function RiskChart() {
   const { adminRiskEvolution, fetchAdminRiskEvolution, isLoading } = useDashboardStore();
-
+const { t: tCommon } = useTranslation('common');
   useEffect(() => {
     fetchAdminRiskEvolution();
-  }, [fetchAdminRiskEvolution]);
+  }, []);
 
+ 
   if (isLoading) {
     return (
       <Card className="rounded-sm border border-gray-200 dark:border-white/5 bg-white dark:bg-[#0c1023] shadow-sm dark:shadow-xl">
         <CardHeader>
-          <CardTitle className="text-gray-900 dark:text-white">Évolution du risque humain</CardTitle>
+          <CardTitle className="text-gray-900 dark:text-white">{tCommon('admin.page_overview.risk_chart_title')}</CardTitle>
         </CardHeader>
         <CardContent>
           <div className="h-[300px] flex items-center justify-center">
-            <p className="text-gray-500 dark:text-gray-400">Chargement...</p>
+            <p className="text-gray-500 dark:text-gray-400">{tCommon('admin.page_overview.risk_by_dept_loading')}</p>
           </div>
         </CardContent>
       </Card>
@@ -36,7 +38,7 @@ export function RiskChart() {
   return (
     <Card className="rounded-sm border border-gray-200 dark:border-white/5 bg-white dark:bg-[#0c1023] shadow-sm dark:shadow-xl">
       <CardHeader>
-        <CardTitle className="text-gray-900 dark:text-white">Évolution du risque humain</CardTitle>
+        <CardTitle className="text-gray-900 dark:text-white">{tCommon('admin.page_overview.risk_chart_title')}</CardTitle>
       </CardHeader>
       <CardContent>
         <ResponsiveContainer width="100%" height={300}>
@@ -52,14 +54,16 @@ export function RiskChart() {
             </defs>
             <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb dark:stroke-#374151" />
             <XAxis 
-              dataKey="department" 
-              stroke="#6b7280 dark:stroke-#9ca3af" 
-              style={{ fontSize: '12px' }}
-            />
-            <YAxis 
-              stroke="#6b7280 dark:stroke-#9ca3af" 
-              style={{ fontSize: '12px' }}
-            />
+  dataKey="department" 
+  className="text-gray-500 dark:text-gray-400"
+  stroke="currentColor"
+  style={{ fontSize: '12px' }}
+/>
+<YAxis 
+  className="text-gray-500 dark:text-gray-400"
+  stroke="currentColor"
+  style={{ fontSize: '12px' }}
+/>
             <Tooltip
               contentStyle={{
                 backgroundColor: '#ffffff',

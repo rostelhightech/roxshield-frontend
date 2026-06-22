@@ -29,6 +29,7 @@ import {
 import { Group } from '@/store/group.store';
 import { useUserStore } from '@/store/user.store';
 import { GroupUsersPanel } from './group-users-panel';
+import { useTranslation } from 'react-i18next';
 
 interface GroupTableProps {
   groups: Group[];
@@ -37,6 +38,7 @@ interface GroupTableProps {
 }
 
 export const GroupTable = ({ groups, onEdit, onDelete }: GroupTableProps) => {
+  const { t: tCommon } = useTranslation('common');
   const [selectedGroupForPanel, setSelectedGroupForPanel] = useState<Group | null>(null);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const { users } = useUserStore();
@@ -58,12 +60,12 @@ export const GroupTable = ({ groups, onEdit, onDelete }: GroupTableProps) => {
         <Table>
           <TableHeader className="bg-gray-100 dark:bg-gray-800/50">
             <TableRow className="border-gray-200 dark:border-gray-800 hover:bg-transparent">
-              <TableHead className="text-gray-700 dark:text-gray-300">Groupe</TableHead>
-              <TableHead className="text-gray-700 dark:text-gray-300">Organisation</TableHead>
-              <TableHead className="text-gray-700 dark:text-gray-300">Membres</TableHead>
-              <TableHead className="text-gray-700 dark:text-gray-300">Description</TableHead>
-              <TableHead className="text-gray-700 dark:text-gray-300">Créé le</TableHead>
-              <TableHead className="text-gray-700 dark:text-gray-300 text-right">Actions</TableHead>
+              <TableHead className="text-gray-700 dark:text-gray-300">{tCommon('admin.groups.table_group')}</TableHead>
+              <TableHead className="text-gray-700 dark:text-gray-300">{tCommon('admin.grc.org_name')}</TableHead>
+              <TableHead className="text-gray-700 dark:text-gray-300">{tCommon('admin.groups.table_members')}</TableHead>
+              <TableHead className="text-gray-700 dark:text-gray-300">{tCommon('admin.campaigns.form_description')}</TableHead>
+              <TableHead className="text-gray-700 dark:text-gray-300">{tCommon('admin.ambassadors.table_created')}</TableHead>
+              <TableHead className="text-gray-700 dark:text-gray-300 text-right">{tCommon('admin.ambassadors.table_actions')}</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -105,7 +107,7 @@ export const GroupTable = ({ groups, onEdit, onDelete }: GroupTableProps) => {
                         <MoreHorizontal className="h-4 w-4" />
                       </Button>
                     </DropdownMenuTrigger>
-                    <DropdownMenuContent align="end" className="bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700 max-w-md">
+                    <DropdownMenuContent align="end" className="bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700 w-auto">
                       <DropdownMenuItem
                         onClick={(event) => {
                           event.stopPropagation();
@@ -114,14 +116,14 @@ export const GroupTable = ({ groups, onEdit, onDelete }: GroupTableProps) => {
                         className="text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white"
                       >
                         <Edit className="w-4 h-4 mr-2" />
-                        Modifier
+                        {tCommon('admin.ambassadors.edit')}
                       </DropdownMenuItem>
                       <DropdownMenuItem
                         onClick={(event) => handleOpenUsersPanel(group, event)}
                         className="text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300"
                       >
                         <UserPlus className="w-4 h-4 mr-2" />
-                        Affecter
+                        {tCommon('admin.groups.assign_users')}
                       </DropdownMenuItem>
                       <DropdownMenuItem
                         onClick={(event) => {
@@ -131,7 +133,7 @@ export const GroupTable = ({ groups, onEdit, onDelete }: GroupTableProps) => {
                         className="text-red-600 dark:text-red-400 hover:text-red-700 dark:hover:text-red-300"
                       >
                         <Trash2 className="w-4 h-4 mr-2" />
-                        Supprimer
+                        {tCommon('admin.ambassadors.delete')}
                       </DropdownMenuItem>
                     </DropdownMenuContent>
                   </DropdownMenu>
@@ -143,23 +145,23 @@ export const GroupTable = ({ groups, onEdit, onDelete }: GroupTableProps) => {
       </div>
 
       {/* Dialog pour l'affectation des utilisateurs */}
-      <Dialog open={isDialogOpen} onOpenChange={handleCloseDialog}>
-        <DialogContent className="min-w-4xl max-h-[90vh] overflow-y-auto bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-800">
-          <DialogHeader>
-            <DialogTitle className="text-gray-900 dark:text-white flex items-center gap-2">
-              <UserPlus className="h-5 w-5 text-blue-600 dark:text-blue-400" />
-              Affecter des utilisateurs
-            </DialogTitle>
-          </DialogHeader>
-          {selectedGroupForPanel && (
-            <GroupUsersPanel
-              group={selectedGroupForPanel}
-              users={users}
-              onClose={handleCloseDialog}
-            />
-          )}
-        </DialogContent>
-      </Dialog>
+     <Dialog open={isDialogOpen} onOpenChange={handleCloseDialog}>
+  <DialogContent className="w-[calc(100vw-2rem)] sm:w-full sm:max-w-4xl max-h-[90vh] overflow-y-auto bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-800">
+    <DialogHeader>
+      <DialogTitle className="text-gray-900 dark:text-white flex items-center gap-2 text-base sm:text-lg">
+        <UserPlus className="h-5 w-5 text-blue-600 dark:text-blue-400 shrink-0" />
+        {tCommon('admin.groups.assign_users')}
+      </DialogTitle>
+    </DialogHeader>
+    {selectedGroupForPanel && (
+      <GroupUsersPanel
+        group={selectedGroupForPanel}
+        users={users}
+        onClose={handleCloseDialog}
+      />
+    )}
+  </DialogContent>
+</Dialog>
     </>
   );
 };

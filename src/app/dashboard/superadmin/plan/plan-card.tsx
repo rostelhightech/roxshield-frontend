@@ -12,6 +12,7 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { Plan } from '@/store/plan.store';
+import { useTranslation } from 'react-i18next';
 
 interface PlanCardProps {
   plan: Plan;
@@ -20,6 +21,7 @@ interface PlanCardProps {
 }
 
 export const PlanCard = ({ plan, onEdit, onDelete }: PlanCardProps) => {
+  const { t: tCommon } = useTranslation('common');
   const getPlanColor = () => {
     switch (plan.name) {
       case 'starter':
@@ -80,11 +82,11 @@ export const PlanCard = ({ plan, onEdit, onDelete }: PlanCardProps) => {
             <DropdownMenuContent align="end" className="bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700">
               <DropdownMenuItem onClick={() => onEdit(plan)} className="text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white">
                 <Edit className="w-4 h-4 mr-2" />
-                Modifier
+                {tCommon('admin.ambassadors.edit')}
               </DropdownMenuItem>
               <DropdownMenuItem onClick={() => onDelete(plan.id)} className="text-red-600 dark:text-red-400 hover:text-red-700 dark:hover:text-red-300">
                 <Trash2 className="w-4 h-4 mr-2" />
-                Supprimer
+                {tCommon('admin.ambassadors.delete')}
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
@@ -106,17 +108,16 @@ export const PlanCard = ({ plan, onEdit, onDelete }: PlanCardProps) => {
           {plan.targetDescription}
         </p>
 
-        {/* Détails employés */}
-        <div className="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400 mb-4 pb-4 border-b border-gray-200 dark:border-gray-800">
+         <div className="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400 mb-4 pb-4 border-b border-gray-200 dark:border-gray-800">
           <Users className="w-4 h-4" />
           <span>
-            {plan.minEmployees} - {plan.maxEmployees === null ? '∞' : plan.maxEmployees} employés
+            {plan.minEmployees} - {plan.maxEmployees === null ? '∞' : plan.maxEmployees} ${tCommon('common.employes')}
           </span>
         </div>
 
         {/* Fonctionnalités */}
         <div className="space-y-2">
-          <p className="text-sm font-semibold text-gray-900 dark:text-white mb-2">Fonctionnalités incluses :</p>
+          <p className="text-sm font-semibold text-gray-900 dark:text-white mb-2">{tCommon('admin.plan.features_included')}</p>
           {plan.features.map((feature, index) => (
             <div key={index} className="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400">
               <Check className="w-4 h-4 text-green-600 dark:text-green-500" />

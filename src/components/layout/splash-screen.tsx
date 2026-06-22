@@ -1,7 +1,9 @@
+import { useTranslation } from 'react-i18next';
 // components/SplashScreenComponent.tsx
 
 
 export const SplashScreenComponent = () => {
+  const { t: tCommon } = useTranslation('common');
   
 
  
@@ -20,7 +22,7 @@ export const SplashScreenComponent = () => {
         </div>
 
         <p className="text-gray-900 dark:text-white/50 animate-pulse text-sm">
-          Chargement en cours...
+          {tCommon('common.loading.loading')}
         </p>
       </div>
     );

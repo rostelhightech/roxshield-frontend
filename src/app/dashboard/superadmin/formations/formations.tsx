@@ -6,7 +6,6 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useNavigate } from '@tanstack/react-router';
 import { motion } from 'framer-motion';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -27,9 +26,12 @@ import {
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
 import { useFormationStore } from '@/store/formation.store';
-import { toast } from 'sonner';
+import { Combobox } from '@/components/ui/combobox';
+import toast from 'react-hot-toast';
+import { useTranslation } from 'react-i18next';
 
 export const Formations = () => {
+  const { t: tCommon } = useTranslation('common');
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState<string>('all');
   const [viewMode, setViewMode] = useState<'table' | 'cards'>('cards');
@@ -59,8 +61,7 @@ export const Formations = () => {
   // Filtrage des formations avec useMemo pour éviter les re-renders
   const filteredFormations = useMemo(() => {
     let filtered = formations;
-    console.log(formations);
-    
+     
     if (searchTerm) {
       filtered = filtered.filter(formation =>
         formation.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -97,11 +98,7 @@ export const Formations = () => {
     if (!formationToDelete) return;
 
     const success = await deleteFormation(formationToDelete.id) as unknown as {success:boolean};
-    if (success) {
-      toast.success('✅ Formation supprimée avec succès');
-    } else {
-      toast.error('❌ Erreur lors de la suppression de la formation');
-    }
+    
     setDeleteDialogOpen(false);
     setFormationToDelete(null);
   };
@@ -152,20 +149,20 @@ export const Formations = () => {
 
   const getTypeLabel = (type: string) => {
     switch (type) {
-      case 'VIDEO': return 'Vidéo';
-      case 'DOCUMENT': return 'Document';
-      case 'INTERACTIVE': return 'Interactif';
-      case 'QUIZ': return 'Quiz';
-      case 'WEBINAR': return 'Webinaire';
+      case 'VIDEO': return tCommon('admin.formations.type_video');
+      case 'DOCUMENT': return tCommon('admin.formations.type_document');
+      case 'INTERACTIVE': return tCommon('admin.formations.type_interactive');
+      case 'QUIZ': return tCommon('admin.formations.type_quiz');
+      case 'WEBINAR': return tCommon('admin.formations.type_webinar');
       default: return type;
     }
   };
 
   const getStatusLabel = (status: string) => {
     switch (status) {
-      case 'PUBLISHED': return 'Publié';
-      case 'DRAFT': return 'Brouillon';
-      case 'ARCHIVED': return 'Archivé';
+      case 'PUBLISHED': return tCommon('admin.formations.status_published');
+      case 'DRAFT': return tCommon('admin.formations.status_draft');
+      case 'ARCHIVED': return tCommon('admin.formations.status_archived');
       default: return status;
     }
   };
@@ -181,7 +178,7 @@ export const Formations = () => {
               className="bg-gray-200 hover:bg-gray-300 ml-2 dark:bg-slate-600 dark:hover:bg-slate-700 text-gray-900 dark:text-white cursor-pointer transition-all duration-300"
             >
               <Plus className="w-4 h-4 mr-2" />
-              Nouvelle formation
+              {tCommon('admin.formations.list_new')}
             </Button>
           </div>
         </div>
@@ -197,7 +194,7 @@ export const Formations = () => {
                   <BookOpen className="w-5 h-5 text-blue-600 dark:text-blue-400" />
                 </div>
                 <div>
-                  <p className="text-gray-500 dark:text-gray-400 text-sm">Total formations</p>
+                  <p className="text-gray-500 dark:text-gray-400 text-sm">{tCommon('admin.formations.total_formations')}</p>
                   <p className="text-2xl font-bold text-gray-900 dark:text-white">{stats?.formations?.totalFormations || 0}</p>
                 </div>
               </div>
@@ -211,7 +208,7 @@ export const Formations = () => {
                   <Play className="w-5 h-5 text-green-600 dark:text-green-400" />
                 </div>
                 <div>
-                  <p className="text-gray-500 dark:text-gray-400 text-sm">Publiées</p>
+                  <p className="text-gray-500 dark:text-gray-400 text-sm">{tCommon('admin.formations.list_published')}</p>
                   <p className="text-2xl font-bold text-gray-900 dark:text-white">
                     {stats?.formations?.publishedFormations || 0}
                   </p>
@@ -227,7 +224,7 @@ export const Formations = () => {
                   <HelpCircle className="w-5 h-5 text-orange-600 dark:text-orange-400" />
                 </div>
                 <div>
-                  <p className="text-gray-500 dark:text-gray-400 text-sm">Brouillons</p>
+                  <p className="text-gray-500 dark:text-gray-400 text-sm">{tCommon('admin.campaigns.draft')}</p>
                   <p className="text-2xl font-bold text-gray-900 dark:text-white">
                     {stats?.formations?.draftFormations || 0}
                   </p>
@@ -243,7 +240,7 @@ export const Formations = () => {
                   <Users className="w-5 h-5 text-purple-600 dark:text-purple-400" />
                 </div>
                 <div>
-                  <p className="text-gray-500 dark:text-gray-400 text-sm">Inscrits totaux</p>
+                  <p className="text-gray-500 dark:text-gray-400 text-sm">{tCommon('admin.formations.total_enrolled')}</p>
                   <p className="text-2xl font-bold text-gray-900 dark:text-white">
                     {stats?.progress?.totalEnrollments || 0}
                   </p>
@@ -256,29 +253,31 @@ export const Formations = () => {
         {/* Filters */}
         <div className="flex flex-col sm:flex-row gap-4 mb-6">
           <Input
-            placeholder="Rechercher une formation..."
+            placeholder={tCommon('admin.formations.list_search')}
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
             className="bg-white dark:bg-gray-800/30 border-gray-300 dark:border-gray-700 text-gray-900 dark:text-white placeholder:text-gray-400 max-w-sm"
           />
           
-          <Select value={statusFilter} onValueChange={(value) => setStatusFilter(value || 'all')}>
-            <SelectTrigger className="bg-white dark:bg-gray-800/30 border-gray-300 dark:border-gray-700 text-gray-900 dark:text-white w-48">
-              <SelectValue placeholder="Statut" />
-            </SelectTrigger>
-            <SelectContent className="bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700">
-              <SelectItem value="all">Tous les statuts</SelectItem>
-              <SelectItem value="PUBLISHED">Publié</SelectItem>
-              <SelectItem value="DRAFT">Brouillon</SelectItem>
-              <SelectItem value="ARCHIVED">Archivé</SelectItem>
-            </SelectContent>
-          </Select>
+          <Combobox
+  options={[
+    { value: 'all', label: tCommon('admin.users.all_status')},
+    { value: 'PUBLISHED', label: tCommon('admin.formations.status_published') },
+    { value: 'DRAFT', label: tCommon('admin.formations.status_draft') },
+    { value: 'ARCHIVED', label: tCommon('admin.formations.status_archived') },
+  ]}
+  value={statusFilter}
+  onChange={(value) => setStatusFilter(value || 'all')}
+  placeholder={tCommon('admin.ambassadors.status_placeholder')}
+  searchPlaceholder={tCommon('admin.campaigns.search_status')}
+  className="bg-white dark:bg-gray-800/30 border-gray-300 dark:border-gray-700 text-gray-900 dark:text-white w-48"
+/>
         </div>
 
         {/* View Toggle */}
         <div className="flex items-center justify-between mb-4">
           <p className="text-sm text-gray-500 dark:text-gray-400">
-            {filteredFormations?.length} formation(s) trouvée(s)
+            {tCommon('admin.formations.formations_found', { count: filteredFormations?.length ?? 0 })}
           </p>
         </div>
 
@@ -293,13 +292,13 @@ export const Formations = () => {
           <Card className="bg-white dark:bg-gray-800/30 border-gray-200 dark:border-gray-700/50">
             <CardContent className="p-12 text-center">
               <BookOpen className="w-12 h-12 text-gray-400 dark:text-gray-600 mx-auto mb-4" />
-              <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-2">Aucune formation</h3>
+              <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-2">{tCommon('admin.formations.list_empty')}</h3>
               <p className="text-gray-500 dark:text-gray-400 mb-4">
-                Commencez par créer votre première formation de sensibilisation
+                {tCommon('admin.formations.list_empty_desc')}
               </p>
               <Button onClick={handleCreateFormation} variant="outline">
                 <Plus className="w-4 h-4 mr-2" />
-                Créer une formation
+                {tCommon('admin.formations.list_create')}
               </Button>
             </CardContent>
           </Card>
@@ -338,19 +337,19 @@ export const Formations = () => {
                         <DropdownMenuContent align="end" className="bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700 w-auto">
                           <DropdownMenuItem onClick={() => handleViewFormation(formation.id)}>
                             <Eye className="w-4 h-4 mr-2" />
-                            Voir les détails
+                            {tCommon('admin.organizations.view_details')}
                           </DropdownMenuItem>
                           <DropdownMenuItem>
                             <Edit className="w-4 h-4 mr-2" />
-                            Modifier
+                            {tCommon('admin.ambassadors.edit')}
                           </DropdownMenuItem>
-                          <DropdownMenuItem 
+                          {/* <DropdownMenuItem 
                             className="text-red-600 dark:text-red-400"
                             onClick={() => handleDeleteFormation(formation.id, formation.title)}
                           >
                             <Trash2 className="w-4 h-4 mr-2" />
-                            Supprimer
-                          </DropdownMenuItem>
+                            {tCommon('admin.ambassadors.delete')}
+                          </DropdownMenuItem> */}
                         </DropdownMenuContent>
                       </DropdownMenu>
                     </div>
@@ -366,19 +365,19 @@ export const Formations = () => {
                         </Badge>
                         {formation.isRequired && (
                           <Badge variant="outline" className="text-red-600 dark:text-red-400 border-red-400/50">
-                            Obligatoire
+                            {tCommon('admin.formations.required')}
                           </Badge>
                         )}
                       </div>
                       
                       <div className="flex items-center justify-between text-sm text-gray-500 dark:text-gray-400">
-                        <span>Durée: {formation.estimatedDuration} min</span>
-                        <span>Score min: {formation.passingScore}%</span>
+                        <span>{tCommon('admin.formations.duration_min', { count: formation.estimatedDuration })}</span>
+                        <span>{tCommon('admin.formations.min_score', { score: formation.passingScore })}</span>
                       </div>
                       
                       <div className="space-y-2">
                         <div className="flex justify-between text-sm">
-                          <span className="text-gray-500 dark:text-gray-400">Progression</span>
+                          <span className="text-gray-500 dark:text-gray-400">{tCommon('admin.formations.progression')}</span>
                           <span className="text-gray-900 dark:text-white">{completionRate(formation)}%</span>
                         </div>
                         <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2">
@@ -388,8 +387,8 @@ export const Formations = () => {
                           />
                         </div>
                         <div className="flex justify-between text-xs text-gray-500">
-                          <span>{formation.completedCount} complétés</span>
-                          <span>{formation.enrolledCount} inscrits</span>
+                          <span>{tCommon('admin.formations.completed_count', { count: formation.completedCount })}</span>
+                          <span>{tCommon('admin.formations.enrolled_count', { count: formation.enrolledCount })}</span>
                         </div>
                       </div>
                     </div>
@@ -401,7 +400,7 @@ export const Formations = () => {
         ) : (
           // Table view (à implémenter si nécessaire)
           <div className="text-center py-8 text-gray-500 dark:text-gray-400">
-            Vue tableau à implémenter
+            {tCommon('admin.formations.list_table_view')}
           </div>
         )}
       </div>
@@ -409,20 +408,20 @@ export const Formations = () => {
       <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
         <AlertDialogContent className="bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-800">
           <AlertDialogHeader>
-            <AlertDialogTitle className="text-gray-900 dark:text-white">Supprimer la formation?</AlertDialogTitle>
+            <AlertDialogTitle className="text-gray-900 dark:text-white">{tCommon('admin.formations.list_delete_confirm_title')}</AlertDialogTitle>
             <AlertDialogDescription className="text-gray-600 dark:text-gray-400">
-              Êtes-vous sûr de vouloir supprimer la formation <span className="font-semibold text-gray-900 dark:text-white">"{formationToDelete?.title}"</span> ? Cette action est irréversible.
+              {tCommon('admin.formations.list_delete_confirm_desc')} <span className="font-semibold text-gray-900 dark:text-white">"{formationToDelete?.title}"</span> {tCommon('admin.campaigns.page_delete_confirm_desc2')}
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter className='bg-white dark:bg-gray-900'>
             <AlertDialogCancel className="bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 border-gray-300 dark:border-gray-700 text-gray-700 dark:text-white hover:text-gray-900 dark:hover:text-white">
-              Annuler
+              {tCommon('user.formations.cancel')}
             </AlertDialogCancel>
             <AlertDialogAction
               onClick={confirmDelete}
               className="bg-red-600 hover:bg-red-700 text-white"
             >
-              Supprimer
+              {tCommon('admin.ambassadors.delete')}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>

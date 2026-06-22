@@ -5,7 +5,6 @@ import { TemplateForm } from './template-form';
 import { useOrganizationStore } from '@/store/organization.store';
 import { useTemplateStore } from '@/store/template.store';
 import { Button } from '@/components/ui/button';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -16,8 +15,13 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
+import { Combobox } from '@/components/ui/combobox';
+import { useAuthStore } from '@/store/auth.store';
+import { roleEnum } from '@/constants/roleEnum';
+import { useTranslation } from 'react-i18next';
 
 export default function Templates() {
+  const { t: tCommon } = useTranslation('common');
   const { organizations, fetchAll } = useOrganizationStore();
   const {
     templateList,
@@ -29,11 +33,13 @@ export default function Templates() {
     isLoading,
   } = useTemplateStore();
 
+  const {user} = useAuthStore()
+
   const [search, setSearch] = useState('');
   const [sortBy, setSortBy] = useState<'name' | 'organization' | 'createdAt'>('createdAt');
   const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc');
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
-  const [templateToDelete, setTemplateToDelete] = useState<{ id: string; name: string } | null>(null);
+  const [templateToDelete, setTemplateToDelete] = useState<{ id: string; name: string; isDefault: boolean } | null>(null);
 
   useEffect(() => {
     fetchAll();
@@ -43,7 +49,8 @@ export default function Templates() {
   const filteredTemplates = useMemo(() => {
     const normalizedSearch = search.toLowerCase().trim();
 
-    const filtered = templateList.filter((template) => {
+
+    const filtered = templateList?.filter((template) => {
       if (!normalizedSearch) return true;
       return [
         template.name,
@@ -71,21 +78,21 @@ export default function Templates() {
     });
   }, [templateList, search, sortBy, sortOrder]);
 
-  const handleDelete = (id: string, name: string) => {
-    setTemplateToDelete({ id, name });
+  const handleDelete = (id: string, name: string, isDefault: boolean) => {
+    setTemplateToDelete({ id, name, isDefault });
     setDeleteDialogOpen(true);
   };
 
-  const confirmDelete = async () => {
-    if (!templateToDelete) return;
+const confirmDelete = async () => {
+  if (!templateToDelete) return;
 
-    await deleteTemplate(templateToDelete.id);
-    if (currentTemplate?.id === templateToDelete.id) {
-      setCurrentTemplate(null);
-    }
-    setDeleteDialogOpen(false);
-    setTemplateToDelete(null);
-  };
+  await deleteTemplate(templateToDelete.id, templateToDelete?.isDefault ?? false);
+  if (currentTemplate?.id === templateToDelete.id) {
+    setCurrentTemplate(null);
+  }
+  setDeleteDialogOpen(false);
+  setTemplateToDelete(null);
+};
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-[#050816]">
@@ -99,26 +106,24 @@ export default function Templates() {
                   type="text"
                   value={search}
                   onChange={(e) => setSearch(e.target.value)}
-                  placeholder="Rechercher un template..."
+                  placeholder={tCommon('admin.templates.search_placeholder')}
                   className="w-full rounded-sm border border-gray-300 dark:border-slate-800 bg-white dark:bg-slate-900 px-4 py-3 text-sm text-gray-900 dark:text-white placeholder:text-gray-400 dark:placeholder:text-slate-500 focus:border-gray-400 dark:focus:border-slate-700 focus:outline-none"
                 />
               </div>
 
               <div className="flex gap-2">
-                <Select
-                  value={sortBy}
-                  onValueChange={(value) => setSortBy(value as typeof sortBy)}
-                >
-                  <SelectTrigger className="w-[180px] border-gray-300 dark:border-slate-800 bg-white dark:bg-slate-900 text-gray-900 dark:text-white">
-                    <SelectValue placeholder="Trier par" />
-                  </SelectTrigger>
-
-                  <SelectContent className="bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700">
-                    <SelectItem value="createdAt">Date</SelectItem>
-                    <SelectItem value="name">Nom</SelectItem>
-                    <SelectItem value="organization">Organisation</SelectItem>
-                  </SelectContent>
-                </Select>
+              <Combobox
+  options={[
+    { value: 'createdAt', label: tCommon('admin.campaigns.tracking_date')},
+    { value: 'name', label: tCommon('user.profile.last_name')},
+    { value: 'organization', label: tCommon('admin.grc.org_name')},
+  ]}
+  value={sortBy}
+  onChange={(value) => setSortBy(value as typeof sortBy)}
+  placeholder={tCommon('admin.campaigns.page_sort_by')}
+  searchPlaceholder={tCommon('admin.templates.search_criteria')}
+  className="w-[180px] border-gray-300 dark:border-slate-800 bg-white dark:bg-slate-900 text-gray-900 dark:text-white"
+/>
 
                 <Button
                   variant="outline"
@@ -134,9 +139,9 @@ export default function Templates() {
               </div>
             </div>
 
-            {filteredTemplates.length > 0 && (
+            {filteredTemplates?.length > 0 && (
               <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
-                {filteredTemplates.map((template) => {
+                {filteredTemplates?.map((template) => {
                   const isSelected =
                     template.id === currentTemplate?.id;
 
@@ -160,13 +165,13 @@ export default function Templates() {
 
                           <div className="mt-2 inline-flex rounded-full border border-gray-300 dark:border-slate-700 px-2.5 py-1 text-xs text-gray-600 dark:text-slate-300">
                             {template.organization?.name ??
-                              "Organisation inconnue"}
+                              "Roxshield Default"}
                           </div>
                         </div>
 
                         {isSelected && (
                           <span className="rounded-full bg-cyan-500/10 px-2 py-1 text-xs text-cyan-400">
-                            Actif
+                            {tCommon('common.active')}
                           </span>
                         )}
                       </div>
@@ -186,15 +191,15 @@ export default function Templates() {
                           Voir
                         </Button>
 
-                        <Button
-                          size="sm"
-                          variant="destructive"
-                          onClick={() =>
-                            handleDelete(template.id, template.name)
-                          }
-                        >
-                          Supprimer
-                        </Button>
+{(user?.role === roleEnum.SUPERADMIN || !template?.isDefault) && (
+  <Button
+    size="sm"
+    variant="destructive"
+    onClick={() => handleDelete(template.id, template.name, template.isDefault as boolean)}
+  >
+    {tCommon('admin.ambassadors.delete')}
+  </Button>
+)}
                       </div>
                     </div>
                   );
@@ -216,20 +221,20 @@ export default function Templates() {
       <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
         <AlertDialogContent className="bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-800">
           <AlertDialogHeader>
-            <AlertDialogTitle className="text-gray-900 dark:text-white">Supprimer le template?</AlertDialogTitle>
+            <AlertDialogTitle className="text-gray-900 dark:text-white">{tCommon('admin.templates.delete_confirm_title')}</AlertDialogTitle>
             <AlertDialogDescription className="text-gray-600 dark:text-gray-400">
-              Êtes-vous sûr de vouloir supprimer le template <span className="font-semibold text-gray-900 dark:text-white">"{templateToDelete?.name}"</span> ? Cette action est irréversible.
+              {tCommon('admin.templates.delete_confirm_desc')} <span className="font-semibold text-gray-900 dark:text-white">"{templateToDelete?.name}"</span> {tCommon('admin.campaigns.page_delete_confirm_desc2')}
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter className='bg-white dark:bg-gray-900'>
             <AlertDialogCancel className="bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 border-gray-300 dark:border-gray-700 text-gray-700 dark:text-white hover:text-gray-900 dark:hover:text-white">
-              Annuler
+              {tCommon('user.formations.cancel')}
             </AlertDialogCancel>
             <AlertDialogAction
               onClick={confirmDelete}
               className="bg-red-600 hover:bg-red-700 text-white"
             >
-              Supprimer
+              {tCommon('admin.ambassadors.delete')}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>

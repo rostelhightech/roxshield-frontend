@@ -93,6 +93,7 @@ export const useGroupStore = create<GroupState>((set, get) => ({
         isLoading: false,
       }));
       get().applyFilters();
+      get().fetchById(newGroup.id);
     } catch (error) {
       const message = error instanceof Error ? error.message : 'Erreur inconnue';
       set({ error: message, isLoading: false });
@@ -111,6 +112,7 @@ export const useGroupStore = create<GroupState>((set, get) => ({
         isLoading: false,
       }));
       get().applyFilters();
+      get().fetchById(id);
     } catch (error) {
       const message = error instanceof Error ? error.message : 'Erreur inconnue';
       set({ error: message, isLoading: false });
@@ -128,6 +130,7 @@ export const useGroupStore = create<GroupState>((set, get) => ({
         isLoading: false,
       }));
       get().applyFilters();
+      get().fetchAll();
     } catch (error) {
       const message = error instanceof Error ? error.message : 'Erreur inconnue';
       set({ error: message, isLoading: false });
@@ -164,8 +167,8 @@ export const useGroupStore = create<GroupState>((set, get) => ({
     }
 
     filtered.sort((a, b) => {
-      let aVal: any = a[filters.sortBy as keyof Group];
-      let bVal: any = b[filters.sortBy as keyof Group];
+      let aVal: unknown = a[filters.sortBy as keyof Group];
+      let bVal: unknown = b[filters.sortBy as keyof Group];
 
       if (filters.sortBy === 'organizationName') {
         aVal = a.organization?.name ?? '';

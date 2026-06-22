@@ -19,11 +19,14 @@ import { FormationContent } from './components/formation-content';
 import { FormationAssignment } from './components/formation-assignment';
 import { FormationProgressComponent } from './components/formation-progress';
 import { FormationAnalytics } from './components/formation-analytics';
+import { useTranslation } from 'react-i18next';
 
 export function FormationDetailPage() {
+  const { t: tCommon } = useTranslation('common');
   const { formationId } = useParams({ from: '/_authenticated/dashboard/formations/$formationId' });
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState('overview');
+  const [isInitialized, setIsInitialized] = useState(false);
   const {
     selectedFormation: formation,
     formationProgress: progress,
@@ -35,12 +38,13 @@ export function FormationDetailPage() {
 
   useEffect(() => {
     if (formationId) {
-      fetchFormationById(formationId);
+      setIsInitialized(false);
+      fetchFormationById(formationId).finally(() => setIsInitialized(true));
       fetchFormationProgress(formationId);
     }
   }, [formationId]);
 
-  if (loading && !formation) {
+  if (!isInitialized) {
     return (
       <div className="min-h-screen bg-gray-50 dark:bg-[#050816] px-6">
         <div className="space-y-6">
@@ -58,16 +62,16 @@ export function FormationDetailPage() {
 
   if (error || !formation) {
     return (
-      <div className="min-h-screen bg-gray-50 dark:bg-[#050816] px-6">
+      <div className="min-h-screen bg-gray-50 dark:bg-[#050816] px-2 md:px-6">
         <Card className="bg-red-50 dark:bg-red-900/20 border-red-300 dark:border-red-700/50">
           <CardContent className="p-6 text-center">
             <AlertCircle className="w-12 h-12 text-red-600 dark:text-red-400 mx-auto mb-4" />
-            <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-2">Formation non trouvée</h3>
+            <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-2">{tCommon('admin.formations.detail_not_found')}</h3>
             <p className="text-gray-600 dark:text-gray-400 mb-4">
-              {error || 'La formation demandée n\'existe pas ou a été supprimée.'}
+              {error || tCommon('admin.formations.detail_not_found_desc')}
             </p>
             <Button onClick={() => navigate({ to: '/dashboard/formations' })} variant="outline">
-              Retour aux formations
+              {tCommon('user.formations.back_to_trainings')}
             </Button>
           </CardContent>
         </Card>
@@ -78,10 +82,10 @@ export function FormationDetailPage() {
     <>
       <DashboardTopbar
         title={formation.title}
-        description="Détails et statistiques de la formation"
+        description={tCommon('admin.formations.detail_page_desc')}
       />
       
-      <div className="min-h-screen bg-gray-50 dark:bg-[#050816] px-6">
+      <div className="min-h-screen bg-gray-50 dark:bg-[#050816] px-2 md:px-6">
         {/* Header avec navigation et actions */}
         <FormationHeader formation={formation} />
 
@@ -89,45 +93,62 @@ export function FormationDetailPage() {
         <FormationStatsCards formation={formation} />
 
         {/* Tabs */}
-        <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
-          <TabsList className="bg-gray-100 dark:bg-slate-900/50 gap-4 border border-gray-200 dark:border-slate-700/50 p-1">
-            <TabsTrigger value="overview" className="data-[state=active]:bg-blue-600 data-[state=active]:text-white text-gray-700 dark:text-gray-100 hover:text-gray-900 dark:hover:text-gray-400">
-              Vue d'ensemble
-            </TabsTrigger>
-            <TabsTrigger value="content" className="data-[state=active]:bg-purple-600 data-[state=active]:text-white text-gray-700 dark:text-gray-100 hover:text-gray-900 dark:hover:text-gray-400">
-              Contenu
-            </TabsTrigger>
-            <TabsTrigger value="assignment" className="data-[state=active]:bg-indigo-600 data-[state=active]:text-white text-gray-700 dark:text-gray-100 hover:text-gray-900 dark:hover:text-gray-400">
-              Assignation
-            </TabsTrigger>
-            <TabsTrigger value="progress" className="data-[state=active]:bg-green-600 data-[state=active]:text-white text-gray-700 dark:text-gray-100 hover:text-gray-900 dark:hover:text-gray-400">
-              Progression utilisateurs
-            </TabsTrigger>
-            <TabsTrigger value="analytics" className="data-[state=active]:bg-orange-600 data-[state=active]:text-white text-gray-700 dark:text-gray-100 hover:text-gray-900 dark:hover:text-gray-400">
-              Analyses
-            </TabsTrigger>
-          </TabsList>
+     <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
+  <div className="w-full overflow-x-auto scrollbar-hide -mx-4 px-4 sm:mx-0 sm:px-0">
+    <TabsList className="flex w-max sm:w-full gap-2 sm:gap-4 bg-gray-100 dark:bg-slate-900/50 border border-gray-200 dark:border-slate-700/50 p-1">
+      <TabsTrigger
+        value="overview"
+        className="data-[state=active]:bg-blue-600 data-[state=active]:text-white text-gray-700 dark:text-gray-100 hover:text-gray-900 dark:hover:text-gray-400 whitespace-nowrap text-sm sm:text-base"
+      >
+        {tCommon('admin.formations.tab_overview')}
+      </TabsTrigger>
+      <TabsTrigger
+        value="content"
+        className="data-[state=active]:bg-purple-600 data-[state=active]:text-white text-gray-700 dark:text-gray-100 hover:text-gray-900 dark:hover:text-gray-400 whitespace-nowrap text-sm sm:text-base"
+      >
+        {tCommon('admin.formations.tab_content')}
+      </TabsTrigger>
+      <TabsTrigger
+        value="assignment"
+        className="data-[state=active]:bg-indigo-600 data-[state=active]:text-white text-gray-700 dark:text-gray-100 hover:text-gray-900 dark:hover:text-gray-400 whitespace-nowrap text-sm sm:text-base"
+      >
+        {tCommon('admin.formations.tab_assignment')}
+      </TabsTrigger>
+      <TabsTrigger
+        value="progress"
+        className="data-[state=active]:bg-green-600 data-[state=active]:text-white text-gray-700 dark:text-gray-100 hover:text-gray-900 dark:hover:text-gray-400 whitespace-nowrap text-sm sm:text-base"
+      >
+        {tCommon('admin.formations.tab_progress')}
+      </TabsTrigger>
+      <TabsTrigger
+        value="analytics"
+        className="data-[state=active]:bg-orange-600 data-[state=active]:text-white text-gray-700 dark:text-gray-100 hover:text-gray-900 dark:hover:text-gray-400 whitespace-nowrap text-sm sm:text-base"
+      >
+        {tCommon('admin.formations.tab_analytics')}
+      </TabsTrigger>
+    </TabsList>
+  </div>
 
-          <TabsContent value="overview">
-            <FormationOverview formation={formation} />
-          </TabsContent>
+  <TabsContent value="overview">
+    <FormationOverview formation={formation} />
+  </TabsContent>
 
-          <TabsContent value="content">
-            <FormationContent formation={formation} />
-          </TabsContent>
+  <TabsContent value="content">
+    <FormationContent formation={formation} />
+  </TabsContent>
 
-          <TabsContent value="assignment">
-            <FormationAssignment formation={formation} progress={progress} />
-          </TabsContent>
+  <TabsContent value="assignment">
+    <FormationAssignment formation={formation} progress={progress} />
+  </TabsContent>
 
-          <TabsContent value="progress">
-            <FormationProgressComponent progress={progress} />
-          </TabsContent>
+  <TabsContent value="progress">
+    <FormationProgressComponent progress={progress} />
+  </TabsContent>
 
-          <TabsContent value="analytics">
-            <FormationAnalytics formation={formation} />
-          </TabsContent>
-        </Tabs>
+  <TabsContent value="analytics">
+    <FormationAnalytics formation={formation} />
+  </TabsContent>
+</Tabs>
       </div>
     </>
   );

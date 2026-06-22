@@ -29,6 +29,7 @@ function DashboardLayout() {
       try {
         if (user.role === roleEnum.SUPERADMIN) {
           await Promise.all([fetchAllOrganizations()]);
+          
         } else if (user.role === roleEnum.ADMIN) {
           await Promise.all([fetchAllOrganizations()]);
         } else if (user.role === roleEnum.USER) {
@@ -42,6 +43,7 @@ function DashboardLayout() {
     };
 
     loadData();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isAuthenticated, user]);
 
   if (!user || isLoading) return <SplashScreenComponent />;
@@ -50,11 +52,11 @@ function DashboardLayout() {
     return (
       <div className="min-h-screen bg-gray-50  dark:bg-[#050816] text-gray-900 dark:text-white">
         <div className="flex min-h-screen">
-          <div className={`shrink-0 transition-all duration-300 ${collapsed ? "w-[72px]" : "w-[260px]"}`} />
+          <div className={`hidden md:block shrink-0 transition-all duration-300 ${collapsed ? "w-[72px]" : "w-[260px]"}`} />
           <SuperAdminSidebar />
-          <div className="overflow-hidden flex-1 space-y-6 p-6">
-            <Outlet />
-          </div>
+          <div className="overflow-hidden flex-1 space-y-6 p-6 pt-20 md:pt-6">
+  <Outlet />
+</div>
         </div>
       </div>
     );
@@ -64,9 +66,9 @@ function DashboardLayout() {
     return (
       <div className="min-h-screen bg-gray-50  dark:bg-[#050816] text-gray-900 dark:text-white">
         <div className="flex min-h-screen">
-          <div className={`shrink-0 transition-all duration-300 ${collapsed ? "w-[72px]" : "w-[260px]"}`} />
+          <div className={`hidden md:block shrink-0 transition-all duration-300 ${collapsed ? "w-[72px]" : "w-[260px]"}`} />
           <AdminSidebar />
-          <div className="overflow-hidden flex-1 space-y-6 p-6">
+          <div className="overflow-hidden flex-1 space-y-6 p-6 pt-20 md:pt-6">
             <Outlet />
           </div>
         </div>
@@ -78,9 +80,9 @@ function DashboardLayout() {
     return (
       <div className="min-h-screen bg-gray-50  dark:bg-[#050816] text-gray-900 dark:text-white">
         <div className="flex min-h-screen">
-          <div className={`shrink-0 transition-all duration-300 ${collapsed ? "w-[72px]" : "w-[260px]"}`} />
+          <div className={`hidden md:block shrink-0 transition-all duration-300 ${collapsed ? "w-[72px]" : "w-[260px]"}`} />
           <UserSidebar />
-          <div className="overflow-hidden flex-1 space-y-6 p-6">
+          <div className="overflow-hidden flex-1 space-y-6 p-2 md:p-6 pt-20 md:pt-6">
             <Outlet />
           </div>
         </div>

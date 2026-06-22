@@ -5,6 +5,7 @@ import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip } from 'recharts';
 import { Smartphone, Monitor, Globe, Cpu } from 'lucide-react';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card';
 import { UserAgentAnalysis } from '@/store/campaign.store';
+import { useTranslation } from 'react-i18next';
 
 interface CampaignDeviceAnalysisProps {
   userAgentAnalysis: UserAgentAnalysis;
@@ -15,6 +16,7 @@ const BROWSER_COLORS = ['#f59e0b', '#10b981', '#06b6d4', '#ef4444', '#8b5cf6'];
 const OS_COLORS = ['#3b82f6', '#64748b', '#f97316', '#22c55e', '#a855f7'];
 
 export function CampaignDeviceAnalysis({ userAgentAnalysis }: CampaignDeviceAnalysisProps) {
+  const { t: tCommon } = useTranslation('common');
   const { deviceData, browserData, osData } = userAgentAnalysis;
 
   const totalDevices = deviceData.reduce((sum, item) => sum + item.value, 0);
@@ -58,7 +60,7 @@ export function CampaignDeviceAnalysis({ userAgentAnalysis }: CampaignDeviceAnal
             <div>
               <p className="text-sm text-gray-500 dark:text-zinc-400">Navigateurs</p>
               <h2 className="text-2xl font-bold text-gray-900 dark:text-white">{browserData.length}</h2>
-              <p className="text-xs text-gray-400 dark:text-zinc-500">types détectés</p>
+              <p className="text-xs text-gray-400 dark:text-zinc-500">{tCommon('admin.campaigns.device_types')}</p>
             </div>
           </div>
         </motion.div>
@@ -76,7 +78,7 @@ export function CampaignDeviceAnalysis({ userAgentAnalysis }: CampaignDeviceAnal
             <div>
               <p className="text-sm text-gray-500 dark:text-zinc-400">Systèmes d'exploitation</p>
               <h2 className="text-2xl font-bold text-gray-900 dark:text-white">{osData.length}</h2>
-              <p className="text-xs text-gray-400 dark:text-zinc-500">plateformes utilisées</p>
+              <p className="text-xs text-gray-400 dark:text-zinc-500">{tCommon('admin.campaigns.device_platforms')}</p>
             </div>
           </div>
         </motion.div>
@@ -141,7 +143,7 @@ export function CampaignDeviceAnalysis({ userAgentAnalysis }: CampaignDeviceAnal
                 <Globe className="w-5 h-5 text-purple-600 dark:text-purple-400" />
                 Navigateurs
               </CardTitle>
-              <CardDescription className="text-gray-500 dark:text-gray-400">Répartition par navigateur</CardDescription>
+              <CardDescription className="text-gray-500 dark:text-gray-400">{tCommon('admin.campaigns.device_browser')}</CardDescription>
             </CardHeader>
             <CardContent>
               <ResponsiveContainer width="100%" height={250}>

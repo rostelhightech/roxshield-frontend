@@ -11,8 +11,10 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { PlanFilters } from './plan-filter';
 import { PlanCard } from './plan-card';
 import { PlanDialog } from './plan-dialog';
+import { useTranslation } from 'react-i18next';
 
 export const Plans = () => {
+  const { t: tCommon } = useTranslation('common');
   const [dialogOpen, setDialogOpen] = useState(false);
   const [editingPlan, setEditingPlan] = useState(null);
   
@@ -45,7 +47,7 @@ export const Plans = () => {
               className="bg-gray-200 hover:bg-gray-300 dark:bg-slate-600 dark:hover:bg-slate-700 text-gray-900 dark:text-white ml-2 cursor-pointer transition-all duration-300"
             >
               <Plus className="w-4 h-4 mr-2" />
-              Nouveau plan
+              {tCommon('admin.plans.new_plan')}
             </Button>
           </div>
         </div>
@@ -56,13 +58,13 @@ export const Plans = () => {
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
           <Card className="bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-800 rounded-sm">
             <div className="p-4">
-              <p className="text-gray-500 dark:text-gray-400 text-sm">Total plans</p>
+              <p className="text-gray-500 dark:text-gray-400 text-sm">{tCommon('admin.plans.total_plans')}</p>
               <p className="text-2xl font-bold text-gray-900 dark:text-white">{filteredPlans.length}</p>
             </div>
           </Card>
           <Card className="bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-800 rounded-sm">
             <div className="p-4">
-              <p className="text-gray-500 dark:text-gray-400 text-sm">Plans populaires</p>
+              <p className="text-gray-500 dark:text-gray-400 text-sm">{tCommon('admin.plans.popular_plans')}</p>
               <p className="text-2xl font-bold text-gray-900 dark:text-white">
                 {filteredPlans.filter(p => p.isPopular).length}
               </p>
@@ -70,7 +72,7 @@ export const Plans = () => {
           </Card>
           <Card className="bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-800 rounded-sm">
             <div className="p-4">
-              <p className="text-gray-500 dark:text-gray-400 text-sm">Prix moyen</p>
+              <p className="text-gray-500 dark:text-gray-400 text-sm">{tCommon('admin.plans.avg_price')}</p>
               <p className="text-2xl font-bold text-gray-900 dark:text-white">
                 {Math.round(filteredPlans.reduce((acc, p) => acc + p.pricePerUser, 0) / (filteredPlans.length || 1))} F
               </p>
@@ -78,7 +80,7 @@ export const Plans = () => {
           </Card>
           <Card className="bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-800 rounded-sm">
             <div className="p-4">
-              <p className="text-gray-500 dark:text-gray-400 text-sm">Entreprise max</p>
+              <p className="text-gray-500 dark:text-gray-400 text-sm">{tCommon('admin.plans.max_enterprise')}</p>
               <p className="text-2xl font-bold text-gray-900 dark:text-white">
                 {filteredPlans.reduce(
                   (max, plan) => Math.max(max, plan.maxEmployees || 0),
@@ -105,11 +107,11 @@ export const Plans = () => {
                 className="text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white"
               >
                 <Filter className="w-4 h-4 mr-2" />
-                Réinitialiser les filtres
+                {tCommon('admin.ambassadors.reset_filters')}
               </Button>
             )}
             <p className="text-sm text-gray-500 dark:text-gray-400">
-              {filteredPlans.length} plan(s) trouvé(s)
+              {tCommon('admin.plans.plans_found', { count: filteredPlans.length })}
             </p>
           </div>
         </div>
@@ -125,9 +127,9 @@ export const Plans = () => {
           <Card className="bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-800 rounded-sm">
             <div className="p-12 text-center">
               <CreditCard className="w-12 h-12 text-gray-400 dark:text-gray-600 mx-auto mb-4" />
-              <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-2">Aucun plan</h3>
+              <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-2">{tCommon('admin.plans.no_plans')}</h3>
               <p className="text-gray-500 dark:text-gray-400">
-                {hasFilters ? "Aucun plan ne correspond aux filtres" : "Commencez par créer votre premier plan"}
+                {hasFilters ? tCommon('admin.plans.no_plans_filter') : tCommon('admin.plans.no_plans_start')}
               </p>
               {!hasFilters && (
                 <Button
@@ -136,7 +138,7 @@ export const Plans = () => {
                   className="mt-4"
                 >
                   <Plus className="w-4 h-4 mr-2" />
-                  Créer un plan
+                  {tCommon('admin.plans.create_plan')}
                 </Button>
               )}
             </div>

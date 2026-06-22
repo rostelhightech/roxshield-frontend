@@ -1,6 +1,52 @@
 import { create } from 'zustand';
 import { apiService } from '@/app/services/api.service';
 
+// Types pour les métadonnées
+export interface ChapterMetadata {
+  videoUrl?: string;
+  documentUrl?: string;
+  resources?: Array<{
+    name: string;
+    url: string;
+    type: string;
+  }>;
+}
+
+export interface VideoProgress {
+  watchedDuration: number;
+  totalDuration: number;
+  lastPosition: number;
+}
+
+export interface EvaluationQuestion {
+  id: string;
+  question: string;
+  type: 'multiple_choice' | 'true_false' | 'short_answer';
+  options?: string[];
+  correctAnswer: number | string;
+  points: number;
+  explanation?: string;
+}
+
+export interface EvaluationAnswer {
+  questionId: string;
+  selectedAnswer: number | string;
+  isCorrect: boolean;
+  pointsEarned: number;
+  timeSpent?: number;
+}
+
+export interface SubmitEvaluationData {
+  answers: EvaluationAnswer[];
+  attemptId: string;
+}
+
+export interface SaveChapterProgressData {
+  isCompleted: boolean;
+  videoProgress?: VideoProgress;
+}
+
+// Interfaces existantes avec corrections
 export interface Formation {
   id: string;
   title: string;
@@ -9,6 +55,8 @@ export interface Formation {
   estimatedDuration: number;
   isRequired: boolean;
   passingScore: number;
+  type: string;
+  hasFinalEvaluation: boolean;
   allowRetries: boolean;
   maxAttempts: number;
   targetAudience: {
@@ -23,7 +71,6 @@ export interface Formation {
   updatedAt: string;
   enrolledCount: number;
   completedCount: number;
-  // Nouvelle structure hiérarchique
   modules?: Array<{
     id: string;
     title: string;
@@ -38,23 +85,16 @@ export interface Formation {
       order: number;
       type: 'VIDEO' | 'DOCUMENT' | 'INTERACTIVE' | 'QUIZ' | 'WEBINAR';
       estimatedDuration: number;
-      metadata?: any;
+      metadata?: ChapterMetadata;
+      pdfUrl?: string | null;
+      pdfPublicId?: string | null;
     }>;
   }>;
-  // Évaluation finale
   finalEvaluation?: {
     id: string;
     title: string;
     description?: string;
-    questions: Array<{
-      id: string;
-      question: string;
-      type: 'multiple_choice' | 'true_false' | 'short_answer';
-      options?: string[];
-      correctAnswer: number | string;
-      points: number;
-      explanation?: string;
-    }>;
+    questions: EvaluationQuestion[];
     passingScore: number;
     timeLimit?: number;
     allowRetries: boolean;
@@ -117,6 +157,7 @@ export interface FormationFilters {
 export interface CreateFormationPayload {
   title: string;
   description: string;
+  status: 'DRAFT' | 'PUBLISHED' | 'ARCHIVED';
   estimatedDuration: number;
   isRequired: boolean;
   passingScore: number;
@@ -124,7 +165,6 @@ export interface CreateFormationPayload {
   maxAttempts: number;
   targetAudience: Formation['targetAudience'];
   organizationId: string;
-  // Nouvelle structure
   modules: Array<{
     title: string;
     description?: string;
@@ -137,7 +177,9 @@ export interface CreateFormationPayload {
       order: number;
       type: 'VIDEO' | 'DOCUMENT' | 'INTERACTIVE' | 'QUIZ' | 'WEBINAR';
       estimatedDuration: number;
-      metadata?: any;
+      metadata?: ChapterMetadata;
+      pdfUrl?: string | null;
+      pdfPublicId?: string | null;
     }>;
   }>;
 }
@@ -174,23 +216,26 @@ export interface AssignFormationPayload {
   organizationId?: string;
 }
 
+export interface MyFormation extends Omit<Formation, 'status'> {
+  progressId: string;
+  status: 'NOT_STARTED' | 'IN_PROGRESS' | 'COMPLETED' | 'FAILED';
+  progressPercentage: number;
+  timeSpent: number;
+  currentScore: number;
+  hasFinalEvaluation: boolean;
+  bestScore: number;
+  attemptCount: number;
+  startedAt?: string;
+  completedAt?: string;
+  lastAccessedAt: string;
+}
+
 interface FormationState {
   formations: Formation[];
   filteredFormations: Formation[];
   selectedFormation: Formation | null;
   formationProgress: FormationProgress[];
-  myFormations: (Omit<Formation, 'status'> & { 
-    progressId: string; 
-    status: 'NOT_STARTED' | 'IN_PROGRESS' | 'COMPLETED' | 'FAILED'; 
-    progressPercentage: number; 
-    timeSpent: number; 
-    currentScore: number; 
-    bestScore: number; 
-    attemptCount: number; 
-    startedAt?: string; 
-    completedAt?: string; 
-    lastAccessedAt: string 
-  })[];
+  myFormations: MyFormation[];
   analytics: FormationAnalytics | null;
   stats: FormationStats | null;
   isLoading: boolean;
@@ -210,15 +255,18 @@ interface FormationState {
   setFilters: (filters: Partial<FormationFilters>) => void;
   resetFilters: () => void;
   applyFilters: () => void;
-  
-  // Nouvelles méthodes
-  startFormation: (formationId: string) => Promise<any>;
-  completeFormation: (formationId: string, data: { timeSpent: number; finalScore?: number }) => Promise<any>;
-  saveChapterProgress: (formationId: string, chapterId: string, data: { isCompleted: boolean; timeSpent: number; videoProgress?: any }) => Promise<void>;
-  getChaptersProgress: (formationId: string) => Promise<any[]>;
-  submitEvaluation: (formationId: string, evaluationId: string, data: { answers: any[]; timeSpent: number; attemptId: string }) => Promise<any>;
-  startEvaluation: (formationId: string, evaluationId: string) => Promise<any>;
-  getEvaluationAttempts: (formationId: string, evaluationId: string) => Promise<any[]>;
+
+  uploadChapterPdf: (file: File, organizationId: string) => Promise<{ pdfUrl: string; pdfPublicId: string }>;
+  deleteChapterPdf: (chapterId: string) => Promise<void>;
+
+  startFormation: (formationId: string) => Promise<unknown>;
+  addTime: (chapterId: string, data: { timeSpent: number }) => Promise<unknown>;
+  completeFormation: (formationId: string, data: { finalScore?: number }) => Promise<unknown>;
+  saveChapterProgress: (formationId: string, chapterId: string, data: SaveChapterProgressData) => Promise<void>;
+  getChaptersProgress: (formationId: string) => Promise<unknown[]>;
+  submitEvaluation: (formationId: string, evaluationId: string, data: SubmitEvaluationData) => Promise<unknown>;
+  startEvaluation: (formationId: string, evaluationId: string) => Promise<unknown>;
+  getEvaluationAttempts: (formationId: string, evaluationId: string) => Promise<unknown[]>;
 }
 
 const defaultFilters: FormationFilters = {
@@ -246,13 +294,11 @@ export const useFormationStore = create<FormationState>((set, get) => ({
     try {
       const params = new URLSearchParams();
       if (organizationId) params.append('organizationId', organizationId);
-      
+
       const response = await apiService.get(`/formations?${params}`);
-      console.log('API Response:', response);
-      
-      // Le backend retourne { success: true, data: [...] }
+
       const formationsData = response.data?.data || response.data || [];
-      
+
       set({ formations: formationsData as Formation[], isLoading: false });
       get().applyFilters();
     } catch (error) {
@@ -278,19 +324,37 @@ export const useFormationStore = create<FormationState>((set, get) => ({
     try {
       const response = await apiService.get('/formations/my-formations');
       const myFormationsData = response.data?.data || response.data || [];
-      
-      // Mapper progressStatus vers status pour correspondre à notre interface
-      const mappedFormations = myFormationsData.map((formation: any) => ({
-        ...formation,
-        status: formation.progressStatus || 'NOT_STARTED', // Utiliser progressStatus du backend
-        bestScore: formation.finalScore || 0, // Mapper finalScore vers bestScore
-        attemptCount: 0, // Temporaire, à calculer si nécessaire
-      }));
-      
+
+      const mappedFormations: MyFormation[] = myFormationsData.map((formation: unknown) => {
+        const f = formation as {
+          id: string;
+        progressStatus: string;
+        finalScore: number;};
+        return {
+          ...f,
+          status: f.progressStatus || 'NOT_STARTED',
+          bestScore: f.finalScore || 0,
+          attemptCount: 0,
+        };
+      });
+
       set({ myFormations: mappedFormations, isLoading: false });
     } catch (error) {
       const message = error instanceof Error ? error.message : 'Erreur inconnue';
       set({ error: message, isLoading: false });
+    }
+  },
+
+  addTime: async (chapterId: string, data: { timeSpent: number }) => {
+    set({ error: null });
+    try {
+      const response = await apiService.put(`/formations/${chapterId}/add-time`, data);
+      const updatedFormationData = response.data?.data || response.data;
+      return updatedFormationData;
+    } catch (error) {
+      const message = error instanceof Error ? error.message : 'Erreur inconnue';
+      set({ error: message, isLoading: false });
+      throw error;
     }
   },
 
@@ -299,11 +363,9 @@ export const useFormationStore = create<FormationState>((set, get) => ({
     try {
       const response = await apiService.post('/formations', data);
       const newFormation = response.data as Formation;
-      
-      
-      // Rafraîchir la liste des formations
+
       await get().fetchAll(data.organizationId);
-      
+
       return newFormation;
     } catch (error) {
       const message = error instanceof Error ? error.message : 'Erreur inconnue';
@@ -317,15 +379,14 @@ export const useFormationStore = create<FormationState>((set, get) => ({
     try {
       const response = await apiService.put(`/formations/${id}`, data);
       const updatedFormationData = response.data?.data || response.data;
-      
+
       set(state => ({
         formations: state.formations.map(formation => formation.id === id ? updatedFormationData : formation),
         selectedFormation: state.selectedFormation?.id === id ? updatedFormationData : state.selectedFormation,
         isLoading: false,
       }));
       get().applyFilters();
-      
-      // Rafraîchir les données
+
       await get().fetchById(id);
     } catch (error) {
       const message = error instanceof Error ? error.message : 'Erreur inconnue';
@@ -344,6 +405,7 @@ export const useFormationStore = create<FormationState>((set, get) => ({
         isLoading: false,
       }));
       get().applyFilters();
+      get().fetchAll();
     } catch (error) {
       const message = error instanceof Error ? error.message : 'Erreur inconnue';
       set({ error: message, isLoading: false });
@@ -383,12 +445,11 @@ export const useFormationStore = create<FormationState>((set, get) => ({
     try {
       await apiService.post(`/formations/${formationId}/assign`, assignment);
       set({ isLoading: false });
-      
-      // Optionnel: rafraîchir les données de progression
+
       if (assignment.organizationId) {
         await get().fetchFormationProgress(formationId, { organizationId: assignment.organizationId });
       }
-      
+
     } catch (error) {
       const message = error instanceof Error ? error.message : 'Erreur inconnue';
       set({ error: message, isLoading: false });
@@ -426,7 +487,6 @@ export const useFormationStore = create<FormationState>((set, get) => ({
     const { formations, filters } = get();
     let filtered = [...formations];
 
-    // Filtre par recherche
     if (filters.search) {
       const searchLower = filters.search.toLowerCase();
       filtered = filtered.filter(formation =>
@@ -435,41 +495,50 @@ export const useFormationStore = create<FormationState>((set, get) => ({
       );
     }
 
-    // Filtre par statut
     if (filters.status) {
       filtered = filtered.filter(formation => formation.status === filters.status);
     }
 
-    // Filtre par organisation
     if (filters.organizationId) {
       filtered = filtered.filter(formation => formation.organizationId === filters.organizationId);
     }
 
-    // Tri
     filtered.sort((a, b) => {
-      let aVal: any = a[filters.sortBy as keyof Formation];
-      let bVal: any = b[filters.sortBy as keyof Formation];
+      const aVal = a[filters.sortBy as keyof Formation];
+      const bVal = b[filters.sortBy as keyof Formation];
 
       if (filters.sortBy === 'status') {
-        aVal = a.status;
-        bVal = b.status;
+        if (a.status < b.status) return filters.sortOrder === 'asc' ? -1 : 1;
+        if (a.status > b.status) return filters.sortOrder === 'asc' ? 1 : -1;
+        return 0;
       }
 
-      if (aVal < bVal) return filters.sortOrder === 'asc' ? -1 : 1;
-      if (aVal > bVal) return filters.sortOrder === 'asc' ? 1 : -1;
+   if ((aVal && bVal) && (aVal ) < bVal) return filters.sortOrder === 'asc' ? -1 : 1;
+      if ((aVal && bVal) && (aVal) > bVal) return filters.sortOrder === 'asc' ? 1 : -1;
       return 0;
     });
 
     set({ filteredFormations: filtered });
   },
 
+  uploadChapterPdf: async (file, organizationId) => {
+    const formData = new FormData();
+    formData.append('pdf', file);
+    formData.append('organizationId', organizationId);
+    const response = await apiService.post('/formations/chapters/upload-pdf', formData, {
+      headers: { 'Content-Type': 'multipart/form-data' },
+    });
+    return response.data as { pdfUrl: string; pdfPublicId: string };
+  },
+
+  deleteChapterPdf: async (chapterId) => {
+    await apiService.delete(`/formations/chapters/${chapterId}/pdf`);
+  },
+
   startFormation: async (formationId) => {
     try {
       const response = await apiService.post(`/formations/${formationId}/start`);
-      
-      // Rafraîchir la liste des formations pour avoir le statut à jour
       await get().fetchMyFormations();
-      
       return response.data;
     } catch (error) {
       console.error('Erreur lors du démarrage de la formation:', error);
@@ -480,10 +549,7 @@ export const useFormationStore = create<FormationState>((set, get) => ({
   completeFormation: async (formationId, data) => {
     try {
       const response = await apiService.post(`/formations/${formationId}/complete`, data);
-      
-      // Rafraîchir la liste des formations
       await get().fetchMyFormations();
-      
       return response.data;
     } catch (error) {
       console.error('Erreur lors de la complétion de la formation:', error);
@@ -516,7 +582,7 @@ export const useFormationStore = create<FormationState>((set, get) => ({
         `/formations/${formationId}/evaluations/${evaluationId}/attempt`,
         data
       );
-      return response.data;
+      return response;
     } catch (error) {
       console.error('Erreur lors de la soumission de l\'évaluation:', error);
       throw error;
@@ -540,7 +606,7 @@ export const useFormationStore = create<FormationState>((set, get) => ({
       const response = await apiService.get(
         `/formations/${formationId}/evaluations/${evaluationId}/attempts`
       );
-      return response.data;
+      return response;
     } catch (error) {
       console.error('Erreur lors de la récupération des tentatives:', error);
       throw error;

@@ -12,6 +12,7 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { User } from '@/store/user.store';
+import { useTranslation } from 'react-i18next';
 
 interface UserCardProps {
   user: User;
@@ -23,8 +24,9 @@ interface UserCardProps {
 const getInitials = (user: User) => `${user.firstName[0] ?? ''}${user.lastName[0] ?? ''}`.toUpperCase();
 
 export const UserCard = ({ user, onEdit, onDelete, onToggleActive }: UserCardProps) => {
+  const { t: tCommon } = useTranslation('common');
   const roleLabel = {
-    user: 'Utilisateur',
+    user: tCommon('admin.grc.user_name'),
     admin: 'Admin',
     superadmin: 'Superadmin',
   }[user.role];
@@ -54,7 +56,7 @@ export const UserCard = ({ user, onEdit, onDelete, onToggleActive }: UserCardPro
             <DropdownMenuContent align="end" className="bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700">
               <DropdownMenuItem onClick={() => onEdit(user)} className="text-gray-700 dark:text-gray-300">
                 <Edit className="w-4 h-4 mr-2" />
-                Modifier
+                {tCommon('admin.ambassadors.edit')}
               </DropdownMenuItem>
               <DropdownMenuItem onClick={() => onToggleActive(user.id)} className="text-gray-700 dark:text-gray-300">
                 {user.isActive ? <UserX className="w-4 h-4 mr-2" /> : <UserCheck className="w-4 h-4 mr-2" />}
@@ -62,7 +64,7 @@ export const UserCard = ({ user, onEdit, onDelete, onToggleActive }: UserCardPro
               </DropdownMenuItem>
               <DropdownMenuItem onClick={() => onDelete(user.id, user.firstName, user.lastName)} className="text-red-600 dark:text-red-400">
                 <Trash2 className="w-4 h-4 mr-2" />
-                Supprimer
+                {tCommon('admin.ambassadors.delete')}
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
@@ -74,7 +76,7 @@ export const UserCard = ({ user, onEdit, onDelete, onToggleActive }: UserCardPro
             {roleLabel}
           </Badge>
           <Badge className={user.isActive ? 'bg-green-100 dark:bg-green-500/20 text-green-700 dark:text-green-400 border-green-300 dark:border-green-500/30' : 'bg-red-100 dark:bg-red-500/20 text-red-700 dark:text-red-400 border-red-300 dark:border-red-500/30'}>
-            {user.isActive ? 'Actif' : 'Inactif'}
+            {user.isActive ? tCommon('common.active') : tCommon('common.active')}
           </Badge>
         </div>
 
@@ -91,7 +93,7 @@ export const UserCard = ({ user, onEdit, onDelete, onToggleActive }: UserCardPro
           )}
           <div className="flex items-center gap-2 text-gray-500 dark:text-gray-400">
             <Users className="w-4 h-4" />
-            <span>{user.group?.name || 'Aucun groupe'}</span>
+            <span>{user.group?.name || tCommon('admin.users.group_placeholder')}</span>
           </div>
         </div>
       </div>

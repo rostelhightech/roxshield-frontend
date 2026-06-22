@@ -31,7 +31,7 @@ import {
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
 import { Ambassador } from '@/store/ambassador.store';
-import { toast } from 'sonner';
+import { useTranslation } from 'react-i18next';
 
 interface AmbassadorTableProps {
   ambassadors: Ambassador[];
@@ -45,15 +45,18 @@ export const AmbassadorTable = ({ ambassadors, onEdit, onDelete, onQRCode, onSta
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [selectedId, setSelectedId] = useState<string | null>(null);
 
+
+  const { t: tCommon } = useTranslation('common');
+  
+
   const handleDelete = async () => {
     if (!selectedId) return;
     try {
       await onDelete(selectedId);
-      toast.success('✅ Ambassadeur supprimé avec succès');
       setDeleteDialogOpen(false);
       setSelectedId(null);
     } catch (error) {
-      toast.error('❌ Erreur lors de la suppression');
+      //
     }
   };
 
@@ -69,14 +72,14 @@ export const AmbassadorTable = ({ ambassadors, onEdit, onDelete, onQRCode, onSta
         <Table>
           <TableHeader className="bg-gray-100 dark:bg-gray-800/50">
             <TableRow className="border-gray-200 dark:border-gray-800 hover:bg-transparent">
-              <TableHead className="text-gray-700 dark:text-gray-300">Nom</TableHead>
-              <TableHead className="text-gray-700 dark:text-gray-300">Email</TableHead>
-              <TableHead className="text-gray-700 dark:text-gray-300">Téléphone</TableHead>
-              <TableHead className="text-gray-700 dark:text-gray-300">Parrainages</TableHead>
-              <TableHead className="text-gray-700 dark:text-gray-300">Succès</TableHead>
-              <TableHead className="text-gray-700 dark:text-gray-300">Statut</TableHead>
-              <TableHead className="text-gray-700 dark:text-gray-300">Créé le</TableHead>
-              <TableHead className="text-gray-700 dark:text-gray-300 text-right">Actions</TableHead>
+              <TableHead className="text-gray-700 dark:text-gray-300">{tCommon('user.profile.last_name')}</TableHead>
+              <TableHead className="text-gray-700 dark:text-gray-300">{tCommon('user.profile.email')}</TableHead>
+              <TableHead className="text-gray-700 dark:text-gray-300">{tCommon('admin.ambassadors.table_phone')}</TableHead>
+              <TableHead className="text-gray-700 dark:text-gray-300">{tCommon('admin.ambassadors.table_referrals')}</TableHead>
+              <TableHead className="text-gray-700 dark:text-gray-300">{tCommon('admin.ambassadors.success')}</TableHead>
+              <TableHead className="text-gray-700 dark:text-gray-300">{tCommon('admin.ambassadors.status_placeholder')}</TableHead>
+              <TableHead className="text-gray-700 dark:text-gray-300">{tCommon('admin.ambassadors.table_created')}</TableHead>
+              <TableHead className="text-gray-700 dark:text-gray-300 text-right">{tCommon('admin.ambassadors.table_actions')}</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -95,11 +98,11 @@ export const AmbassadorTable = ({ ambassadors, onEdit, onDelete, onQRCode, onSta
                 <TableCell>
                   {ambassador.isActive ? (
                     <Badge className="bg-green-100 dark:bg-green-500/20 text-green-700 dark:text-green-400 border-green-300 dark:border-green-500/30">
-                      Actif
+                      {tCommon('common.active')}
                     </Badge>
                   ) : (
                     <Badge className="bg-gray-100 dark:bg-gray-500/20 text-gray-700 dark:text-gray-400 border-gray-300 dark:border-gray-500/30">
-                      Inactif
+                      {tCommon('common.inactive')}
                     </Badge>
                   )}
                 </TableCell>
@@ -122,7 +125,7 @@ export const AmbassadorTable = ({ ambassadors, onEdit, onDelete, onQRCode, onSta
                         className="text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white"
                       >
                         <QrCode className="w-4 h-4 mr-2" />
-                        Générer QR Code
+                        {tCommon('admin.ambassadors.generate_qr')}
                       </DropdownMenuItem>
                       <DropdownMenuItem
                         onClick={(event) => {
@@ -142,14 +145,14 @@ export const AmbassadorTable = ({ ambassadors, onEdit, onDelete, onQRCode, onSta
                         className="text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white"
                       >
                         <Edit className="w-4 h-4 mr-2" />
-                        Modifier
+                        {tCommon('admin.ambassadors.edit')}
                       </DropdownMenuItem>
                       <DropdownMenuItem
                         onClick={(event) => openDeleteDialog(ambassador.id, event)}
                         className="text-red-600 dark:text-red-400 hover:text-red-700 dark:hover:text-red-300"
                       >
                         <Trash2 className="w-4 h-4 mr-2" />
-                        Supprimer
+                        {tCommon('admin.ambassadors.delete')}
                       </DropdownMenuItem>
                     </DropdownMenuContent>
                   </DropdownMenu>
@@ -171,13 +174,13 @@ export const AmbassadorTable = ({ ambassadors, onEdit, onDelete, onQRCode, onSta
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel className="bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 border-gray-300 dark:border-gray-700 text-gray-700 dark:text-white">
-              Annuler
+              {tCommon('user.formations.cancel')}
             </AlertDialogCancel>
             <AlertDialogAction
               onClick={handleDelete}
               className="bg-red-600 hover:bg-red-700 text-white"
             >
-              Supprimer
+              {tCommon('admin.ambassadors.delete')}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>

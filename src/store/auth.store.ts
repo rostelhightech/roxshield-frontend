@@ -3,35 +3,9 @@ import { tokenStorage } from '@/app/services/token.service';
 import { apiService } from '@/app/services/api.service';
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
+import type { User } from './user.store';
 
-interface User {
-  id: string;
-  email: string;
-  name: string;
-  role?: string;
-  firstName?: string;
-  organizationId?: string;
-  organization?: {
-    id: string;
-    name: string;
-    planId: string;
-    plan?: {
-      id: string;
-      name: string;
-      label: string;
-      pricePerUser: number;
-      targetDescription: string;
-      minEmployees: number;
-      maxEmployees: number | null;
-      features: string[];
-    };
-  };
-  lastName?: string;
-  position?: string;
-  department?: string;
-  createdAt?: string;
-}
-
+ 
 interface AuthState {
   // State
   user: User | null;
@@ -42,7 +16,7 @@ interface AuthState {
   // Actions
   setAuth: (user: User, accessToken: string, refreshToken: string) => void;
   setAccessToken: (token: string) => void;
-  clearAuth: () => void;
+  clearAuth: () => Promise<void>;
   hydrate: () => void;
   setLoading: (loading: boolean) => void;
   setIsAuthenticated: (isAuthenticated: boolean) => void;
@@ -51,7 +25,7 @@ interface AuthState {
 
 export const useAuthStore = create<AuthState>()(
   persist(
-    (set, get) => ({
+    (set, _get) => ({
       // Initial state
       user: null,
       accessToken: null,
@@ -88,7 +62,16 @@ export const useAuthStore = create<AuthState>()(
       },
 
       // Clear tout
-      clearAuth: () => {
+      clearAuth: async () => {
+        // Révoquer le refresh token côté serveur avant de tout effacer
+        try {
+          const refreshToken = tokenStorage.getRefreshToken();
+          if (refreshToken) {
+            await apiService.post('/auth/logout', { refreshToken });
+          }
+        } catch {
+          // Silencieux : même si la révocation échoue, on déconnecte quand même
+        }
         tokenStorage.clearAll();
         set({
           user: null,

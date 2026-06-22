@@ -8,6 +8,7 @@ import {
 import { StatCard } from "./stat-card";
 import { useEffect, useState } from "react";
 import { apiService } from "@/app/services/api.service";
+import { useTranslation } from 'react-i18next';
 
 interface DashboardStats {
   totalOrganizations: number;
@@ -19,6 +20,7 @@ interface DashboardStats {
 }
 
 export function StatsCards() {
+  const { t: tCommon } = useTranslation('common');
   const [stats, setStats] = useState<DashboardStats | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
@@ -30,7 +32,7 @@ export function StatsCards() {
           setStats(response.data);
         }
       } catch (error) {
-        console.error('Erreur lors du chargement des statistiques', error);
+        console.error(tCommon('admin.ambassadors.stats_error'), error);
       } finally {
         setIsLoading(false);
       }
@@ -54,34 +56,34 @@ export function StatsCards() {
         icon={BarChart3}
         title="MRR"
         value={stats ? formatMRR(stats.mrr) : "0 F"}
-        subtitle="0% vs mois dernier"
+        subtitle=""
         iconColor="#5d2595"
         isLoading={isLoading}
       />
 
       <StatCard
         icon={Building2}
-        title="Organisations"
+        title={tCommon('nav.topbar.organizations_title')}
         value={stats ? stats.totalOrganizations.toString() : "0"}
-        subtitle={`${stats?.activeOrganizations || 0} actives`}
+        subtitle={tCommon('admin.page_overview.active_orgs_count', { count: stats?.activeOrganizations || 0 })}
         iconColor="#0e7490"
         isLoading={isLoading}
       />
 
       <StatCard
         icon={Users}
-        title="Employés"
+        title={tCommon('admin.grc.org_employees')}
         value={stats ? stats.totalEmployees.toString() : "0"}
-        subtitle="Toutes organisations"
+        subtitle={tCommon('admin.groups.all_orgs')}
         iconColor="#0f766e"
         isLoading={isLoading}
       />
 
       <StatCard
         icon={Target}
-        title="Campagnes"
+        title={tCommon('nav.topbar.campaigns_title')}
         value={stats ? stats.totalCampaigns.toString() : "0"}
-        subtitle={`Score moyen ${stats?.averageCampaignScore || 0}%`}
+        subtitle={tCommon('admin.page_overview.avg_score', { score: stats?.averageCampaignScore || 0 })}
         iconColor="#b45309"
         isLoading={isLoading}
       />

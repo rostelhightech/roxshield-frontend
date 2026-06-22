@@ -1,58 +1,31 @@
 'use client';
 
-import { useEffect, useMemo } from 'react';
-import { useForm } from 'react-hook-form';
+import { useEffect, useMemo, useState } from 'react';
+import { Resolver, useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { Loader2 } from 'lucide-react';
+import { Loader2, FileText, Settings2, CalendarClock, Users } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
-import { useCampaignStore, CampaignTargetPayload } from '@/store/campaign.store';
+import { useCampaignStore, CampaignTargetPayload, Campaign } from '@/store/campaign.store';
 import { Organization } from '@/store/organization.store';
 import { Group } from '@/store/group.store';
 import { Template } from '@/store/template.store';
 import { LandingPageTemplate } from '@/store/landing-page-template.store';
 import { SmtpProfile } from '@/store/smtp-profile.store';
+import { Link } from '@tanstack/react-router';
+import { Combobox } from '@/components/ui/combobox';
+import { useTranslation } from 'react-i18next';
 
-const campaignSchema = z.object({
-  name: z.string().min(3, 'Le nom de la campagne est requis'),
-  description: z.string().optional().nullable(),
-  organizationId: z.string().min(1, 'Organisation requise'),
-  smtpProfileId: z.string().min(1, 'Profil SMTP requis'),
-  emailTemplateId: z.string().min(1, 'Template email requise'),
-  landingPageTemplateId: z.string().min(1, 'Template de landing page requise'),
-  scheduledAt: z.string().optional().nullable(),
-  endAt: z.string().optional().nullable(),
-  targetGroupId: z.string().optional().nullable(),
-  targetEmails: z.string().optional().nullable(),
-}).superRefine((data, ctx) => {
-  const hasEmailTargets = Boolean(data.targetEmails?.trim());
-  if (!data.targetGroupId && !hasEmailTargets) {
-    ctx.addIssue({
-      code: z.ZodIssueCode.custom,
-      message: 'Sélectionnez un groupe ou saisissez au moins une adresse email',
-      path: ['targetEmails'],
-    });
-  }
-  if (data.scheduledAt && data.endAt && data.endAt <= data.scheduledAt) {
-    ctx.addIssue({
-      code: z.ZodIssueCode.custom,
-      message: 'La date de fin doit être postérieure à la date de début',
-      path: ['endAt'],
-    });
-  }
-});
-
-export type CampaignFormData = z.infer<typeof campaignSchema>;
-
-const defaultFormValues: CampaignFormData = {
+ 
+const defaultFormValues = {
   name: '',
   description: '',
   organizationId: '',
   smtpProfileId: '',
+  fromName: '',
   emailTemplateId: '',
   landingPageTemplateId: '',
   scheduledAt: '',
@@ -69,11 +42,42 @@ interface CampaignFormProps {
   smtpProfiles: SmtpProfile[];
   onCreated: () => void;
   onCancel?: () => void;
-  onSubmitAction?: (data: CampaignFormData) => Promise<void>;
-  initialValues?: CampaignFormData;
+  onSubmitAction?: (data: Campaign) => Promise<void>;
+  initialValues?: Campaign;
   submitLabel?: string;
   defaultOrganizationId?: string;
   hideOrganization?: boolean;
+}
+
+// Wrapper de section réutilisable : icône + titre + fond distinct
+function FormSection({
+  icon: Icon,
+  title,
+  description,
+  children,
+}: {
+  icon: React.ElementType;
+  title: string;
+  description?: string;
+  children: React.ReactNode;
+}) {
+
+  return (
+    <section className="rounded-lg border border-gray-200 dark:border-white/10 bg-gray-50/60 dark:bg-white/[0.03] p-5 sm:p-6">
+      <div className="flex items-start gap-3 mb-5">
+        <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-md bg-blue-600/10 dark:bg-blue-400/10 text-blue-600 dark:text-blue-400">
+          <Icon className="h-4.5 w-4.5" />
+        </div>
+        <div>
+          <h3 className="text-sm font-semibold text-gray-900 dark:text-white">{title}</h3>
+          {description && (
+            <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">{description}</p>
+          )}
+        </div>
+      </div>
+      {children}
+    </section>
+  );
 }
 
 export function CampaignForm({
@@ -89,9 +93,39 @@ export function CampaignForm({
   submitLabel,
   defaultOrganizationId,
   hideOrganization = false,
-  
 }: CampaignFormProps) {
   const { createCampaign, isSaving } = useCampaignStore();
+  const { t: tCommon } = useTranslation('common');
+
+  const campaignSchema = useMemo(() => z.object({
+    name: z.string().min(3, tCommon('admin.campaigns.error_name')),
+    description: z.string().optional().nullable(),
+    organizationId: z.string().min(1, tCommon('admin.campaigns.error_org')),
+    smtpProfileId: z.string().min(1, tCommon('admin.campaigns.error_smtp')),
+    fromName: z.string().optional().nullable(),
+    emailTemplateId: z.string().min(1, tCommon('admin.campaigns.error_email_template')),
+    landingPageTemplateId: z.string().min(1, tCommon('admin.campaigns.error_landing_template')),
+    scheduledAt: z.string().optional().nullable(),
+    endAt: z.string().optional().nullable(),
+    targetGroupId: z.string().optional().nullable(),
+    targetEmails: z.string().optional().nullable(),
+  }).superRefine((data, ctx) => {
+    const hasEmailTargets = Boolean(data.targetEmails?.trim());
+    if (!data.targetGroupId && !hasEmailTargets) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: tCommon('admin.campaigns.error_target'),
+        path: ['targetEmails'],
+      });
+    }
+    if (data.scheduledAt && data.endAt && data.endAt <= data.scheduledAt) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: tCommon('admin.campaigns.error_end_date'),
+        path: ['endAt'],
+      });
+    }
+  }), [tCommon]) as unknown as z.ZodSchema<Campaign>;
 
   const {
     register,
@@ -100,8 +134,8 @@ export function CampaignForm({
     setValue,
     reset,
     formState: { errors },
-  } = useForm<CampaignFormData>({
-    resolver: zodResolver(campaignSchema),
+  } = useForm<Campaign>({
+    resolver: zodResolver(campaignSchema as z.ZodType<Campaign, Campaign>),
     defaultValues: initialValues ?? defaultFormValues,
   });
 
@@ -110,44 +144,38 @@ export function CampaignForm({
   }, [initialValues, reset]);
 
   const selectedOrganizationId = watch('organizationId');
-  const selectedSmtpProfileId = watch('smtpProfileId');
-  const selectedEmailTemplateId = watch('emailTemplateId');
-  const selectedLandingPageTemplateId = watch('landingPageTemplateId');
-  const selectedTargetGroupId = watch('targetGroupId');
-
-  const selectedOrganization = organizations.find((organization) => organization.id === selectedOrganizationId);
-  const selectedSmtpProfile = smtpProfiles.find((profile) => profile.id === selectedSmtpProfileId);
-  const selectedEmailTemplate = templates.find((template) => template.id === selectedEmailTemplateId);
-  const selectedLandingPageTemplate = landingPageTemplates.find(
-    (template) => template.id === selectedLandingPageTemplateId,
-  );
-  const selectedTargetGroup = groups.find((group) => group.id === selectedTargetGroupId);
 
   const availableGroups = useMemo(
     () => groups.filter((group) => group.organizationId === selectedOrganizationId),
     [groups, selectedOrganizationId],
   );
-  const availableSmtpProfiles = useMemo(
-    () => smtpProfiles.filter((profile) => profile.organizationId === selectedOrganizationId),
-    [smtpProfiles, selectedOrganizationId],
-  );
-  const availableTemplates = useMemo(
-    () => templates.filter((template) => template.organizationId === selectedOrganizationId),
-    [templates, selectedOrganizationId],
-  );
-  const availableLandingPages = useMemo(
-    () => landingPageTemplates.filter((template) => template.organizationId === selectedOrganizationId),
-    [landingPageTemplates, selectedOrganizationId],
 
-  );
+  const availableSmtpProfiles = useMemo(() => {
+    const profiles = smtpProfiles.filter(
+      (profile) => profile.organizationId === selectedOrganizationId || profile.isDefault,
+    );
+    return [...profiles];
+  }, [smtpProfiles, selectedOrganizationId]);
+
+  const availableTemplates = useMemo(() => {
+    return templates.filter(
+      (template) => template.organizationId === selectedOrganizationId || template.isDefault,
+    );
+  }, [templates, selectedOrganizationId]);
+
+  const availableLandingPages = useMemo(() => {
+    return landingPageTemplates.filter(
+      (template) => template.organizationId === selectedOrganizationId || template.isDefault,
+    );
+  }, [landingPageTemplates, selectedOrganizationId]);
 
   useEffect(() => {
-  if (defaultOrganizationId && !initialValues) {
-    setValue('organizationId', defaultOrganizationId);
-  }
-}, [defaultOrganizationId, initialValues]);
+    if (defaultOrganizationId && !initialValues) {
+      setValue('organizationId', defaultOrganizationId);
+    }
+  }, [defaultOrganizationId, initialValues]);
 
-  const handleFormSubmit = async (data: CampaignFormData) => {
+  const handleFormSubmit = async (data: Campaign) => {
     const targets: CampaignTargetPayload[] = [];
 
     if (data.targetGroupId) {
@@ -174,6 +202,7 @@ export function CampaignForm({
           name: data.name,
           description: data.description || null,
           smtpProfileId: data.smtpProfileId,
+          fromName: data.fromName || null,
           emailTemplateId: data.emailTemplateId,
           landingPageTemplateId: data.landingPageTemplateId,
           scheduledAt: data.scheduledAt || null,
@@ -188,197 +217,252 @@ export function CampaignForm({
     }
   };
 
-return (
- <form onSubmit={handleSubmit(handleFormSubmit)} className="space-y-8">
+  const organizationOptions = organizations.map((org) => ({
+    value: org.id,
+    label: org.name ?? org.id,
+  }));
 
-    {/* Section: Informations générales */}
-    <div className="space-y-4">
-      <h3 className="text-xs font-semibold uppercase tracking-widest text-gray-500 dark:text-gray-900 dark:text-white/40">Informations générales</h3>
-      <div className="grid gap-4 sm:grid-cols-2">
-        <div className="space-y-1.5">
-          <Label htmlFor="name" className="text-gray-700 dark:text-gray-300">Nom de la campagne <span className="text-red-600 dark:text-red-400">*</span></Label>
-          <Input
-            id="name"
-            {...register('name')}
-            className="bg-white dark:bg-white dark:bg-[#071120] border-gray-300 dark:border-white/10 text-gray-900 dark:text-gray-900 dark:text-white"
-            placeholder="Ex: Campagne de sensibilisation Q3"
-          />
-          {errors.name && <p className="text-red-600 dark:text-red-400 text-xs">{errors.name.message}</p>}
+  const smtpProfileOptions = availableSmtpProfiles.map((profile) => ({
+    value: profile.id,
+    label: profile.name,
+  }));
+
+  const templateOptions = availableTemplates.map((template) => ({
+    value: template.id,
+    label: template.name,
+  }));
+
+  const landingPageOptions = availableLandingPages.map((template) => ({
+    value: template.id,
+    label: template.name,
+  }));
+
+  const groupOptions = availableGroups.map((group) => ({
+    value: group.id,
+    label: group.name,
+  }));
+
+  return (
+    <form onSubmit={handleSubmit(handleFormSubmit)} className="space-y-6">
+      <FormSection
+        icon={FileText}
+        title={tCommon('admin.campaigns.form_general_title')}
+        description={tCommon('admin.campaigns.form_general_desc')}
+      >
+        <div className="grid gap-4 sm:grid-cols-2">
+          <div className="space-y-1.5">
+            <Label htmlFor="name" className="text-gray-700 dark:text-gray-300">
+              {tCommon('admin.campaigns.form_name')} <span className="text-red-600 dark:text-red-400">*</span>
+            </Label>
+            <Input
+              id="name"
+              {...register('name')}
+              className="bg-white dark:bg-[#071120] border-gray-300 dark:border-white/10 text-gray-900 dark:text-white"
+              placeholder={tCommon('admin.campaigns.form_name_placeholder')}
+            />
+            {errors.name && <p className="text-red-600 dark:text-red-400 text-xs">{errors.name.message}</p>}
+          </div>
+
+          {!hideOrganization && (
+            <div className="space-y-1.5">
+              <Label htmlFor="organizationId" className="text-gray-700 dark:text-gray-300">
+                {tCommon('admin.grc.org_name')} <span className="text-red-600 dark:text-red-400">*</span>
+              </Label>
+              <Combobox
+                options={organizationOptions}
+                value={watch('organizationId') || ''}
+                onChange={(value) => setValue('organizationId', value)}
+                placeholder={tCommon('admin.campaigns.form_org_placeholder')}
+                searchPlaceholder={tCommon('admin.campaigns.search_org')}
+              />
+              {errors.organizationId && (
+                <p className="text-red-600 dark:text-red-400 text-xs">{errors.organizationId.message}</p>
+              )}
+            </div>
+          )}
+
+          <div className="space-y-1.5 sm:col-span-2">
+            <Label htmlFor="description" className="text-gray-700 dark:text-gray-300">
+              {tCommon('admin.campaigns.form_description')}
+            </Label>
+            <Textarea
+              id="description"
+              {...register('description')}
+              className="bg-white dark:bg-[#071120] border-gray-300 dark:border-white/10 text-gray-900 dark:text-white"
+              placeholder={tCommon('admin.campaigns.form_desc_placeholder')}
+              rows={3}
+            />
+          </div>
+        </div>
+      </FormSection>
+
+      <FormSection
+        icon={Settings2}
+        title={tCommon('admin.campaigns.form_configuration')}
+        description={tCommon('admin.campaigns.form_smtp_desc')}
+      >
+        <div className="grid gap-4 sm:grid-cols-2">
+          <div className="space-y-1.5">
+            <Label htmlFor="smtpProfileId" className="text-gray-700 dark:text-gray-300">
+              {tCommon('admin.campaigns.form_smtp')} <span className="text-red-600 dark:text-red-400">*</span>
+            </Label>
+            <Combobox
+              options={smtpProfileOptions}
+              value={watch('smtpProfileId') || ''}
+              onChange={(value) => setValue('smtpProfileId', value)}
+              placeholder={tCommon('admin.campaigns.form_smtp_placeholder')}
+              searchPlaceholder={tCommon('admin.campaigns.search_smtp')}
+            />
+            {errors.smtpProfileId && (
+              <p className="text-red-600 dark:text-red-400 text-xs">{errors.smtpProfileId.message}</p>
+            )}
+          </div>
+
+          <div className="space-y-1.5">
+            <Label htmlFor="fromName" className="text-gray-700 dark:text-gray-300">
+              {tCommon('admin.campaigns.form_sender_name')}
+            </Label>
+            <input
+              id="fromName"
+              {...register('fromName')}
+              placeholder={tCommon('admin.campaigns.form_from_placeholder')}
+              className="flex h-9 w-full rounded-sm border border-gray-300 dark:border-white/10 bg-white dark:bg-[#071120] px-3 py-1 text-sm text-gray-900 dark:text-white placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:outline-none focus:ring-1 focus:ring-ring"
+            />
+            {errors.fromName && (
+              <p className="text-red-600 dark:text-red-400 text-xs">{errors.fromName.message}</p>
+            )}
+            <p className="text-xs text-gray-500 dark:text-gray-400">
+              {tCommon('admin.campaigns.form_visible')}
+            </p>
+          </div>
+
+          <div className="space-y-1.5">
+            <Label htmlFor="emailTemplateId" className="text-gray-700 dark:text-gray-300">
+              {tCommon('admin.campaigns.form_template')} <span className="text-red-600 dark:text-red-400">*</span>
+            </Label>
+            <Combobox
+              options={templateOptions}
+              value={watch('emailTemplateId') || ''}
+              onChange={(value) => setValue('emailTemplateId', value)}
+              placeholder={tCommon('admin.campaigns.form_template_placeholder')}
+              searchPlaceholder={tCommon('admin.campaigns.search_email_template')}
+            />
+            {errors.emailTemplateId && (
+              <p className="text-red-600 dark:text-red-400 text-xs">{errors.emailTemplateId.message}</p>
+            )}
+          </div>
+
+          <div className="space-y-1.5">
+            <Label htmlFor="landingPageTemplateId" className="text-gray-700 dark:text-gray-300">
+              {tCommon('admin.campaigns.form_landing_template_label')} <span className="text-red-600 dark:text-red-400">*</span>
+            </Label>
+            <Combobox
+              options={landingPageOptions}
+              value={watch('landingPageTemplateId') || ''}
+              onChange={(value) => setValue('landingPageTemplateId', value)}
+              placeholder={tCommon('admin.campaigns.form_template_placeholder')}
+              searchPlaceholder={tCommon('admin.campaigns.search_landing_template')}
+            />
+            {errors.landingPageTemplateId && (
+              <p className="text-red-600 dark:text-red-400 text-xs">{errors.landingPageTemplateId.message}</p>
+            )}
+          </div>
+        </div>
+      </FormSection>
+
+      <FormSection
+        icon={CalendarClock}
+        title={tCommon('admin.campaigns.form_scheduling')}
+        description={tCommon('admin.campaigns.form_period_desc')}
+      >
+        <div className="grid gap-4 sm:grid-cols-2">
+          <div className="space-y-1.5">
+            <Label htmlFor="scheduledAt" className="text-gray-700 dark:text-gray-300">
+              {tCommon('admin.campaigns.form_start')}
+            </Label>
+            <Input
+              id="scheduledAt"
+              type="datetime-local"
+              {...register('scheduledAt')}
+              className="bg-white dark:bg-[#071120] border-gray-300 dark:border-white/10 text-gray-900 dark:text-white"
+            />
+          </div>
+
+          <div className="space-y-1.5">
+            <Label htmlFor="endAt" className="text-gray-700 dark:text-gray-300">
+              {tCommon('admin.campaigns.form_end')}
+            </Label>
+            <Input
+              id="endAt"
+              type="datetime-local"
+              {...register('endAt')}
+              className="bg-white dark:bg-[#071120] border-gray-300 dark:border-white/10 text-gray-900 dark:text-white"
+            />
+            {errors.endAt && <p className="text-red-600 dark:text-red-400 text-xs">{errors.endAt.message}</p>}
+          </div>
+        </div>
+      </FormSection>
+
+      <FormSection
+        icon={Users}
+        title={tCommon('admin.campaigns.form_recipients')}
+        description={tCommon('admin.campaigns.form_group_desc')}
+      >
+        <div className="flex items-center justify-end text-sm mb-4">
+          <Link
+            to="/dashboard/groups"
+            className="font-medium text-blue-600 hover:underline dark:text-blue-400"
+          >
+            {tCommon('admin.campaigns.form_create_group')}
+          </Link>
         </div>
 
-       {!hideOrganization && (
-    <div className="space-y-1.5">
-      <Label htmlFor="organizationId" className="text-gray-700 dark:text-gray-300">Organisation <span className="text-red-600 dark:text-red-400">*</span></Label>
-      <Select value={watch('organizationId') || ''} onValueChange={(value) => setValue('organizationId', value ?? '')}>
-        <SelectTrigger className="bg-white dark:bg-white dark:bg-[#071120] border-gray-300 dark:border-white/10 text-gray-900 dark:text-gray-900 dark:text-white">
-          <SelectValue placeholder="Sélectionner une organisation">
-            {selectedOrganization ? selectedOrganization.name : undefined}
-          </SelectValue>
-        </SelectTrigger>
-        <SelectContent className="bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700">
-          <SelectItem value="">Sélectionner une organisation</SelectItem>
-          {organizations.map((organization) => (
-            <SelectItem key={organization.id} value={organization.id}>
-              {organization.name ?? organization.id}
-            </SelectItem>
-          ))}
-        </SelectContent>
-      </Select>
-      {errors.organizationId && <p className="text-red-600 dark:text-red-400 text-xs">{errors.organizationId.message}</p>}
-    </div>
-  )}
-      </div>
+        <div className="grid gap-4 sm:grid-cols-2">
+          <div className="space-y-1.5">
+            <Label htmlFor="targetGroupId" className="text-gray-700 dark:text-gray-300">
+              {tCommon('admin.campaigns.form_target_group')}
+            </Label>
+            <Combobox
+              options={groupOptions}
+              value={watch('targetGroupId') || ''}
+              onChange={(value) => setValue('targetGroupId', value)}
+              placeholder={tCommon('admin.campaigns.form_group_placeholder')}
+              searchPlaceholder={tCommon('admin.campaigns.search_group')}
+            />
+          </div>
 
-      <div className="space-y-1.5">
-        <Label htmlFor="description" className="text-gray-700 dark:text-gray-300">Description</Label>
-        <Textarea
-          id="description"
-          {...register('description')}
-          className="bg-white dark:bg-white dark:bg-[#071120] border-gray-300 dark:border-white/10 text-gray-900 dark:text-gray-900 dark:text-white"
-          placeholder="Décrivez les objectifs ou les détails de la campagne..."
-          rows={3}
-        />
-      </div>
-    </div>
-
-    {/* Section: Configuration */}
-    <div className="space-y-4">
-      <h3 className="text-xs font-semibold uppercase tracking-widest text-gray-500 dark:text-gray-900 dark:text-white/40">Configuration</h3>
-      <div className="grid gap-4 sm:grid-cols-2">
-        <div className="space-y-1.5">
-          <Label htmlFor="smtpProfileId" className="text-gray-700 dark:text-gray-300">Profil SMTP <span className="text-red-600 dark:text-red-400">*</span></Label>
-          <Select value={watch('smtpProfileId') || ''} onValueChange={(value) => setValue('smtpProfileId', value ?? '')}>
-            <SelectTrigger className="bg-white dark:bg-white dark:bg-[#071120] border-gray-300 dark:border-white/10 text-gray-900 dark:text-gray-900 dark:text-white">
-              <SelectValue placeholder="Sélectionner un profil SMTP">
-                {selectedSmtpProfile?.name}
-              </SelectValue>
-            </SelectTrigger>
-            <SelectContent className="bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700">
-              <SelectItem value="">Sélectionner un profil SMTP</SelectItem>
-              {availableSmtpProfiles.map((profile) => (
-                <SelectItem key={profile.id} value={profile.id}>{profile.name}</SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-          {errors.smtpProfileId && <p className="text-red-600 dark:text-red-400 text-xs">{errors.smtpProfileId.message}</p>}
+          <div className="space-y-1.5">
+            <Label htmlFor="targetEmails" className="text-gray-700 dark:text-gray-300">
+              {tCommon('admin.campaigns.form_extra_emails')}
+            </Label>
+            <Textarea
+              id="targetEmails"
+              {...register('targetEmails')}
+              className="bg-white dark:bg-[#071120] border-gray-300 dark:border-white/10 text-gray-900 dark:text-white"
+              placeholder={tCommon('admin.campaigns.form_emails_placeholder')}
+              rows={3}
+            />
+            {errors.targetEmails && (
+              <p className="text-red-600 dark:text-red-400 text-xs">{errors.targetEmails.message}</p>
+            )}
+          </div>
         </div>
+      </FormSection>
 
-        <div className="space-y-1.5">
-          <Label htmlFor="emailTemplateId" className="text-gray-700 dark:text-gray-300">Template email <span className="text-red-600 dark:text-red-400">*</span></Label>
-          <Select value={watch('emailTemplateId') || ''} onValueChange={(value) => setValue('emailTemplateId', value ?? '')}>
-            <SelectTrigger className="bg-white dark:bg-white dark:bg-[#071120] border-gray-300 dark:border-white/10 text-gray-900 dark:text-gray-900 dark:text-white">
-              <SelectValue placeholder="Sélectionner un template">
-                {selectedEmailTemplate?.name}
-              </SelectValue>
-            </SelectTrigger>
-            <SelectContent className="bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700">
-              <SelectItem value="">Sélectionner un template email</SelectItem>
-              {availableTemplates.map((template) => (
-                <SelectItem key={template.id} value={template.id}>{template.name}</SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-          {errors.emailTemplateId && <p className="text-red-600 dark:text-red-400 text-xs">{errors.emailTemplateId.message}</p>}
-        </div>
-
-        <div className="space-y-1.5">
-          <Label htmlFor="landingPageTemplateId" className="text-gray-700 dark:text-gray-300">Template landing page <span className="text-red-600 dark:text-red-400">*</span></Label>
-          <Select value={watch('landingPageTemplateId') || ''} onValueChange={(value) => setValue('landingPageTemplateId', value ?? '')}>
-            <SelectTrigger className="bg-white dark:bg-white dark:bg-[#071120] border-gray-300 dark:border-white/10 text-gray-900 dark:text-gray-900 dark:text-white">
-              <SelectValue placeholder="Sélectionner un template">
-                {selectedLandingPageTemplate?.name}
-              </SelectValue>
-            </SelectTrigger>
-            <SelectContent className="bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700">
-              <SelectItem value="">Sélectionner un template de landing page</SelectItem>
-              {availableLandingPages.map((template) => (
-                <SelectItem key={template.id} value={template.id}>{template.name}</SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-          {errors.landingPageTemplateId && <p className="text-red-600 dark:text-red-400 text-xs">{errors.landingPageTemplateId.message}</p>}
-        </div>
-      </div>
-    </div>
-
-    {/* Section: Planification */}
-    <div className="space-y-4">
-      <h3 className="text-xs font-semibold uppercase tracking-widest text-gray-500 dark:text-gray-900 dark:text-white/40">Planification</h3>
-      <div className="grid gap-4 sm:grid-cols-2">
-        <div className="space-y-1.5">
-          <Label htmlFor="scheduledAt" className="text-gray-700 dark:text-gray-300">Date de début</Label>
-          <Input
-            id="scheduledAt"
-            type="datetime-local"
-            {...register('scheduledAt')}
-            className="bg-white dark:bg-white dark:bg-[#071120] border-gray-300 dark:border-white/10 text-gray-900 dark:text-gray-900 dark:text-white"
-          />
-        </div>
-
-        <div className="space-y-1.5">
-          <Label htmlFor="endAt" className="text-gray-700 dark:text-gray-300">Date de fin</Label>
-          <Input
-            id="endAt"
-            type="datetime-local"
-            {...register('endAt')}
-            className="bg-white dark:bg-white dark:bg-[#071120] border-gray-300 dark:border-white/10 text-gray-900 dark:text-gray-900 dark:text-white"
-          />
-          {errors.endAt && <p className="text-red-600 dark:text-red-400 text-xs">{errors.endAt.message}</p>}
-        </div>
-      </div>
-    </div>
-
-    {/* Section: Destinataires */}
-    <div className="space-y-4">
-      <h3 className="text-xs font-semibold uppercase tracking-widest text-gray-500 dark:text-gray-900 dark:text-white/40">Destinataires</h3>
-      <div className="grid gap-4 sm:grid-cols-2">
-        <div className="space-y-1.5">
-          <Label htmlFor="targetGroupId" className="text-gray-700 dark:text-gray-300">Groupe de destinataires</Label>
-          <Select value={watch('targetGroupId') || ''} onValueChange={(value) => setValue('targetGroupId', value ?? '')}>
-            <SelectTrigger className="bg-white dark:bg-white dark:bg-[#071120] border-gray-300 dark:border-white/10 text-gray-900 dark:text-gray-900 dark:text-white">
-              <SelectValue placeholder="Sélectionner un groupe">
-                {selectedTargetGroup?.name}
-              </SelectValue>
-            </SelectTrigger>
-            <SelectContent className="bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700">
-              <SelectItem value="">Sélectionner un groupe</SelectItem>
-              {availableGroups.map((group) => (
-                <SelectItem key={group.id} value={group.id}>{group.name}</SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        </div>
-
-        <div className="space-y-1.5">
-          <Label htmlFor="targetEmails" className="text-gray-700 dark:text-gray-300">Adresses email supplémentaires</Label>
-          <Textarea
-            id="targetEmails"
-            {...register('targetEmails')}
-            className="bg-white dark:bg-white dark:bg-[#071120] border-gray-300 dark:border-white/10 text-gray-900 dark:text-gray-900 dark:text-white"
-            placeholder="Une adresse par ligne..."
-            rows={3}
-          />
-          {errors.targetEmails && <p className="text-red-600 dark:text-red-400 text-xs">{errors.targetEmails.message}</p>}
-        </div>
-      </div>
-    </div>
-
-    {/* Actions */}
-    <div className="flex items-center justify-end gap-3 border-t border-gray-200 dark:border-white/10 pt-6">
-      {onCancel && (
-        <Button type="button" variant="outline" onClick={onCancel}>
-          Annuler
+      <div className="flex items-center justify-end gap-3 pt-2">
+        {onCancel && (
+          <Button type="button" variant="outline" onClick={onCancel}>
+            {tCommon('user.formations.cancel')}
+          </Button>
+        )}
+        <Button type="button" variant="outline" onClick={() => reset(defaultFormValues)}>
+          {tCommon('admin.campaigns.form_reset')}
         </Button>
-      )}
-      <Button type="button" variant="outline" onClick={() => reset(defaultFormValues)}>
-        Réinitialiser
-      </Button>
-      <Button type="submit" disabled={isSaving}>
-        {isSaving && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-        {submitLabel ?? 'Créer la campagne'}
-      </Button>
-    </div>
-
-  </form>
-);
+        <Button type="submit" disabled={isSaving}>
+          {isSaving && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+          {submitLabel ?? tCommon('admin.campaigns.create_campaign')}
+        </Button>
+      </div>
+    </form>
+  );
 }

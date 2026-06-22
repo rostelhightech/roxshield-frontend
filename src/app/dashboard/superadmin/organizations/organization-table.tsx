@@ -22,6 +22,8 @@ import { Organization } from '@/store/organization.store';
 import { format } from 'date-fns';
 import { fr } from 'date-fns/locale';
 import { useNavigate } from '@tanstack/react-router';
+import { AlertDialog, AlertDialogContent, AlertDialogDescription, AlertDialogHeader, AlertDialogTitle } from '@/components/ui/alert-dialog';
+import { useTranslation } from 'react-i18next';
 
 interface OrganizationTableProps {
   organizations: Organization[];
@@ -30,6 +32,7 @@ interface OrganizationTableProps {
 }
 
 export const OrganizationTable = ({ organizations, onEdit, onDelete }: OrganizationTableProps) => {
+  const { t: tCommon } = useTranslation('common');
   const navigate = useNavigate();
 
   const handleViewDetails = (organizationId: string) => {
@@ -58,17 +61,18 @@ export const OrganizationTable = ({ organizations, onEdit, onDelete }: Organizat
 
   return (
     <div className="rounded-sm border border-gray-200 dark:border-gray-800/50 bg-white dark:bg-gray-900/30 backdrop-blur-sm overflow-hidden">
+
       <Table>
         <TableHeader className="bg-gray-100 dark:bg-gray-800/50">
           <TableRow className="border-gray-200 dark:border-gray-800 hover:bg-transparent">
-            <TableHead className="text-gray-700 dark:text-gray-300">Nom</TableHead>
-            <TableHead className="text-gray-700 dark:text-gray-300">Type</TableHead>
+            <TableHead className="text-gray-700 dark:text-gray-300">{tCommon('user.profile.last_name')}</TableHead>
+            <TableHead className="text-gray-700 dark:text-gray-300">{tCommon('admin.campaigns.tracking_type')}</TableHead>
             <TableHead className="text-gray-700 dark:text-gray-300">Plan</TableHead>
             <TableHead className="text-gray-700 dark:text-gray-300">Localisation</TableHead>
-            <TableHead className="text-gray-700 dark:text-gray-300">Employés</TableHead>
-            <TableHead className="text-gray-700 dark:text-gray-300">Score risque</TableHead>
-            <TableHead className="text-gray-700 dark:text-gray-300">Statut</TableHead>
-            <TableHead className="text-gray-700 dark:text-gray-300">Créé le</TableHead>
+            <TableHead className="text-gray-700 dark:text-gray-300">{tCommon('admin.grc.org_employees')}</TableHead>
+            <TableHead className="text-gray-700 dark:text-gray-300">{tCommon('admin.organizations.risk_score')}</TableHead>
+            <TableHead className="text-gray-700 dark:text-gray-300">{tCommon('admin.ambassadors.status_placeholder')}</TableHead>
+            <TableHead className="text-gray-700 dark:text-gray-300">{tCommon('admin.ambassadors.table_created')}</TableHead>
             <TableHead className="text-gray-700 dark:text-gray-300 text-right">Actions</TableHead>
           </TableRow>
         </TableHeader>
@@ -110,11 +114,11 @@ export const OrganizationTable = ({ organizations, onEdit, onDelete }: Organizat
               <TableCell>
                 {org.isActive ? (
                   <Badge className="bg-green-100 dark:bg-green-500/20 text-green-700 dark:text-green-400 border-green-300 dark:border-green-500/30">
-                    <Check className="w-3 h-3 mr-1" /> Actif
+                    <Check className="w-3 h-3 mr-1" /> {tCommon('common.active')}
                   </Badge>
                 ) : (
                   <Badge variant="destructive" className="bg-red-100 dark:bg-red-500/20 text-red-700 dark:text-red-400 border-red-300 dark:border-red-500/30">
-                    <X className="w-3 h-3 mr-1" /> Inactif
+                    <X className="w-3 h-3 mr-1" /> {tCommon('common.inactive')}
                   </Badge>
                 )}
               </TableCell>
@@ -134,7 +138,7 @@ export const OrganizationTable = ({ organizations, onEdit, onDelete }: Organizat
                       className="text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white"
                     >
                       <Eye className="w-4 h-4 mr-2" />
-                      Voir les détails
+                      {tCommon('admin.organizations.view_details')}
                     </DropdownMenuItem>
                     <DropdownMenuItem
                       onClick={(e) => {
@@ -144,7 +148,7 @@ export const OrganizationTable = ({ organizations, onEdit, onDelete }: Organizat
                       className="text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white"
                     >
                       <Edit className="w-4 h-4 mr-2" />
-                      Modifier
+                      {tCommon('admin.ambassadors.edit')}
                     </DropdownMenuItem>
                     <DropdownMenuItem
                       onClick={(e) => {
@@ -154,7 +158,7 @@ export const OrganizationTable = ({ organizations, onEdit, onDelete }: Organizat
                       className="text-red-600 dark:text-red-400 hover:bg-gray-100 dark:hover:bg-gray-700 hover:text-red-700 dark:hover:text-red-300"
                     >
                       <Trash2 className="w-4 h-4 mr-2" />
-                      Supprimer
+                      {tCommon('admin.ambassadors.delete')}
                     </DropdownMenuItem>
                   </DropdownMenuContent>
                 </DropdownMenu>

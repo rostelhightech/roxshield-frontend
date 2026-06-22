@@ -12,7 +12,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
-import { toast } from 'sonner';
+import { useTranslation } from 'react-i18next';
 
 interface EditAmbassadorDialogProps {
   open: boolean;
@@ -27,6 +27,7 @@ export function EditAmbassadorDialog({
 }: EditAmbassadorDialogProps) {
   const { ambassadors, updateAmbassador, isLoading } = useAmbassadorStore();
   const ambassador = ambassadors.find((a) => a.id === ambassadorId);
+const { t: tCommon } = useTranslation('common');
 
   const [formData, setFormData] = useState({
     firstName: '',
@@ -59,10 +60,9 @@ export function EditAmbassadorDialog({
         phone: formData.phone || undefined,
         isActive: formData.isActive,
       });
-      toast.success('✅ Ambassadeur mis à jour avec succès');
       onOpenChange(false);
     } catch (error) {
-      toast.error('❌ Erreur lors de la mise à jour de l\'ambassadeur');
+      //
     }
   };
 
@@ -80,7 +80,7 @@ export function EditAmbassadorDialog({
         <form onSubmit={handleSubmit}>
           <div className="space-y-4 pb-4">
             <div className="space-y-2">
-              <Label htmlFor="edit-firstName" className="text-gray-700 dark:text-gray-300">Prénom *</Label>
+              <Label htmlFor="edit-firstName" className="text-gray-700 dark:text-gray-300">{tCommon('admin.ambassadors.first_name')}</Label>
               <Input
                 className="bg-white dark:bg-slate-800/50 border-gray-300 dark:border-slate-600 text-gray-900 dark:text-white pr-10"
                 id="edit-firstName"
@@ -92,7 +92,7 @@ export function EditAmbassadorDialog({
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="edit-lastName" className="text-gray-700 dark:text-gray-300">Nom *</Label>
+              <Label htmlFor="edit-lastName" className="text-gray-700 dark:text-gray-300">{tCommon('admin.ambassadors.last_name')}</Label>
               <Input
                 className="bg-white dark:bg-slate-800/50 border-gray-300 dark:border-slate-600 text-gray-900 dark:text-white pr-10"
                 id="edit-lastName"
@@ -104,7 +104,7 @@ export function EditAmbassadorDialog({
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="edit-email" className="text-gray-700 dark:text-gray-300">Email *</Label>
+              <Label htmlFor="edit-email" className="text-gray-700 dark:text-gray-300">{tCommon('contact.email_label')}</Label>
               <Input
                 className="bg-white dark:bg-slate-800/50 border-gray-300 dark:border-slate-600 text-gray-900 dark:text-white pr-10"
                 id="edit-email"
@@ -117,7 +117,7 @@ export function EditAmbassadorDialog({
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="edit-phone" className="text-gray-700 dark:text-gray-300">Téléphone</Label>
+              <Label htmlFor="edit-phone" className="text-gray-700 dark:text-gray-300">{tCommon('admin.ambassadors.table_phone')}</Label>
               <Input
                 className="bg-white dark:bg-slate-800/50 border-gray-300 dark:border-slate-600 text-gray-900 dark:text-white pr-10"
                 id="edit-phone"
@@ -129,7 +129,7 @@ export function EditAmbassadorDialog({
               />
             </div>
             <div className="flex items-center justify-between">
-              <Label htmlFor="edit-isActive" className="text-gray-700 dark:text-gray-300">Statut actif</Label>
+              <Label htmlFor="edit-isActive" className="text-gray-700 dark:text-gray-300">{tCommon('admin.ambassadors.active_status')}</Label>
               <Switch
                 id="edit-isActive"
                 checked={formData.isActive}
@@ -147,7 +147,7 @@ export function EditAmbassadorDialog({
               disabled={isLoading}
               className="border-gray-300 dark:border-gray-700 text-gray-600 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300"
             >
-              Annuler
+              {tCommon('user.formations.cancel')}
             </Button>
             <Button type="submit" disabled={isLoading}>
               {isLoading ? 'Mise à jour...' : 'Mettre à jour'}

@@ -11,7 +11,7 @@ import { Badge } from '@/components/ui/badge';
 import { useFormationStore, type Formation, type FormationProgress } from '@/store/formation.store';
 import { useUserStore } from '@/store/user.store';
 import { useGroupStore } from '@/store/group.store';
-import { toast } from 'sonner';
+import { useTranslation } from 'react-i18next';
 
 interface FormationAssignmentProps {
   formation: Formation;
@@ -19,6 +19,7 @@ interface FormationAssignmentProps {
 }
 
 export function FormationAssignment({ formation, progress }: FormationAssignmentProps) {
+  const { t: tCommon } = useTranslation('common');
   const [assignmentMode, setAssignmentMode] = useState<'all' | 'groups' | 'users'>('all');
   const [selectedGroups, setSelectedGroups] = useState<string[]>([]);
   const [selectedUsers, setSelectedUsers] = useState<string[]>([]);
@@ -82,12 +83,11 @@ export function FormationAssignment({ formation, progress }: FormationAssignment
       };
 
       await assignFormation(formation.id, assignment);
-      toast.success('Formation assignée avec succès');
       
       // Recharger la progression
       await fetchFormationProgress(formation.id);
     } catch (error) {
-      toast.error('Erreur lors de l\'assignation');
+      //
     } finally {
       setLoadingAssignment(false);
     }
@@ -140,13 +140,13 @@ export function FormationAssignment({ formation, progress }: FormationAssignment
         <CardHeader>
           <CardTitle className="text-gray-900 dark:text-white flex items-center gap-2">
             <UserPlus className="w-5 h-5" />
-            Assigner cette formation
+            {tCommon('admin.formations.assignment_title')}
           </CardTitle>
         </CardHeader>
         <CardContent className="space-y-6">
           {/* Mode d'assignation */}
           <div className="space-y-4">
-            <Label className="text-gray-900 dark:text-white text-base font-medium">Qui peut faire cette formation ?</Label>
+            <Label className="text-gray-900 dark:text-white text-base font-medium">{tCommon('admin.formations.assignment_who')}</Label>
             
             <div className="space-y-3">
               <div className="flex items-center space-x-2">
@@ -159,7 +159,7 @@ export function FormationAssignment({ formation, progress }: FormationAssignment
                   className="w-4 h-4 text-indigo-600 bg-gray-100 dark:bg-slate-700 border-gray-300 dark:border-slate-600"
                 />
                 <Label htmlFor="all-users" className="text-gray-700 dark:text-white cursor-pointer">
-                  Tous les utilisateurs de l'organisation
+                  {tCommon('admin.formations.assignment_all_users')}
                 </Label>
               </div>
               
@@ -173,7 +173,7 @@ export function FormationAssignment({ formation, progress }: FormationAssignment
                   className="w-4 h-4 text-indigo-600 bg-gray-100 dark:bg-slate-700 border-gray-300 dark:border-slate-600"
                 />
                 <Label htmlFor="specific-groups" className="text-gray-700 dark:text-white cursor-pointer">
-                  Groupes spécifiques
+                  {tCommon('admin.formations.assignment_specific_groups')}
                 </Label>
               </div>
               
@@ -187,7 +187,7 @@ export function FormationAssignment({ formation, progress }: FormationAssignment
                   className="w-4 h-4 text-indigo-600 bg-gray-100 dark:bg-slate-700 border-gray-300 dark:border-slate-600"
                 />
                 <Label htmlFor="specific-users" className="text-gray-700 dark:text-white cursor-pointer">
-                  Utilisateurs spécifiques
+                  {tCommon('admin.formations.assignment_specific_users')}
                 </Label>
               </div>
             </div>
@@ -196,9 +196,9 @@ export function FormationAssignment({ formation, progress }: FormationAssignment
           {/* Sélection des groupes */}
           {assignmentMode === 'groups' && (
             <div className="space-y-4">
-              <Label className="text-gray-900 dark:text-white font-medium">Sélectionner les groupes</Label>
+              <Label className="text-gray-900 dark:text-white font-medium">{tCommon('admin.formations.assignment_select_groups')}</Label>
               {groupsLoading ? (
-                <p className="text-gray-500 dark:text-gray-400">Chargement des groupes...</p>
+                <p className="text-gray-500 dark:text-gray-400">{tCommon('admin.formations.assignment_loading_groups')}</p>
               ) : (
                 <div className="grid gap-3 max-h-60 overflow-y-auto">
                   {groups?.map((group) => (
@@ -210,17 +210,17 @@ export function FormationAssignment({ formation, progress }: FormationAssignment
                       />
                       <Label htmlFor={`group-${group.id}`} className="text-gray-900 dark:text-white cursor-pointer flex-1">
                         {group.name}
-                        <span className="text-gray-500 dark:text-gray-400 text-sm ml-2">({group.users?.length || 0} membres)</span>
+                        <span className="text-gray-500 dark:text-gray-400 text-sm ml-2">{tCommon('admin.formations.assignment_group_members', { count: group.users?.length || 0 })}</span>
                       </Label>
                     </div>
                   ))}
                   {groups.length === 0 && (
-                    <p className="text-gray-500 dark:text-gray-400 text-center py-4">Aucun groupe disponible</p>
+                    <p className="text-gray-500 dark:text-gray-400 text-center py-4">{tCommon('admin.formations.assignment_no_groups')}</p>
                   )}
                 </div>
               )}
               <p className="text-sm text-gray-500 dark:text-gray-400">
-                {selectedGroups.length} groupe(s) sélectionné(s)
+                {tCommon('admin.formations.assignment_groups_selected', { count: selectedGroups.length })}
               </p>
             </div>
           )}
@@ -229,11 +229,11 @@ export function FormationAssignment({ formation, progress }: FormationAssignment
           {assignmentMode === 'users' && (
             <div className="space-y-4">
               <div className="flex items-center justify-between">
-                <Label className="text-gray-900 dark:text-white font-medium">Sélectionner les utilisateurs</Label>
+                <Label className="text-gray-900 dark:text-white font-medium">{tCommon('admin.formations.assignment_select_users')}</Label>
                 <div className="relative">
                   <Search className="w-4 h-4 absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
                   <Input
-                    placeholder="Rechercher un utilisateur..."
+                    placeholder={tCommon('admin.formations.assignment_search_user')}
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
                     className="pl-10 bg-white dark:bg-slate-800/50 border-gray-300 dark:border-slate-600 text-gray-900 dark:text-white w-64"
@@ -242,7 +242,7 @@ export function FormationAssignment({ formation, progress }: FormationAssignment
               </div>
               
               {usersLoading ? (
-                <p className="text-gray-500 dark:text-gray-400">Chargement des utilisateurs...</p>
+                <p className="text-gray-500 dark:text-gray-400">{tCommon('admin.formations.assignment_loading_users')}</p>
               ) : (
                 <div className="grid gap-3 max-h-60 overflow-y-auto">
                   {filteredUsers.map((user) => (
@@ -264,12 +264,12 @@ export function FormationAssignment({ formation, progress }: FormationAssignment
                     </div>
                   ))}
                   {filteredUsers.length === 0 && !usersLoading && (
-                    <p className="text-gray-500 dark:text-gray-400 text-center py-4">Aucun utilisateur trouvé</p>
+                    <p className="text-gray-500 dark:text-gray-400 text-center py-4">{tCommon('admin.formations.assignment_no_users')}</p>
                   )}
                 </div>
               )}
               <p className="text-sm text-gray-500 dark:text-gray-400">
-                {selectedUsers.length} utilisateur(s) sélectionné(s)
+                {tCommon('admin.formations.assignment_users_selected', { count: selectedUsers.length })}
               </p>
             </div>
           )}
@@ -281,79 +281,82 @@ export function FormationAssignment({ formation, progress }: FormationAssignment
               disabled={loadingAssignment || (assignmentMode === 'groups' && selectedGroups.length === 0) || (assignmentMode === 'users' && selectedUsers.length === 0)}
             >
               <UserPlus className="w-4 h-4 mr-2" />
-              {loadingAssignment ? 'Assignation...' : 'Assigner la formation'}
+              {loadingAssignment ? tCommon('admin.formations.assignment_assigning') : tCommon('admin.formations.assignment_btn')}
             </Button>
           </div>
         </CardContent>
       </Card>
 
       {/* Résumé des assignations actuelles */}
-      <Card className="rounded-sm border border-gray-200 dark:border-white/10 bg-white dark:bg-[#0c1023]/90">
-        <CardHeader>
-          <CardTitle className="text-gray-900 dark:text-white">Assignations actuelles</CardTitle>
-        </CardHeader>
-        <CardContent>
-          {progress.length === 0 ? (
-            <div className="text-center py-8 text-gray-500 dark:text-gray-400">
-              <Users className="w-12 h-12 mx-auto mb-4 opacity-50" />
-              <p>Aucune assignation pour le moment</p>
-            </div>
-          ) : (
-            <div className="space-y-4">
-              <div className="flex items-center justify-between">
-                <p className="text-gray-500 dark:text-gray-400">
-                  {progress.length} utilisateur(s) assigné(s)
-                </p>
-                <div className="flex gap-2">
-                  <Badge variant="outline" className="text-green-600 dark:text-green-400 border-green-400/50">
-                    {progress.filter(p => p.status === 'COMPLETED').length} complétés
-                  </Badge>
-                  <Badge variant="outline" className="text-blue-600 dark:text-blue-400 border-blue-400/50">
-                    {progress.filter(p => p.status === 'IN_PROGRESS').length} en cours
-                  </Badge>
-                  <Badge variant="outline" className="text-gray-500 dark:text-gray-400 border-gray-400/50">
-                    {progress.filter(p => p.status === 'NOT_STARTED').length} non commencés
-                  </Badge>
-                </div>
-              </div>
+    <Card className="rounded-sm border border-gray-200 dark:border-white/10 bg-white dark:bg-[#0c1023]/90">
+  <CardHeader>
+    <CardTitle className="text-gray-900 dark:text-white">{tCommon('admin.formations.assignment_current')}</CardTitle>
+  </CardHeader>
+  <CardContent>
+    {progress.length === 0 ? (
+      <div className="text-center py-8 text-gray-500 dark:text-gray-400">
+        <Users className="w-12 h-12 mx-auto mb-4 opacity-50" />
+        <p>{tCommon('admin.formations.assignment_none')}</p>
+      </div>
+    ) : (
+      <div className="space-y-4">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+          <p className="text-gray-500 dark:text-gray-400 text-sm sm:text-base">
+            {tCommon('admin.formations.assignment_assigned_count', { count: progress.length })}
+          </p>
+          <div className="flex flex-wrap gap-2">
+            <Badge variant="outline" className="text-green-600 dark:text-green-400 border-green-400/50">
+              {tCommon('admin.formations.assignment_completed_count', { count: progress.filter(p => p.status === 'COMPLETED').length })}
+            </Badge>
+            <Badge variant="outline" className="text-blue-600 dark:text-blue-400 border-blue-400/50">
+              {tCommon('admin.formations.assignment_in_progress_count', { count: progress.filter(p => p.status === 'IN_PROGRESS').length })}
+            </Badge>
+            <Badge variant="outline" className="text-gray-500 dark:text-gray-400 border-gray-400/50">
+              {tCommon('admin.formations.assignment_not_started_count', { count: progress.filter(p => p.status === 'NOT_STARTED').length })}
+            </Badge>
+          </div>
+        </div>
 
-              <div className="grid gap-3 max-h-60 overflow-y-auto">
-                {progress.slice(0, 5).map((userProgress) => (
-                  <div key={userProgress.progressId} className="flex items-center justify-between p-3 bg-gray-50 dark:bg-slate-800/30 rounded-lg">
-                    <div className="flex items-center gap-3">
-                      <span className="text-lg">{getProgressStatusIcon(userProgress.status)}</span>
-                      <div>
-                        <p className="text-gray-900 dark:text-white text-sm font-medium">
-                          {userProgress.userFirstName} {userProgress.userLastName}
-                        </p>
-                        <p className="text-gray-500 dark:text-gray-400 text-xs">{userProgress.userEmail}</p>
-                      </div>
-                    </div>
-                    <div className="text-right">
-                      <p className={`text-xs font-medium ${getProgressStatusColor(userProgress.status)}`}>
-                        {userProgress.status === 'COMPLETED' ? 'Complété' : 
-                         userProgress.status === 'IN_PROGRESS' ? 'En cours' :
-                         userProgress.status === 'FAILED' ? 'Échoué' : 'Non commencé'}
-                      </p>
-                      <p className="text-gray-400 dark:text-gray-500 text-xs">
-                        {userProgress.finalScore}% • {formatTime(userProgress.timeSpent)}
-                      </p>
-                    </div>
-                  </div>
-                ))}
-              </div>
-
-              {progress.length > 5 && (
-                <div className="text-center pt-2">
-                  <p className="text-gray-500 dark:text-gray-400 text-sm">
-                    Et {progress.length - 5} autre(s) utilisateur(s)
+        <div className="grid gap-3 max-h-60 overflow-y-auto">
+          {progress.slice(0, 5).map((userProgress) => (
+            <div
+              key={userProgress.progressId}
+              className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 p-3 bg-gray-50 dark:bg-slate-800/30 rounded-lg"
+            >
+              <div className="flex items-center gap-3 min-w-0">
+                <span className="text-lg shrink-0">{getProgressStatusIcon(userProgress.status)}</span>
+                <div className="min-w-0">
+                  <p className="text-gray-900 dark:text-white text-sm font-medium truncate">
+                    {userProgress.userFirstName} {userProgress.userLastName}
                   </p>
+                  <p className="text-gray-500 dark:text-gray-400 text-xs truncate">{userProgress.userEmail}</p>
                 </div>
-              )}
+              </div>
+              <div className="text-left sm:text-right pl-9 sm:pl-0 shrink-0">
+                <p className={`text-xs font-medium ${getProgressStatusColor(userProgress.status)}`}>
+                  {userProgress.status === 'COMPLETED' ? tCommon('admin.formations.assignment_status_completed') :
+                   userProgress.status === 'IN_PROGRESS' ? tCommon('user.formations.in_progress_status') :
+                   userProgress.status === 'FAILED' ? tCommon('admin.formations.progress_failed') : tCommon('admin.formations.assignment_status_not_started')}
+                </p>
+                <p className="text-gray-400 dark:text-gray-500 text-xs">
+                  {userProgress.finalScore}% • {formatTime(userProgress.timeSpent)}
+                </p>
+              </div>
             </div>
-          )}
-        </CardContent>
-      </Card>
+          ))}
+        </div>
+
+        {progress.length > 5 && (
+          <div className="text-center pt-2">
+            <p className="text-gray-500 dark:text-gray-400 text-sm">
+              {tCommon('admin.formations.assignment_others', { count: progress.length - 5 })}
+            </p>
+          </div>
+        )}
+      </div>
+    )}
+  </CardContent>
+</Card>
     </div>
   );
 }

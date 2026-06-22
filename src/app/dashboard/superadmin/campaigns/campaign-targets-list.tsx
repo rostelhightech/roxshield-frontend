@@ -3,6 +3,7 @@
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card';
 import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
+import { useTranslation } from 'react-i18next';
 
 interface CampaignTargetsListProps {
   campaign: any;
@@ -18,23 +19,24 @@ const getStatusVariant = (status: string) => {
 };
 
 export function CampaignTargetsList({ campaign }: CampaignTargetsListProps) {
+  const { t: tCommon } = useTranslation('common');
   return (
     <Card className="rounded-md border border-white/10 bg-white  dark:bg-[#0c1023]/90   mt-6">
       <CardHeader>
-        <CardTitle>Liste des destinataires</CardTitle>
-        <CardDescription>Visualisez chaque cible associée à la campagne.</CardDescription>
+        <CardTitle>{tCommon('admin.campaigns.targets_list_title')}</CardTitle>
+        <CardDescription>{tCommon('admin.campaigns.targets_list_desc')}</CardDescription>
       </CardHeader>
       <CardContent>
         {campaign.targets.length === 0 ? (
-          <p className="text-sm text-gray-400">Aucune cible ajoutée pour cette campagne.</p>
+          <p className="text-sm text-gray-400">{tCommon('admin.campaigns.targets_list_empty')}</p>
         ) : (
           <Table className="min-w-full text-gray-900 dark:text-white border-separate border-spacing-0">
             <TableHeader>
               <TableRow>
-                <TableHead className="text-gray-900 dark:text-white">Email</TableHead>
-                <TableHead className="text-gray-900 dark:text-white">Nom</TableHead>
-                <TableHead className="text-gray-900 dark:text-white">Groupes / Utilisateur</TableHead>
-                <TableHead className="text-gray-900 dark:text-white">Statut</TableHead>
+                <TableHead className="text-gray-900 dark:text-white">{tCommon('user.profile.email')}</TableHead>
+                <TableHead className="text-gray-900 dark:text-white">{tCommon('user.profile.last_name')}</TableHead>
+                <TableHead className="text-gray-900 dark:text-white">{tCommon('admin.campaigns.targets_list_groups')}</TableHead>
+                <TableHead className="text-gray-900 dark:text-white">{tCommon('admin.ambassadors.status_placeholder')}</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>

@@ -7,6 +7,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useAuthStore } from '@/store/auth.store';
 import { Eye, EyeOff, Lock } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 
 interface ChangePasswordDialogProps {
   open: boolean;
@@ -14,6 +15,7 @@ interface ChangePasswordDialogProps {
 }
 
 export function ChangePasswordDialog({ open, onOpenChange }: ChangePasswordDialogProps) {
+  const { t: tCommon } = useTranslation('common');
   const { changePassword } = useAuthStore();
   const [currentPassword, setCurrentPassword] = useState('');
   const [newPassword, setNewPassword] = useState('');
@@ -78,10 +80,10 @@ export function ChangePasswordDialog({ open, onOpenChange }: ChangePasswordDialo
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2 text-gray-900 dark:text-white">
             <Lock className="w-5 h-5" />
-            Changer mon mot de passe
+            {tCommon('user.profile.change_password')}
           </DialogTitle>
           <DialogDescription className="text-gray-500 dark:text-gray-400">
-            Entrez votre mot de passe actuel et choisissez un nouveau mot de passe sécurisé
+            {tCommon('common.change_password_desc')}
           </DialogDescription>
         </DialogHeader>
 
@@ -95,7 +97,7 @@ export function ChangePasswordDialog({ open, onOpenChange }: ChangePasswordDialo
           {/* Mot de passe actuel */}
           <div className="space-y-2">
             <Label htmlFor="currentPassword" className="text-gray-700 dark:text-white">
-              Mot de passe actuel *
+              {tCommon('common.current_password')}
             </Label>
             <div className="relative">
               <Input
@@ -104,7 +106,7 @@ export function ChangePasswordDialog({ open, onOpenChange }: ChangePasswordDialo
                 value={currentPassword}
                 onChange={(e) => setCurrentPassword(e.target.value)}
                 className="bg-white dark:bg-slate-800/50 border-gray-300 dark:border-slate-600 text-gray-900 dark:text-white pr-10"
-                placeholder="Entrez votre mot de passe actuel"
+                placeholder={tCommon('common.change_password.current_placeholder')}
                 disabled={isLoading}
               />
               <button
@@ -129,7 +131,7 @@ export function ChangePasswordDialog({ open, onOpenChange }: ChangePasswordDialo
                 value={newPassword}
                 onChange={(e) => setNewPassword(e.target.value)}
                 className="bg-white dark:bg-slate-800/50 border-gray-300 dark:border-slate-600 text-gray-900 dark:text-white pr-10"
-                placeholder="Entrez votre nouveau mot de passe"
+                placeholder={tCommon('common.change_password.new_placeholder')}
                 disabled={isLoading}
               />
               <button
@@ -140,13 +142,13 @@ export function ChangePasswordDialog({ open, onOpenChange }: ChangePasswordDialo
                 {showNewPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
               </button>
             </div>
-            <p className="text-xs text-gray-500 dark:text-gray-400">Au moins 6 caractères</p>
+            <p className="text-xs text-gray-500 dark:text-gray-400">{tCommon('common.change_password.min_chars')}</p>
           </div>
 
           {/* Confirmation */}
           <div className="space-y-2">
             <Label htmlFor="confirmPassword" className="text-gray-700 dark:text-white">
-              Confirmer le nouveau mot de passe *
+              {tCommon('common.change_password.confirm_password')}
             </Label>
             <div className="relative">
               <Input
@@ -155,7 +157,7 @@ export function ChangePasswordDialog({ open, onOpenChange }: ChangePasswordDialo
                 value={confirmPassword}
                 onChange={(e) => setConfirmPassword(e.target.value)}
                 className="bg-white dark:bg-slate-800/50 border-gray-300 dark:border-slate-600 text-gray-900 dark:text-white pr-10"
-                placeholder="Confirmez votre nouveau mot de passe"
+                placeholder={tCommon('common.change_password.confirm_placeholder')}
                 disabled={isLoading}
               />
               <button
@@ -176,7 +178,7 @@ export function ChangePasswordDialog({ open, onOpenChange }: ChangePasswordDialo
               disabled={isLoading}
               className="border-gray-300 dark:border-slate-600 text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white"
             >
-              Annuler
+              {tCommon('user.formations.cancel')}
             </Button>
             <Button type="submit" disabled={isLoading}>
               {isLoading ? 'Modification...' : 'Modifier le mot de passe'}

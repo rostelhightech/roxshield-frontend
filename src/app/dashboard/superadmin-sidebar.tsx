@@ -14,6 +14,7 @@ import { Separator } from "@/components/ui/separator";
 import { useTranslation } from "@/lib/i18n";
 import { useAuthStore } from "@/store/auth.store";
 import { useSidebarStore } from "@/store/sidebar.store";
+import { useSettingsStore } from "@/store/settings.store";
 
 function getInitials(name?: string | null, email?: string | null): string {
   if (name) return name.split(" ").map((n) => n[0]).join("").toUpperCase().slice(0, 2);
@@ -28,10 +29,11 @@ interface NavItem {
 }
 
 export function SuperAdminSidebar() {
-  const { t } = useTranslation();
+  const { t, t: tCommon } = useTranslation();
   const { collapsed, setCollapsed } = useSidebarStore();
   const [mobileOpen, setMobileOpen] = useState(false);
   const { user, clearAuth } = useAuthStore();
+  const { user: profile } = useSettingsStore();
 
   const routerState = useRouterState();
   const currentPath = routerState.location.pathname;
@@ -40,19 +42,20 @@ export function SuperAdminSidebar() {
   const userEmail = user?.email || "";
 
   const navItems: NavItem[] = [
-    { label: t("nav.dashboard"),    to: "/dashboard/overview",              icon: LayoutDashboard },
-    { label: "Demandes de démo",    to: "/dashboard/demos",                 icon: Mail },
-    { label: "Campagnes",           to: "/dashboard/campaigns",             icon: Crosshair },
-    { label: "Formations",          to: "/dashboard/formations",            icon: BookOpen },
-    { label: t("nav.organization"), to: "/dashboard/organizations",         icon: Building2 },
-    { label: "Utilisateurs",        to: "/dashboard/users",                 icon: Users },
-    { label: "Groupes",             to: "/dashboard/groups",                icon: GraduationCap },
-    { label: "Ambassadeurs",        to: "/dashboard/ambassadors",           icon: UserCheck },
-    { label: "Templates",           to: "/dashboard/templates",             icon: Sheet },
-    { label: "Landing pages",       to: "/dashboard/landing-page-templates",icon: FileBarChart },
-    { label: "SMTP",                to: "/dashboard/smtp-profiles",         icon: Mail },
-    { label: "Plans",               to: "/dashboard/plan",                  icon: FileBarChart },
-    { label: "GRC",                 to: "/dashboard/grc",                   icon: ShieldCheck },
+    { label: tCommon('nav.topbar.overview_title'),          to: "/dashboard/overview",               icon: LayoutDashboard },
+    { label: tCommon('nav.topbar.demos_title'),             to: "/dashboard/demos",                  icon: Mail },
+    { label: tCommon('nav.topbar.campaigns_title'),         to: "/dashboard/campaigns",              icon: Crosshair },
+    { label: tCommon('nav.topbar.formations_title'),        to: "/dashboard/formations",             icon: BookOpen },
+    { label: tCommon('nav.topbar.organizations_title'),     to: "/dashboard/organizations",          icon: Building2 },
+    { label: tCommon('nav.topbar.users_title'),             to: "/dashboard/users",                  icon: Users },
+    { label: tCommon('nav.topbar.groups_title'),            to: "/dashboard/groups",                 icon: GraduationCap },
+    { label: tCommon('nav.topbar.ambassadors_title'),       to: "/dashboard/ambassadors",            icon: UserCheck },
+    { label: tCommon('nav.topbar.templates_title'),         to: "/dashboard/templates",              icon: Sheet },
+    { label: tCommon('nav.topbar.landing_templates_title'), to: "/dashboard/landing-page-templates", icon: FileBarChart },
+    { label: tCommon('nav.topbar.smtp_title'),              to: "/dashboard/smtp-profiles",          icon: Mail },
+    { label: tCommon('nav.topbar.plan_title'),              to: "/dashboard/plan",                   icon: FileBarChart },
+    { label: tCommon('nav.topbar.grc_title'),               to: "/dashboard/grc",                    icon: ShieldCheck },
+    { label: tCommon('nav.topbar.settings_title'),          to: "/dashboard/settings",               icon: Settings },
   ];
 
   useEffect(() => {
@@ -64,9 +67,9 @@ export function SuperAdminSidebar() {
   };
 
   return (
-    <div>
+    <div className="">
       {/* MOBILE HEADER */}
-      <div className="fixed left-0 right-0 top-0 z-50 flex h-14 items-center gap-3 border-b border-gray-200 dark:border-white/[0.05] bg-white dark:bg-[#070b18] px-4 text-gray-900 dark:text-white md:hidden">
+      <div className="fixed left-0 right-0 top-0 z-50 flex h-14 items-center gap-3 border-b border-gray-100 dark:border-white/[0.05] bg-white dark:bg-[#070b18] px-4 text-gray-900 dark:text-white md:hidden">
         <Button
           variant="ghost"
           size="icon"
@@ -77,7 +80,7 @@ export function SuperAdminSidebar() {
         </Button>
         <div className="flex items-center gap-2">
           <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-[#5d2595]">
-            <Shield className="h-4 w-4 text-white" />
+            <img src="/logowhite.png" className="h-4 w-4 text-white" />
           </div>
           <span className="text-sm font-bold">
             <span className="font-normal opacity-60">Rox</span>Shield
@@ -88,7 +91,7 @@ export function SuperAdminSidebar() {
       {/* MOBILE OVERLAY */}
       {mobileOpen && (
         <div
-          className="fixed inset-0 z-40 bg-black/20 dark:bg-black/60 backdrop-blur-sm md:hidden"
+          className="fixed inset-0  z-40 bg-black/20 dark:bg-black/60 backdrop-blur-sm md:hidden"
           onClick={() => setMobileOpen(false)}
         />
       )}
@@ -109,15 +112,15 @@ export function SuperAdminSidebar() {
       >
         {/* HEADER */}
         <div className="flex items-center gap-3 px-4 py-5">
-          <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-[#5d2595]">
-            <Shield className="h-5 w-5 text-white" />
+          <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl  ">
+            <img src="/logowhite.png" className="h-auto w-8 text-white" />
           </div>
           {!collapsed && (
             <div className="flex flex-col">
               <span className="text-sm font-bold tracking-tight">
                 <span className="font-normal opacity-60">Rox</span>Shield
               </span>
-              <span className="text-[11px] text-gray-400 dark:text-white/40">by Rostel High-Tech</span>
+              <span className="text-sm text-gray-400 dark:text-white/40">by Rostel High-Tech</span>
             </div>
           )}
           <Button
@@ -173,11 +176,22 @@ export function SuperAdminSidebar() {
         <div className="p-3">
           <div className={`flex items-center gap-3 rounded-xl px-3 py-2 ${collapsed ? "justify-center" : ""}`}>
             <div className="shrink-0">
-              <Avatar className="h-9 w-9 cursor-pointer transition-opacity hover:opacity-80">
+              
+                 {profile?.avatarUrl ? (
+                <img
+                  src={profile.avatarUrl}
+                  alt={tCommon('user.profile.profile_picture')}
+                  className="h-9 w-9 rounded-full object-cover"
+                />
+              ) : (
+                  <Avatar className="h-9 w-9 cursor-pointer transition-opacity hover:opacity-80">
                 <AvatarFallback className="bg-[#5d2595] text-xs text-white">
                   {getInitials(user?.name, user?.email)}
                 </AvatarFallback>
               </Avatar>
+              )}
+              
+            
             </div>
             {!collapsed && (
               <>
@@ -185,7 +199,7 @@ export function SuperAdminSidebar() {
                   <p className="truncate text-sm font-medium text-gray-900 dark:text-white">{userName}</p>
                   <p className="truncate text-xs text-gray-500 dark:text-white/40">{userEmail}</p>
                 </div>
-                <button onClick={handleLogout} aria-label="Se déconnecter">
+                <button onClick={handleLogout} aria-label={tCommon('user.sidebar.logout')}>
                   <LogOut className="h-4 w-4 text-gray-400 dark:text-white/30 transition-all hover:text-red-500 dark:hover:text-red-400" />
                 </button>
               </>
@@ -196,3 +210,4 @@ export function SuperAdminSidebar() {
     </div>
   );
 }
+

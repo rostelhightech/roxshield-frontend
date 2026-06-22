@@ -7,6 +7,7 @@ import {
 } from "@/components/ui/card";
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip, Legend } from "recharts";
 import { apiService } from "@/app/services/api.service";
+import { useTranslation } from 'react-i18next';
 
 interface PlanDistribution {
   name: string;
@@ -22,6 +23,7 @@ const PLAN_COLORS = {
 };
 
 export function PlansChart() {
+  const { t: tCommon } = useTranslation('common');
   const [distribution, setDistribution] = useState<PlanDistribution[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
@@ -51,7 +53,7 @@ export function PlansChart() {
     <Card className="rounded-sm border border-gray-200 dark:border-white/5 bg-white  dark:bg-[#0c1023] shadow-xs dark:shadow-xs">
       <CardHeader>
         <CardTitle className="text-gray-900 dark:text-gray-900 dark:text-white">
-          Répartition des plans
+          {tCommon('admin.page_overview.plans_distribution')}
         </CardTitle>
       </CardHeader>
 
@@ -108,7 +110,7 @@ export function PlansChart() {
           </>
         ) : (
           <div className="text-center py-8 text-gray-400 dark:text-slate-400">
-            Aucune donnée disponible
+            {tCommon('admin.page_overview.no_data')}
           </div>
         )}
       </CardContent>

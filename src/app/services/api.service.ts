@@ -14,13 +14,14 @@ class ApiService {
 
   constructor() {
     this.api = axios.create({
-  baseURL: import.meta.env.VITE_API_URL,
-  timeout: 30000,
-  headers: {
-    'Content-Type': 'application/json',
-  },
-});
+      baseURL: `${import.meta.env.VITE_API_URL}/api/v1`,
+      timeout: 30000,
+      headers: {
+        'Content-Type': 'application/json', // Correction : suppression de tCommon
+      },
+    });
 
+    // Intercepteur de requête
     this.api.interceptors.request.use(
       (config: InternalAxiosRequestConfig) => {
         const token = localStorage.getItem('accessToken');
@@ -32,9 +33,10 @@ class ApiService {
       (error) => Promise.reject(error)
     );
 
+    // Intercepteur de réponse
     this.api.interceptors.response.use(
       (response: AxiosResponse) => {
-        // Afficher un message de succès si présent dans la réponse
+        // Toast de succès (sauf pour les GET)
         if (response.data?.message && response.config.method !== 'get') {
           toast.success(response.data.message);
         }
@@ -42,33 +44,32 @@ class ApiService {
       },
       async (error) => {
         const originalRequest = error.config;
-        const isAuthRoute = originalRequest.url?.includes('/auth/');
+        // Only skip refresh for truly public auth endpoints (no token needed)
+        const PUBLIC_AUTH_ROUTES = [
+          '/auth/login',
+          '/auth/refresh-token',
+          '/auth/forgot-password',
+          '/auth/reset-password',
+          '/auth/2fa/verify',
+        ];
+        const isPublicAuthRoute = PUBLIC_AUTH_ROUTES.some(route => originalRequest.url?.includes(route));
+        const isRefreshTokenRoute = originalRequest.url?.includes('/auth/refresh-token');
 
-        // Gestion des erreurs avec affichage du message du backend
-      if (error.response) {
-  const { status, data } = error.response;
+        // Erreur réseau (pas de réponse)
+        if (!error.response) {
+          toast.error('Erreur de connexion au serveur');
+          return Promise.reject(error);
+        }
 
-  if (status !== 401) {
-    if (data?.message) {
-      toast.error(data.message);
-    } else if (data?.error) {
-      toast.error(data.error);
-    } else if (typeof data === 'string') {
-      toast.error(data);
-    } else if (status === 500) {
-      toast.error('Une erreur serveur est survenue');
-    } else if (status === 404) {
-      toast.error('Ressource non trouvée');
-    } else if (status === 403) {
-      toast.error('Accès non autorisé');
-    } else {
-      toast.error('Une erreur est survenue');
-    }
-  }
-}
+        const { status, data } = error.response;
 
-        // Gestion du refresh token (401)
-        if (error.response?.status === 401 && !originalRequest._retry && !isAuthRoute) {
+        // Ne pas afficher de toast pour les erreurs de refresh token
+        if (isRefreshTokenRoute) {
+          return Promise.reject(error);
+        }
+
+        // === Gestion du refresh token (401) ===
+        if (status === 401 && !originalRequest._retry && !isPublicAuthRoute) {
           if (this.isRefreshing) {
             return new Promise((resolve, reject) => {
               this.failedQueue.push({ resolve, reject, config: originalRequest });
@@ -80,7 +81,6 @@ class ApiService {
 
           try {
             const refreshToken = localStorage.getItem('refreshToken');
-
             if (!refreshToken) throw new Error('No refresh token');
 
             const response = await axios.post('http://localhost:3000/api/v1/auth/refresh-token', { refreshToken });
@@ -88,12 +88,11 @@ class ApiService {
             if (response.data.success) {
               const newAccessToken = response.data.data.accessToken;
               localStorage.setItem('accessToken', newAccessToken);
-              
               originalRequest.headers.Authorization = `Bearer ${newAccessToken}`;
-              
               this.processQueue(null, newAccessToken);
-              
               return this.api(originalRequest);
+            } else {
+              throw new Error('Refresh failed');
             }
           } catch (refreshError) {
             this.processQueue(refreshError, null);
@@ -109,12 +108,33 @@ class ApiService {
           }
         }
 
+        // === Gestion des autres erreurs (tous les status ≠ 401 ou déjà traités) ===
+        let errorMessage = 'Une erreur est survenue';
+        if (data?.message) {
+          errorMessage = data.message;
+        } else if (data?.error) {
+          errorMessage = data.error;
+        } else if (typeof data === 'string') {
+          errorMessage = data;
+        } else {
+          // Messages par défaut selon le statut
+          if (status === 400) errorMessage = 'Requête invalide';
+          else if (status === 403) errorMessage = 'Accès non autorisé';
+          else if (status === 404) errorMessage = 'Ressource non trouvée';
+          else if (status === 409) errorMessage = 'Conflit avec les données existantes';
+          else if (status === 500) errorMessage = 'Erreur interne du serveur';
+          else if (status >= 500) errorMessage = 'Erreur serveur';
+        }
+
+        // Afficher la toast d'erreur
+        toast.error(errorMessage);
+
         return Promise.reject(error);
       }
     );
   }
 
-  private processQueue(error: any, token: string | null) {
+  private processQueue(error: unknown, token: string | null) {
     this.failedQueue.forEach(promise => {
       if (error) {
         promise.reject(error);
@@ -161,7 +181,11 @@ class ApiService {
   async upload<T = any>(url: string, file: File, fieldName: string = 'file'): Promise<T> {
     const formData = new FormData();
     formData.append(fieldName, file);
-    return this.post<T>(url, formData, { headers: { 'Content-Type': 'multipart/form-data' } });
+    return this.post<T>(url, formData, { 
+      headers: { 
+        'Content-Type': 'multipart/form-data' // Correction : suppression de tCommon
+      } 
+    });
   }
 
   async download(url: string, filename: string): Promise<void> {

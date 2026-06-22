@@ -3,12 +3,14 @@
 export interface QuizQuestion {
   id: string;
   question: string;
-  type: 'multiple_choice' | 'true_false' | 'short_answer';
+  type: 'multiple_choice' | 'true_false' | 'multiple_select';
   options?: string[];
-  correctAnswer: number | string;
+  correctAnswer: number | string | number[]; // ✅ number[] pour multiple_select
   points: number;
   explanation?: string;
 }
+
+
 
 export interface FormationEvaluation {
   id?: string;
@@ -33,6 +35,9 @@ export interface FormationChapter {
   order: number;
   type: 'VIDEO' | 'DOCUMENT' | 'INTERACTIVE' | 'QUIZ' | 'WEBINAR';
   estimatedDuration: number;
+  /** URL Cloudinary du PDF uploadé (null = mode éditeur) */
+  pdfUrl?: string | null;
+  pdfPublicId?: string | null;
   metadata?: {
     videoUrl?: string;
     documentUrl?: string;
@@ -113,7 +118,8 @@ export interface CreateFormationPayload {
     order: number;
     type: 'VIDEO' | 'DOCUMENT' | 'INTERACTIVE' | 'QUIZ' | 'WEBINAR';
     estimatedDuration: number;
-    metadata?: any;
+    metadata?: {
+      videoUrl?: string;};
   }>;
   
   // Évaluations

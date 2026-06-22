@@ -22,7 +22,7 @@ import {
 } from '@/components/ui/alert-dialog';
 import { Ambassador } from '@/store/ambassador.store';
 import { useState } from 'react';
-import { toast } from 'sonner';
+import { useTranslation } from 'react-i18next';
 
 interface AmbassadorCardProps {
   ambassador: Ambassador;
@@ -34,14 +34,13 @@ interface AmbassadorCardProps {
 
 export const AmbassadorCard = ({ ambassador, onEdit, onDelete, onQRCode, onStats }: AmbassadorCardProps) => {
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
-
+const { t: tCommon } = useTranslation('common');
   const handleDelete = async () => {
     try {
       await onDelete(ambassador.id);
-      toast.success('✅ Ambassadeur supprimé avec succès');
       setDeleteDialogOpen(false);
     } catch (error) {
-      toast.error('❌ Erreur lors de la suppression');
+      //
     }
   };
 
@@ -80,7 +79,7 @@ export const AmbassadorCard = ({ ambassador, onEdit, onDelete, onQRCode, onStats
                   className="text-gray-700 dark:text-gray-300"
                 >
                   <QrCode className="w-4 h-4 mr-2" />
-                  Générer QR Code
+                  {tCommon('admin.ambassadors.generate_qr')}
                 </DropdownMenuItem>
                 <DropdownMenuItem
                   onClick={(event) => {
@@ -100,7 +99,7 @@ export const AmbassadorCard = ({ ambassador, onEdit, onDelete, onQRCode, onStats
                   className="text-gray-700 dark:text-gray-300"
                 >
                   <Edit className="w-4 h-4 mr-2" />
-                  Modifier
+                  {tCommon('admin.ambassadors.edit')}
                 </DropdownMenuItem>
                 <DropdownMenuItem
                   onClick={(event) => {
@@ -110,7 +109,7 @@ export const AmbassadorCard = ({ ambassador, onEdit, onDelete, onQRCode, onStats
                   className="text-red-600 dark:text-red-400"
                 >
                   <Trash2 className="w-4 h-4 mr-2" />
-                  Supprimer
+                  {tCommon('admin.ambassadors.delete')}
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
@@ -128,11 +127,11 @@ export const AmbassadorCard = ({ ambassador, onEdit, onDelete, onQRCode, onStats
           <div className="flex items-center gap-2 mb-4">
             {ambassador.isActive ? (
               <Badge className="bg-green-100 dark:bg-green-500/20 text-green-700 dark:text-green-400 border-green-300 dark:border-green-500/30">
-                Actif
+              {tCommon('common.active')}
               </Badge>
             ) : (
               <Badge className="bg-gray-100 dark:bg-gray-500/20 text-gray-700 dark:text-gray-400 border-gray-300 dark:border-gray-500/30">
-                Inactif
+              {tCommon('common.inactive')}
               </Badge>
             )}
           </div>
@@ -143,7 +142,7 @@ export const AmbassadorCard = ({ ambassador, onEdit, onDelete, onQRCode, onStats
               <p className="text-lg font-bold text-gray-900 dark:text-white">{ambassador.totalReferrals}</p>
             </div>
             <div>
-              <p className="text-xs text-gray-500 dark:text-gray-400">Succès</p>
+              <p className="text-xs text-gray-500 dark:text-gray-400">{tCommon('admin.ambassadors.success')}</p>
               <p className="text-lg font-bold text-green-600 dark:text-green-400">{ambassador.successfulReferrals}</p>
             </div>
           </div>
@@ -161,13 +160,13 @@ export const AmbassadorCard = ({ ambassador, onEdit, onDelete, onQRCode, onStats
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel className="bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 border-gray-300 dark:border-gray-700 text-gray-700 dark:text-white">
-              Annuler
+              {tCommon('user.formations.cancel')}
             </AlertDialogCancel>
             <AlertDialogAction
               onClick={handleDelete}
               className="bg-red-600 hover:bg-red-700 text-white"
             >
-              Supprimer
+              {tCommon('admin.ambassadors.delete')}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>

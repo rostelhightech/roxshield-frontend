@@ -7,9 +7,10 @@ import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Group } from '@/store/group.store';
+ import { Group } from '@/store/group.store';
 import { User, useUserStore } from '@/store/user.store';
+import { Combobox } from '@/components/ui/combobox';
+import { useTranslation } from 'react-i18next';
 
 interface GroupUsersPanelProps {
   group: Group;
@@ -20,6 +21,7 @@ interface GroupUsersPanelProps {
 const getInitials = (user: User) => `${user.firstName[0] ?? ''}${user.lastName[0] ?? ''}`.toUpperCase();
 
 export const GroupUsersPanel = ({ group, users, onClose }: GroupUsersPanelProps) => {
+  const { t: tCommon } = useTranslation('common');
   const { updateUser, isLoading } = useUserStore();
   const [search, setSearch] = useState('');
   const [position, setPosition] = useState('');
@@ -73,14 +75,14 @@ export const GroupUsersPanel = ({ group, users, onClose }: GroupUsersPanelProps)
               <div>
                 <h3 className="text-lg font-semibold text-gray-900 dark:text-white">{group.name}</h3>
                 <p className="text-sm text-gray-500 dark:text-gray-400">
-                  {group.organization?.name || 'Organisation'} · {groupUsersCount} membre(s)
+                  {group.organization?.name || tCommon('admin.grc.org_name')} · {tCommon('admin.groups.group_members_count', { count: groupUsersCount })}
                 </p>
               </div>
             </div>
           </div>
           <Button variant="ghost" size="sm" onClick={onClose} className="text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white">
             <X className="h-4 w-4 mr-2" />
-            Fermer
+            {tCommon('login.close')}
           </Button>
         </div>
 
@@ -90,24 +92,24 @@ export const GroupUsersPanel = ({ group, users, onClose }: GroupUsersPanelProps)
             <Input
               value={search}
               onChange={(event) => setSearch(event.target.value)}
-              placeholder="Rechercher un utilisateur..."
+              placeholder={tCommon('admin.formations.assignment_search_user')}
               className="pl-9 bg-white dark:bg-gray-800/50 border-gray-300 dark:border-gray-700 text-gray-900 dark:text-white"
             />
           </div>
-
-          <Select value={position} onValueChange={setPosition}>
-            <SelectTrigger className="bg-white dark:bg-gray-800/50 border-gray-300 dark:border-gray-700 text-gray-900 dark:text-white">
-              <SelectValue placeholder="Toutes les positions" />
-            </SelectTrigger>
-            <SelectContent className="bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700">
-              <SelectItem value="">Toutes les positions</SelectItem>
-              {positions.map((position) => (
-                <SelectItem key={position} value={position}>
-                  {position}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
+<Combobox
+  options={[
+    { value: '', label: tCommon('admin.groups.all_positions') },
+    ...positions.map((position) => ({
+      value: position,
+      label: position,
+    })),
+  ]}
+  value={position}
+  onChange={setPosition}
+  placeholder={tCommon('admin.groups.all_positions')}
+  searchPlaceholder={tCommon('admin.groups.search_position')}
+  className="bg-white dark:bg-gray-800/50 border-gray-300 dark:border-gray-700 text-gray-900 dark:text-white"
+/>
         </div>
       </div>
 
@@ -115,8 +117,8 @@ export const GroupUsersPanel = ({ group, users, onClose }: GroupUsersPanelProps)
         {filteredUsers.length === 0 ? (
           <div className="py-10 text-center">
             <Users className="mx-auto mb-3 h-10 w-10 text-gray-400 dark:text-gray-600" />
-            <p className="font-medium text-gray-900 dark:text-white">Aucun utilisateur trouvé</p>
-            <p className="text-sm text-gray-500 dark:text-gray-400">Vérifiez la recherche, la position ou l'organisation du groupe.</p>
+            <p className="font-medium text-gray-900 dark:text-white">{tCommon('admin.formations.assignment_no_users')}</p>
+            <p className="text-sm text-gray-500 dark:text-gray-400">{tCommon('admin.groups.no_users_hint')}</p>
           </div>
         ) : (
           <div className="grid grid-cols-1 gap-3 lg:grid-cols-2">
@@ -145,11 +147,11 @@ export const GroupUsersPanel = ({ group, users, onClose }: GroupUsersPanelProps)
                       </div>
                       <div className="mt-1 flex flex-wrap gap-1">
                         <Badge className="bg-gray-200 dark:bg-gray-700/50 text-gray-700 dark:text-gray-300">
-                          {user.position || 'Sans position'}
+                          {user.position || tCommon('admin.groups.no_position')}
                         </Badge>
                         {isInAnotherGroup && (
                           <Badge className="bg-yellow-100 dark:bg-yellow-500/20 text-yellow-700 dark:text-yellow-300 border-yellow-300 dark:border-yellow-500/30">
-                            {user.group?.name || 'Autre groupe'}
+                            {user.group?.name || tCommon('admin.groups.other_group')}
                           </Badge>
                         )}
                       </div>
@@ -165,12 +167,12 @@ export const GroupUsersPanel = ({ group, users, onClose }: GroupUsersPanelProps)
                     {isInGroup ? (
                       <>
                         <UserMinus className="h-4 w-4 mr-2" />
-                        Retirer
+                        {tCommon('admin.groups.remove_user')}
                       </>
                     ) : (
                       <>
                         {isInAnotherGroup ? <Check className="h-4 w-4 mr-2" /> : <Plus className="h-4 w-4 mr-2" />}
-                        {isInAnotherGroup ? 'Déplacer' : 'Ajouter'}
+                        {isInAnotherGroup ? tCommon('admin.groups.move_user') : tCommon('admin.groups.add_user')}
                       </>
                     )}
                   </Button>

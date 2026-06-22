@@ -9,6 +9,7 @@ import {
 } from '@/components/ui/dialog';
 import { Badge } from '@/components/ui/badge';
 import { Users, TrendingUp, DollarSign, Building2 } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 
 interface AmbassadorStatsDialogProps {
   open: boolean;
@@ -22,12 +23,13 @@ export function AmbassadorStatsDialog({
   ambassadorId,
 }: AmbassadorStatsDialogProps) {
   const { ambassadorStats, fetchAmbassadorStats, isLoading } = useAmbassadorStore();
+const { t: tCommon } = useTranslation('common');
 
   useEffect(() => {
     if (open && ambassadorId) {
       fetchAmbassadorStats(ambassadorId);
     }
-  }, [open, ambassadorId, fetchAmbassadorStats]);
+  }, [open, ambassadorId]);
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -41,7 +43,7 @@ export function AmbassadorStatsDialog({
             <DialogDescription className="text-gray-500 dark:text-gray-400 text-sm">
               {ambassadorStats
                 ? `${ambassadorStats.ambassador.firstName} ${ambassadorStats.ambassador.lastName}`
-                : 'Chargement...'}
+                : tCommon('admin.page_overview.risk_by_dept_loading')}
             </DialogDescription>
           </DialogHeader>
           <div className="h-px bg-gray-200 dark:bg-white/[0.08] mt-5" />
@@ -51,7 +53,7 @@ export function AmbassadorStatsDialog({
           <div className="flex items-center justify-center py-12">
             <div className="text-center">
               <div className="inline-block h-8 w-8 animate-spin rounded-full border-4 border-solid border-current border-r-transparent align-[-0.125em] motion-reduce:animate-[spin_1.5s_linear_infinite] text-gray-500 dark:text-gray-400" />
-              <p className="mt-4 text-sm text-gray-500 dark:text-gray-400">Chargement des statistiques...</p>
+              <p className="mt-4 text-sm text-gray-500 dark:text-gray-400">{tCommon('admin.ambassadors.stats_loading')}</p>
             </div>
           </div>
         ) : ambassadorStats ? (
@@ -60,22 +62,22 @@ export function AmbassadorStatsDialog({
             <div className="grid grid-cols-4 gap-2.5">
               {[
                 {
-                  label: 'Total parrainages',
+                  label: tCommon('admin.ambassadors.total_referrals'),
                   value: ambassadorStats.stats.totalReferrals,
                   icon: <Users className="h-4 w-4 text-blue-600 dark:text-blue-400" />,
                 },
                 {
-                  label: 'Parrainages actifs',
+                  label: tCommon('admin.ambassadors.active_referrals'),
                   value: ambassadorStats.stats.activeReferrals,
                   icon: <Building2 className="h-4 w-4 text-green-600 dark:text-green-400" />,
                 },
                 {
-                  label: 'Taux de succès',
+                  label: tCommon('admin.ambassadors.success_rate'),
                   value: `${ambassadorStats.stats.successRate}%`,
                   icon: <TrendingUp className="h-4 w-4 text-purple-600 dark:text-purple-400" />,
                 },
                 {
-                  label: 'Revenu potentiel',
+                  label: tCommon('admin.ambassadors.potential_revenue'),
                   value: (
                     <span>
                       {ambassadorStats.stats.totalRevenue.toLocaleString()}{' '}
@@ -101,7 +103,7 @@ export function AmbassadorStatsDialog({
             {/* Organisations */}
             <div>
               <h3 className="text-[15px] font-medium text-gray-900 dark:text-white mb-3">
-                Organisations parrainées{' '}
+                {tCommon('admin.ambassadors.referred_orgs')}{' '}
                 <span className="text-gray-500 font-normal">
                   ({ambassadorStats.referredOrganizations.length})
                 </span>
@@ -109,7 +111,7 @@ export function AmbassadorStatsDialog({
 
               {ambassadorStats.referredOrganizations.length === 0 ? (
                 <div className="rounded-xl border border-gray-200 dark:border-white/[0.08] bg-gray-100 dark:bg-slate-800/50 p-8 text-center text-gray-500 dark:text-gray-400 text-sm">
-                  Aucune organisation parrainée pour le moment
+                  {tCommon('admin.ambassadors.stats_no_orgs')}
                 </div>
               ) : (
                 <div className="flex flex-col gap-1.5">
@@ -121,16 +123,16 @@ export function AmbassadorStatsDialog({
                       <div>
                         <p className="text-sm font-medium text-gray-900 dark:text-white">{org.name}</p>
                         <p className="text-xs text-gray-500 dark:text-gray-500 mt-0.5">
-                          {org.city}, {org.country} • {org.currentEmployees} employés
+                          {org.city}, {org.country} • {org.currentEmployees} ${tCommon('common.employes')}
                         </p>
                       </div>
                       {org.isActive ? (
                         <Badge className="bg-green-100 dark:bg-green-500/10 text-green-700 dark:text-green-400 border-green-300 dark:border-green-500/25 text-[11px] font-medium rounded-full px-2.5">
-                          Active
+                          {tCommon('common.active')}
                         </Badge>
                       ) : (
                         <Badge className="bg-gray-200 dark:bg-slate-600/40 text-gray-600 dark:text-gray-400 border-gray-300 dark:border-slate-600 text-[11px] font-medium rounded-full px-2.5">
-                          Inactive
+                          {tCommon('common.inactive')}
                         </Badge>
                       )}
                     </div>
@@ -141,7 +143,7 @@ export function AmbassadorStatsDialog({
           </div>
         ) : (
           <div className="py-12 text-center text-gray-500 dark:text-gray-400 text-sm">
-            Erreur lors du chargement des statistiques
+            {tCommon('admin.ambassadors.stats_error')}
           </div>
         )}
       </DialogContent>

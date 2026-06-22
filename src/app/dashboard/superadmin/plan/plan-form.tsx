@@ -1,7 +1,7 @@
 // components/plans/PlanForm.tsx
 'use client';
 
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { useForm, useFieldArray } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
@@ -10,22 +10,12 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Switch } from '@/components/ui/switch';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { usePlanStore, Plan } from '@/store/plan.store';
 import { Loader2, Plus, X } from 'lucide-react';
+import { Combobox } from '@/components/ui/combobox';
+import { useTranslation } from 'react-i18next';
 
-const planSchema = z.object({
-  name: z.enum(['starter', 'business', 'enterprise']),
-  label: z.string().min(2, 'Le label est requis'),
-  pricePerUser: z.number().min(0, 'Le prix doit être positif'),
-  targetDescription: z.string().min(10, 'Description trop courte'),
-  minEmployees: z.number().min(0, 'Minimum d\'employés requis'),
-  maxEmployees: z.number().nullable(),
-  features: z.array(z.string()).min(1, 'Au moins une fonctionnalité'),
-  isPopular: z.boolean().default(false).catch(false),
-});
-
-type PlanFormData = z.infer<typeof planSchema>;
+ 
 
 interface PlanFormProps {
   initialData?: Plan | null;
@@ -34,8 +24,20 @@ interface PlanFormProps {
 }
 
 export const PlanForm = ({ initialData, onSuccess, onCancel }: PlanFormProps) => {
+  const { t: tCommon } = useTranslation('common');
   const { createPlan, updatePlan, isLoading } = usePlanStore();
   const [newFeature, setNewFeature] = useState('');
+
+  const planSchema = useMemo(() => z.object({
+    name: z.enum(['starter', 'business', 'enterprise']),
+    label: z.string().min(2, tCommon('admin.plans.error_label')),
+    pricePerUser: z.number().min(0, tCommon('admin.plans.error_price')),
+    targetDescription: z.string().min(10, tCommon('admin.plans.error_description')),
+    minEmployees: z.number().min(0, tCommon('admin.plans.error_min_employees')),
+    maxEmployees: z.number().nullable(),
+    features: z.array(z.string()).min(1, tCommon('admin.plans.error_features')),
+    isPopular: z.boolean().default(false).catch(false),
+  }), [tCommon]) as unknown as z.ZodSchema<Plan>;
 
   const {
     register,
@@ -44,8 +46,8 @@ export const PlanForm = ({ initialData, onSuccess, onCancel }: PlanFormProps) =>
     watch,
     control,
     formState: { errors },
-  } = useForm<PlanFormData>({
-    resolver: zodResolver(planSchema),
+  } = useForm<Plan>({
+    resolver: zodResolver(planSchema as z.ZodType<Plan, Plan>),
     defaultValues: {
       name: initialData?.name || 'starter',
       label: initialData?.label || '',
@@ -60,11 +62,13 @@ export const PlanForm = ({ initialData, onSuccess, onCancel }: PlanFormProps) =>
 
   const { fields, append, remove } = useFieldArray({
     control,
+    //@ts-expect-error 
     name: 'features'
   });
 
   const watchMinEmployees = watch('minEmployees');
   const watchMaxEmployees = watch('maxEmployees');
+
 
   const addFeature = () => {
     if (newFeature.trim()) {
@@ -73,7 +77,7 @@ export const PlanForm = ({ initialData, onSuccess, onCancel }: PlanFormProps) =>
     }
   };
 
-  const onSubmit = async (data: PlanFormData) => {
+  const onSubmit = async (data: Plan) => {
     try {
       if (initialData) {
         await updatePlan(initialData.id, data);
@@ -92,24 +96,23 @@ export const PlanForm = ({ initialData, onSuccess, onCancel }: PlanFormProps) =>
         {/* Type de plan et Label */}
         <div className="grid grid-cols-2 gap-4">
           <div>
-            <Label htmlFor="name" className="text-gray-700 dark:text-gray-300">Type de plan *</Label>
-            <Select
-              value={watch('name')}
-              onValueChange={(value) => setValue('name', value as any)}
-            >
-              <SelectTrigger className="bg-white dark:bg-gray-800/50 border-gray-300 dark:border-gray-700 text-gray-900 dark:text-white mt-1">
-                <SelectValue placeholder="Sélectionner un type" />
-              </SelectTrigger>
-              <SelectContent className="bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700">
-                <SelectItem value="starter">Starter</SelectItem>
-                <SelectItem value="business">Business</SelectItem>
-                <SelectItem value="enterprise">Enterprise</SelectItem>
-              </SelectContent>
-            </Select>
+            <Label htmlFor="name" className="text-gray-700 dark:text-gray-300">{tCommon('admin.plans.plan_type')}</Label>
+           <Combobox
+  options={[
+    { value: 'starter', label: 'Starter' },
+    { value: 'business', label: 'Business' },
+    { value: 'enterprise', label: 'Enterprise' },
+  ]}
+  value={watch('name')}
+  onChange={(value) => setValue('name', value as any)}
+  placeholder={tCommon('admin.plans.type_placeholder')}
+  searchPlaceholder={tCommon('admin.templates.search_criteria')}
+  className="mt-1 bg-white dark:bg-gray-800/50 border-gray-300 dark:border-gray-700 text-gray-900 dark:text-white w-full"
+/>
           </div>
 
           <div>
-            <Label htmlFor="label" className="text-gray-700 dark:text-gray-300">Nom affiché *</Label>
+            <Label htmlFor="label" className="text-gray-700 dark:text-gray-300">{tCommon('admin.plans.display_name')}</Label>
             <Input
               id="label"
               {...register('label')}
@@ -122,7 +125,7 @@ export const PlanForm = ({ initialData, onSuccess, onCancel }: PlanFormProps) =>
 
         {/* Prix et Description */}
         <div>
-          <Label htmlFor="pricePerUser" className="text-gray-700 dark:text-gray-300">Prix par utilisateur (FCFA) *</Label>
+          <Label htmlFor="pricePerUser" className="text-gray-700 dark:text-gray-300">{tCommon('admin.plans.price_per_user')}</Label>
           <Input
             id="pricePerUser"
             type="number"
@@ -134,12 +137,12 @@ export const PlanForm = ({ initialData, onSuccess, onCancel }: PlanFormProps) =>
         </div>
 
         <div>
-          <Label htmlFor="targetDescription" className="text-gray-700 dark:text-gray-300">Description *</Label>
+          <Label htmlFor="targetDescription" className="text-gray-700 dark:text-gray-300">{tCommon('admin.plans.description')}</Label>
           <Textarea
             id="targetDescription"
             {...register('targetDescription')}
             className="bg-white dark:bg-gray-800/50 border-gray-300 dark:border-gray-700 text-gray-900 dark:text-white mt-1"
-            placeholder="Décrivez à qui s'adresse ce plan..."
+            placeholder={tCommon('admin.plans.desc_placeholder')}
             rows={3}
           />
           {errors.targetDescription && <p className="text-red-600 dark:text-red-400 text-sm mt-1">{errors.targetDescription.message}</p>}
@@ -148,7 +151,7 @@ export const PlanForm = ({ initialData, onSuccess, onCancel }: PlanFormProps) =>
         {/* Employés min/max */}
         <div className="grid grid-cols-2 gap-4">
           <div>
-            <Label htmlFor="minEmployees" className="text-gray-700 dark:text-gray-300">Employés minimum *</Label>
+            <Label htmlFor="minEmployees" className="text-gray-700 dark:text-gray-300">{tCommon('admin.plans.min_employees')}</Label>
             <Input
               id="minEmployees"
               type="number"
@@ -160,7 +163,7 @@ export const PlanForm = ({ initialData, onSuccess, onCancel }: PlanFormProps) =>
           </div>
 
           <div>
-            <Label htmlFor="maxEmployees" className="text-gray-700 dark:text-gray-300">Employés maximum</Label>
+            <Label htmlFor="maxEmployees" className="text-gray-700 dark:text-gray-300">{tCommon('admin.plans.max_employees')}</Label>
             <Input
               id="maxEmployees"
               type="number"
@@ -170,19 +173,18 @@ export const PlanForm = ({ initialData, onSuccess, onCancel }: PlanFormProps) =>
                 setValue('maxEmployees', value === '' ? null : parseInt(value));
               }}
               className="bg-white dark:bg-gray-800/50 border-gray-300 dark:border-gray-700 text-gray-900 dark:text-white mt-1"
-              placeholder="Illimité"
+              placeholder={tCommon('admin.plans.unlimited')}
             />
           </div>
         </div>
 
-        {/* Validation employés */}
-        {watchMinEmployees > 0 && watchMaxEmployees && watchMinEmployees > watchMaxEmployees && (
-          <p className="text-red-600 dark:text-red-400 text-sm">Le minimum ne peut pas être supérieur au maximum</p>
+         {watchMinEmployees > 0 && watchMaxEmployees && watchMinEmployees > watchMaxEmployees && (
+          <p className="text-red-600 dark:text-red-400 text-sm">{tCommon('admin.plans.min_greater_than_max')}</p>
         )}
 
         {/* Fonctionnalités */}
         <div>
-          <Label className="text-gray-700 dark:text-gray-300 mb-2 block">Fonctionnalités *</Label>
+          <Label className="text-gray-700 dark:text-gray-300 mb-2 block">{tCommon('admin.plans.features')}</Label>
           <div className="space-y-2">
             {fields.map((field, index) => (
               <div key={field.id} className="flex gap-2">
@@ -215,7 +217,7 @@ export const PlanForm = ({ initialData, onSuccess, onCancel }: PlanFormProps) =>
                 }
               }}
               className="bg-white dark:bg-gray-800/50 border-gray-300 dark:border-gray-700 text-gray-900 dark:text-white flex-1"
-              placeholder="Nouvelle fonctionnalité..."
+              placeholder={tCommon('admin.plans.feature_placeholder')}
             />
             <Button
               type="button"
@@ -231,15 +233,15 @@ export const PlanForm = ({ initialData, onSuccess, onCancel }: PlanFormProps) =>
 
         {/* Plan populaire */}
         <div className="flex items-center justify-between">
-          <Label htmlFor="isPopular" className="text-gray-700 dark:text-gray-300">Plan populaire</Label>
+          <Label htmlFor="isPopular" className="text-gray-700 dark:text-gray-300">{tCommon('admin.plans.popular_plan')}</Label>
           <div className="flex items-center gap-2">
-            <span className="text-sm text-gray-500 dark:text-gray-400">Non</span>
+            <span className="text-sm text-gray-500 dark:text-gray-400">{tCommon('admin.plans.no')}</span>
             <Switch
               id="isPopular"
               checked={watch('isPopular')}
               onCheckedChange={(checked) => setValue('isPopular', checked)}
             />
-            <span className="text-sm text-gray-500 dark:text-gray-400">Oui</span>
+            <span className="text-sm text-gray-500 dark:text-gray-400">{tCommon('admin.plans.yes')}</span>
           </div>
         </div>
       </div>
@@ -252,7 +254,7 @@ export const PlanForm = ({ initialData, onSuccess, onCancel }: PlanFormProps) =>
           onClick={onCancel}
           className="border-gray-300 dark:border-gray-700 text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 cursor-pointer"
         >
-          Annuler
+          {tCommon('user.formations.cancel')}
         </Button>
         <Button
           type="submit"
@@ -260,7 +262,7 @@ export const PlanForm = ({ initialData, onSuccess, onCancel }: PlanFormProps) =>
           className="cursor-pointer"
         >
           {isLoading && <Loader2 className="w-4 h-4 mr-2 animate-spin" />}
-          {initialData ? 'Mettre à jour' : 'Créer'}
+          {initialData ? tCommon('admin.smtp.smtp.update') : tCommon('admin.plans.create')}
         </Button>
       </div>
     </form>

@@ -12,7 +12,7 @@ import { GroupTable } from './group-table';
 import { GroupCard } from './group-card';
 import { GroupDialog } from './group-dialog';
 import {
-  AlertDialog,
+   AlertDialog,
   AlertDialogAction,
   AlertDialogCancel,
   AlertDialogContent,
@@ -21,8 +21,10 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
+import { useTranslation } from 'react-i18next';
 
 export const Groups = () => {
+  const { t: tCommon } = useTranslation('common');
   const [dialogOpen, setDialogOpen] = useState(false);
   const [editingGroup, setEditingGroup] = useState<Group | null>(null);
   const [viewMode, setViewMode] = useState<'table' | 'cards'>('table');
@@ -81,7 +83,7 @@ export const Groups = () => {
               className="bg-gray-200 hover:bg-gray-300 dark:bg-slate-600 dark:hover:bg-slate-700 ml-2 text-gray-900 dark:text-white  cursor-pointer transition-all duration-300"
             >
               <Plus className="w-4 h-4 mr-2" />
-              Nouveau groupe
+              {tCommon('admin.groups.new_group')}
             </Button>
           </div>
         </div>
@@ -91,25 +93,25 @@ export const Groups = () => {
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
           <Card className="rounded-sm hover:bg-gray-100 dark:hover:bg-[#1a1f36] cursor-pointer transition-colors duration-200 border border-gray-200 dark:border-white/5 bg-white dark:bg-[#0c1023] p-4">
             <div className="p-4">
-              <p className="text-gray-500 dark:text-gray-400 text-sm">Total groupes</p>
+              <p className="text-gray-500 dark:text-gray-400 text-sm">{tCommon('admin.groups.total_groups')}</p>
               <p className="text-2xl font-bold text-gray-900 dark:text-white">{groups.length}</p>
             </div>
           </Card>
           <Card className="rounded-sm hover:bg-gray-100 dark:hover:bg-[#1a1f36] cursor-pointer transition-colors duration-200 border border-gray-200 dark:border-white/5 bg-white dark:bg-[#0c1023] p-4">
             <div className="p-4">
-              <p className="text-gray-500 dark:text-gray-400 text-sm">Groupes actifs</p>
+              <p className="text-gray-500 dark:text-gray-400 text-sm">{tCommon('admin.groups.active_groups')}</p>
               <p className="text-2xl font-bold text-gray-900 dark:text-white">{groupsWithUsers}</p>
             </div>
           </Card>
           <Card className="rounded-sm hover:bg-gray-100 dark:hover:bg-[#1a1f36] cursor-pointer transition-colors duration-200 border border-gray-200 dark:border-white/5 bg-white dark:bg-[#0c1023] p-4">
             <div className="p-4">
-              <p className="text-gray-500 dark:text-gray-400 text-sm">Membres liés</p>
+              <p className="text-gray-500 dark:text-gray-400 text-sm">{tCommon('admin.groups.members')}</p>
               <p className="text-2xl font-bold text-gray-900 dark:text-white">{totalMembers}</p>
             </div>
           </Card>
           <Card className="rounded-sm hover:bg-gray-100 dark:hover:bg-[#1a1f36] cursor-pointer transition-colors duration-200 border border-gray-200 dark:border-white/5 bg-white dark:bg-[#0c1023] p-4">
             <div className="p-4">
-              <p className="text-gray-500 dark:text-gray-400 text-sm">Organisations</p>
+              <p className="text-gray-500 dark:text-gray-400 text-sm">{tCommon('nav.topbar.organizations_title')}</p>
               <p className="text-2xl font-bold text-gray-900 dark:text-white">
                 {new Set(groups.map(group => group.organizationId)).size}
               </p>
@@ -131,11 +133,11 @@ export const Groups = () => {
                 className="text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white"
               >
                 <Filter className="w-4 h-4 mr-2" />
-                Réinitialiser les filtres
+                {tCommon('admin.ambassadors.reset_filters')}
               </Button>
             )}
             <p className="text-sm text-gray-500 dark:text-gray-400">
-              {filteredGroups.length} groupe(s) trouvé(s)
+              {tCommon('admin.groups.groups_found', { count: filteredGroups.length })}
             </p>
           </div>
           <div className="flex items-center gap-2 bg-gray-100 dark:bg-gray-800/30 rounded-lg p-1">
@@ -168,9 +170,9 @@ export const Groups = () => {
           <Card className="bg-white dark:bg-gray-800/30 border-gray-200 dark:border-gray-700/50">
             <div className="p-12 text-center">
               <UsersIcon className="w-12 h-12 text-gray-400 dark:text-gray-600 mx-auto mb-4" />
-              <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-2">Aucun groupe</h3>
+              <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-2">{tCommon('admin.users.group_placeholder')}</h3>
               <p className="text-gray-500 dark:text-gray-400">
-                {hasFilters ? "Aucun groupe ne correspond aux filtres" : "Commencez par créer votre premier groupe"}
+                {hasFilters ? tCommon('admin.groups.no_groups_filter') : tCommon('admin.groups.no_groups_start')}
               </p>
               {!hasFilters && (
                 <Button
@@ -179,7 +181,7 @@ export const Groups = () => {
                   className="mt-4"
                 >
                   <Plus className="w-4 h-4 mr-2" />
-                  Créer un groupe
+                  {tCommon('admin.groups.create_group')}
                 </Button>
               )}
             </div>
@@ -214,20 +216,20 @@ export const Groups = () => {
       <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
         <AlertDialogContent className="bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-800">
           <AlertDialogHeader>
-            <AlertDialogTitle className="text-gray-900 dark:text-white">Supprimer le groupe?</AlertDialogTitle>
+            <AlertDialogTitle className="text-gray-900 dark:text-white">{tCommon('admin.groups.delete_confirm_title')}</AlertDialogTitle>
             <AlertDialogDescription className="text-gray-600 dark:text-gray-400">
-              Êtes-vous sûr de vouloir supprimer le groupe <span className="font-semibold text-gray-900 dark:text-white">"{groupToDelete?.name}"</span> ? Cette action est irréversible.
+              {tCommon('admin.groups.delete_confirm_desc')} <span className="font-semibold text-gray-900 dark:text-white">"{groupToDelete?.name}"</span> {tCommon('admin.campaigns.page_delete_confirm_desc2')}
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter className='bg-white dark:bg-gray-900'>
             <AlertDialogCancel className="bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 border-gray-300 dark:border-gray-700 text-gray-700 dark:text-white hover:text-gray-900 dark:hover:text-white">
-              Annuler
+              {tCommon('user.formations.cancel')}
             </AlertDialogCancel>
             <AlertDialogAction
               onClick={confirmDelete}
               className="bg-red-600 hover:bg-red-700 text-white"
             >
-              Supprimer
+              {tCommon('admin.ambassadors.delete')}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>

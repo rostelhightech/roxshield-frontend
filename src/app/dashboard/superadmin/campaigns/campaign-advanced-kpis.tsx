@@ -4,6 +4,7 @@ import { motion } from 'framer-motion';
 import { TrendingUp, Target, Clock, MousePointerClick } from 'lucide-react';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card';
 import { DetailedTargetAnalysis } from '@/store/campaign.store';
+import { useTranslation } from 'react-i18next';
 
 interface CampaignAdvancedKPIsProps {
   detailedTargetAnalysis: DetailedTargetAnalysis[];
@@ -51,44 +52,47 @@ export function CampaignAdvancedKPIs({ detailedTargetAnalysis, totalTargets }: C
     ? Math.round((engagedTargets.length / totalTargets) * 100)
     : 0;
 
+  const { t: tCommon } = useTranslation('common');
+  
+
   const kpis = [
     {
       icon: Target,
-      label: 'Taux d\'ouverture unique',
+      label: tCommon('admin.campaigns.kpi_unique_open_rate'),
       value: `${uniqueOpenRate}%`,
-      description: `${openedTargets.length} ouvertures uniques`,
+      description: tCommon('admin.campaigns.kpi_unique_opens', { count: openedTargets.length }),
       color: '#3b82f6',
     },
     {
       icon: MousePointerClick,
-      label: 'Taux de clic / Ouverture',
+      label: tCommon('admin.campaigns.kpi_ctr'),
       value: `${clickThroughRate}%`,
-      description: `${clickedTargets.length} clics sur ${openedTargets.length} ouvertures`,
+      description: tCommon('admin.campaigns.kpi_ctr_desc', { clicks: clickedTargets.length, opens: openedTargets.length }),
       color: '#8b5cf6',
     },
     {
       icon: Clock,
-      label: 'Temps moyen d\'ouverture',
-      value: avgTimeToOpen < 60 
+      label: tCommon('admin.campaigns.kpi_avg_open_time'),
+      value: avgTimeToOpen < 60
         ? `${avgTimeToOpen}m`
         : `${Math.floor(avgTimeToOpen / 60)}h${avgTimeToOpen % 60}m`,
-      description: 'Depuis l\'envoi',
+      description: tCommon('admin.campaigns.kpi_since_send'),
       color: '#f59e0b',
     },
     {
       icon: MousePointerClick,
-      label: 'Temps moyen de clic',
-      value: avgTimeToClick < 60 
+      label: tCommon('admin.campaigns.kpi_avg_click_time'),
+      value: avgTimeToClick < 60
         ? `${avgTimeToClick}m`
         : `${Math.floor(avgTimeToClick / 60)}h${avgTimeToClick % 60}m`,
-      description: 'Depuis l\'ouverture',
+      description: tCommon('admin.campaigns.kpi_since_open'),
       color: '#ec4899',
     },
     {
       icon: TrendingUp,
-      label: 'Taux d\'engagement global',
+      label: tCommon('admin.campaigns.kpi_engagement_rate'),
       value: `${engagementRate}%`,
-      description: `${engagedTargets.length} cibles actives`,
+      description: tCommon('admin.campaigns.kpi_active_targets', { count: engagedTargets.length }),
       color: '#06b6d4',
     },
   ];
@@ -98,10 +102,10 @@ export function CampaignAdvancedKPIs({ detailedTargetAnalysis, totalTargets }: C
       <CardHeader>
         <CardTitle className="text-gray-900 dark:text-white flex items-center gap-2">
           <TrendingUp className="w-5 h-5 text-emerald-400" />
-          KPIs Avancés
+          {tCommon('admin.campaigns.advanced_kpis')}
         </CardTitle>
         <CardDescription>
-          Indicateurs de performance détaillés de la campagne
+          {tCommon('admin.campaigns.advanced_kpis_desc')}
         </CardDescription>
       </CardHeader>
       <CardContent>

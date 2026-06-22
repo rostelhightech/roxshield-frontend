@@ -1,6 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { DashboardTopbar } from "@/components/layout/topbar";
 import { useAuthStore } from "@/store/auth.store";
+import { useTranslation } from "react-i18next";
 
 // Superadmin components
 import { StatsCards as SuperAdminStatsCards } from "@/app/dashboard/superadmin/overview/stats-cards";
@@ -23,14 +24,15 @@ export const Route = createFileRoute("/_authenticated/dashboard/overview")({
 
 function OverviewPage() {
   const { user } = useAuthStore();
+  const { t } = useTranslation('common');
   const isSuperAdmin = user?.role === 'superadmin';
 
   if (isSuperAdmin) {
     return (
       <>
         <DashboardTopbar
-          title="Tableau de bord"
-          description="Vue globale de la plateforme"
+          title={t('admin.dashboard.title')}
+          description={t('admin.dashboard.desc_superadmin')}
         />
         <div className="space-y-6 w-full">
           {/* Alertes critiques en haut */}
@@ -58,8 +60,8 @@ function OverviewPage() {
   return (
     <>
       <DashboardTopbar
-        title="Tableau de bord"
-        description="Vue d'ensemble de votre organisation"
+        title={t('admin.dashboard.title')}
+        description={t('admin.dashboard.desc_admin')}
       />
       <div className="space-y-6 w-full">
         {/* Cartes de statistiques */}

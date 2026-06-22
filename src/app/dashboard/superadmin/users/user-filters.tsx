@@ -2,7 +2,6 @@
 
 import { Search, X } from 'lucide-react';
 import { Input } from '@/components/ui/input';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Card } from '@/components/ui/card';
 import { useUserStore } from '@/store/user.store';
 import { Organization } from '@/store/organization.store';
@@ -10,6 +9,8 @@ import { Group } from '@/store/group.store';
 import { useAuthStore } from '@/store/auth.store';
 import { roleEnum } from '@/constants/roleEnum';
 import { useEffect } from 'react';
+import { Combobox } from '@/components/ui/combobox';
+import { useTranslation } from 'react-i18next';
 
 interface UserFiltersProps {
   organizations: Organization[];
@@ -17,6 +18,7 @@ interface UserFiltersProps {
 }
 
 export const UserFilters = ({ organizations, groups }: UserFiltersProps) => {
+  const { t: tCommon } = useTranslation('common');
   const { filters, setFilters } = useUserStore();
   const { user: currentUser } = useAuthStore();
   const isNotSuperAdmin = currentUser?.role !== roleEnum.SUPERADMIN;
@@ -40,13 +42,13 @@ export const UserFilters = ({ organizations, groups }: UserFiltersProps) => {
   // Options des rôles (sans superadmin si non superadmin)
   const roleOptions = isNotSuperAdmin
     ? [
-        { value: '', label: 'Tous les rôles' },
-        { value: 'user', label: 'Utilisateur' },
+        { value: '', label: tCommon('admin.users.all_roles')} ,
+        { value: 'user', label: tCommon('admin.grc.user_name')} ,
         { value: 'admin', label: 'Admin' },
       ]
     : [
-        { value: '', label: 'Tous les rôles' },
-        { value: 'user', label: 'Utilisateur' },
+        { value: '', label: tCommon('admin.users.all_roles')} ,
+        { value: 'user', label: tCommon('admin.grc.user_name') },
         { value: 'admin', label: 'Admin' },
         { value: 'superadmin', label: 'Superadmin' },
       ];
@@ -58,7 +60,7 @@ export const UserFilters = ({ organizations, groups }: UserFiltersProps) => {
         <div className="relative">
           <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
           <Input
-            placeholder="Rechercher nom, email, téléphone..."
+            placeholder={tCommon('admin.users.search_placeholder')}
             value={filters.search}
             onChange={(e) => setFilters({ search: e.target.value })}
             className="pl-9 bg-white dark:bg-gray-800/50 border-gray-300 dark:border-gray-700 text-gray-900 dark:text-white outline-none"
@@ -74,74 +76,66 @@ export const UserFilters = ({ organizations, groups }: UserFiltersProps) => {
           )}
         </div>
 
-        {/* Filtre rôle */}
-        <Select value={filters.role || ''} onValueChange={(value) => setFilters({ role: value || undefined })}>
-          <SelectTrigger className="bg-white dark:bg-gray-800/50 border-gray-300 dark:border-gray-700 text-gray-900 dark:text-white">
-            <SelectValue placeholder="Tous les rôles" />
-          </SelectTrigger>
-          <SelectContent className="bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700">
-            {roleOptions.map((option) => (
-              <SelectItem key={option.value} value={option.value}>
-                {option.label}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
+      {/* Filtre rôle */}
+<Combobox
+  options={roleOptions.map((option) => ({
+    value: option.value,
+    label: option.label,
+  }))}
+  value={filters.role || ''}
+  onChange={(value) => setFilters({ role: value || undefined })}
+  placeholder={tCommon('admin.users.all_roles')}
+  searchPlaceholder="Rechercher un rôle..."
+  className="bg-white dark:bg-gray-800/50 border-gray-300 dark:border-gray-700 text-gray-900 dark:text-white"
+/>
 
-        {/* Filtre organisation : masqué si non superadmin */}
-        {!isNotSuperAdmin && (
-          <Select
-            value={filters.organizationId || ''}
-            onValueChange={(value) => setFilters({ organizationId: value, groupId: '' })}
-          >
-            <SelectTrigger className="bg-white dark:bg-gray-800/50 border-gray-300 dark:border-gray-700 text-gray-900 dark:text-white">
-              {selectedOrganization ? (
-                <span className="truncate">{selectedOrganization.name}</span>
-              ) : (
-                <span className="text-gray-500 dark:text-gray-400">Toutes les organisations</span>
-              )}
-            </SelectTrigger>
-            <SelectContent className="bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700">
-              <SelectItem value="">Toutes les organisations</SelectItem>
-              {organizations.map((organization) => (
-                <SelectItem key={organization.id} value={organization.id}>
-                  {organization.name}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        )}
+{/* Filtre organisation : masqué si non superadmin */}
+{!isNotSuperAdmin && (
+  <Combobox
+    options={[
+      { value: '', label: tCommon('admin.groups.all_orgs')},
+      ...organizations.map((org) => ({
+        value: org.id,
+        label: org.name,
+      })),
+    ]}
+    value={filters.organizationId || ''}
+    onChange={(value) => setFilters({ organizationId: value, groupId: '' })}
+    placeholder={tCommon('admin.groups.all_orgs')}
+    searchPlaceholder="Rechercher une organisation..."
+    className="bg-white dark:bg-gray-800/50 border-gray-300 dark:border-gray-700 text-gray-900 dark:text-white"
+  />
+)}
 
-        {/* Filtre groupe */}
-        <Select value={filters.groupId || ''} onValueChange={(value) => setFilters({ groupId: value || undefined })}>
-          <SelectTrigger className="bg-white dark:bg-gray-800/50 border-gray-300 dark:border-gray-700 text-gray-900 dark:text-white">
-            {selectedGroup ? (
-              <span className="truncate">{selectedGroup.name}</span>
-            ) : (
-              <span className="text-gray-500 dark:text-gray-400">Tous les groupes</span>
-            )}
-          </SelectTrigger>
-          <SelectContent className="bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700">
-            <SelectItem value="">Tous les groupes</SelectItem>
-            {availableGroups.map((group) => (
-              <SelectItem key={group.id} value={group.id}>
-                {group.name}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
+{/* Filtre groupe */}
+<Combobox
+  options={[
+    { value: '', label: tCommon('admin.users.all_groups')} ,
+    ...availableGroups.map((group) => ({
+      value: group.id,
+      label: group.name,
+    })),
+  ]}
+  value={filters.groupId || ''}
+  onChange={(value) => setFilters({ groupId: value || undefined })}
+  placeholder={tCommon('admin.users.all_groups')}
+  searchPlaceholder="Rechercher un groupe..."
+  className="bg-white dark:bg-gray-800/50 border-gray-300 dark:border-gray-700 text-gray-900 dark:text-white"
+/>
 
-        {/* Filtre statut */}
-        <Select value={filters.status || ''} onValueChange={(value) => setFilters({ status: value || undefined })}>
-          <SelectTrigger className="bg-white dark:bg-gray-800/50 border-gray-300 dark:border-gray-700 text-gray-900 dark:text-white">
-            <SelectValue placeholder="Tous les statuts" />
-          </SelectTrigger>
-          <SelectContent className="bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700">
-            <SelectItem value="">Tous les statuts</SelectItem>
-            <SelectItem value="active">Actif</SelectItem>
-            <SelectItem value="inactive">Inactif</SelectItem>
-          </SelectContent>
-        </Select>
+{/* Filtre statut */}
+<Combobox
+  options={[
+    { value: '', label: tCommon('admin.users.all_status') },
+    { value: 'active', label: tCommon('common.active') },
+    { value: 'inactive', label: tCommon('common.inactive') },
+  ]}
+  value={filters.status || ''}
+  onChange={(value) => setFilters({ status: value || undefined })}
+  placeholder={tCommon('admin.users.all_status')}
+  searchPlaceholder="Rechercher un statut..."
+  className="bg-white dark:bg-gray-800/50 border-gray-300 dark:border-gray-700 text-gray-900 dark:text-white"
+/>
       </div>
     </Card>
   );

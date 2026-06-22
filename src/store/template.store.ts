@@ -7,13 +7,14 @@ export interface TemplateOrganization {
 }
 
 export interface Template {
-  id: string;
+  id: string ;
   name: string;
   category: string | null;
   subject: string;
+  isDefault?: boolean;
   html: string;
   text: string;
-  organizationId: string;
+  organizationId: string | null;
   organization?: TemplateOrganization | null;
   createdAt: string;
   updatedAt: string;
@@ -40,9 +41,9 @@ interface TemplateState {
   fetchAll: () => Promise<void>;
   fetchTemplateList: () => Promise<void>;
   fetchById: (id: string) => Promise<void>;
-  createTemplate: (data: Omit<Template, 'id' | 'createdAt' | 'updatedAt'>) => Promise<void>;
-  updateTemplate: (id: string, data: Partial<Template>) => Promise<void>;
-  deleteTemplate: (id: string) => Promise<void>;
+  createTemplate: (data: Omit<Template, 'id' | 'createdAt' | 'updatedAt'>, isDefault?: boolean) => Promise<void>;
+  updateTemplate: (id: string, data: Partial<Template>, isDefault?: boolean) => Promise<void>;
+  deleteTemplate: (id: string, isDefault?: boolean) => Promise<void>;
   setFilters: (filters: Partial<TemplateFilters>) => void;
   resetFilters: () => void;
   applyFilters: () => void;
@@ -86,6 +87,8 @@ export const useTemplateStore = create<TemplateState>((set, get) => ({
     set({ isLoading: true, error: null });
     try {
       const response = await apiService.get('/templates');
+
+
       const templates = response?.data ?? [];
       set({ templateList: templates, isLoading: false });
     } catch (error) {
@@ -109,10 +112,10 @@ export const useTemplateStore = create<TemplateState>((set, get) => ({
     }
   },
 
-  createTemplate: async (data) => {
+  createTemplate: async (data, isDefault) => {
     set({ isSaving: true, error: null });
     try {
-      const response = await apiService.post('/templates', data);
+      const response = await apiService.post(isDefault ? '/templates/superadmin' : '/templates', data);
       const newTemplate = response?.data as Template;
       set(state => ({ 
         templates: [...state.templates, newTemplate],
@@ -126,10 +129,10 @@ export const useTemplateStore = create<TemplateState>((set, get) => ({
     }
   },
 
-  updateTemplate: async (id, data) => {
+  updateTemplate: async (id, data, isDefault) => {
     set({ isSaving: true, error: null });
     try {
-      const response = await apiService.put(`/templates/${id}`, data);
+      const response = await apiService.put(isDefault ? `/templates/superadmin/${id}` : `/templates/${id}`, data);
       const updatedTemplate = response?.data as Template;
       set(state => ({
         templates: state.templates.map(t => t.id === id ? updatedTemplate : t),
@@ -144,10 +147,10 @@ export const useTemplateStore = create<TemplateState>((set, get) => ({
     }
   },
 
-  deleteTemplate: async (id) => {
+  deleteTemplate: async (id, isDefault) => {
     set({ isLoading: true, error: null });
     try {
-      await apiService.delete(`/templates/${id}`);
+      await apiService.delete(isDefault ? `/templates/superadmin/${id}` : `/templates/${id}`);
       set(state => ({
         templates: state.templates.filter(t => t.id !== id),
         templateList: state.templateList.filter(t => t.id !== id),
@@ -194,8 +197,8 @@ export const useTemplateStore = create<TemplateState>((set, get) => ({
       const aValue = a[filters.sortBy];
       const bValue = b[filters.sortBy];
 
-      if (aValue < bValue) return filters.sortOrder === 'asc' ? -1 : 1;
-      if (aValue > bValue) return filters.sortOrder === 'asc' ? 1 : -1;
+       if ((aValue && bValue) && (aValue ) < bValue) return filters.sortOrder === 'asc' ? -1 : 1;
+      if ((aValue && bValue) && (aValue) > bValue) return filters.sortOrder === 'asc' ? 1 : -1;
       return 0;
     });
 

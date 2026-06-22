@@ -8,28 +8,28 @@ import { Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Switch } from '@/components/ui/switch';
 import { useUserStore, User } from '@/store/user.store';
 import { Organization } from '@/store/organization.store';
 import { Group } from '@/store/group.store';
 import { useAuthStore } from '@/store/auth.store';
 import { roleEnum } from '@/constants/roleEnum';
+import { Combobox } from '@/components/ui/combobox';
+import { useTranslation } from 'react-i18next';
 
-const userSchema = z.object({
-  firstName: z.string().min(2, 'Le prénom est requis'),
-  lastName: z.string().min(2, 'Le nom est requis'),
-  email: z.string().email('Email invalide'),
-  password: z.string().optional(),
-  phone: z.string().optional().nullable(),
-  position: z.string().optional().nullable(),
-  role: z.enum(['user', 'admin', 'superadmin']).default('user'),
-  organizationId: z.string().optional().nullable(),
-  groupId: z.string().optional().nullable(),
-  isActive: z.boolean().default(true).catch(true),
-});
-
-type UserFormData = z.infer<typeof userSchema>;
+type UserFormData = {
+  firstName: string;
+  lastName: string;
+  email: string;
+  password?: string;
+  phone?: string | null;
+  position?: string | null;
+  role: 'user' | 'admin' | 'superadmin';
+  organizationId?: string | null;
+  groupId?: string | null;
+  isActive: boolean;
+  sendCredentials: boolean;
+};
 
 interface UserFormProps {
   initialData?: User | null;
@@ -40,12 +40,26 @@ interface UserFormProps {
 }
 
 export const UserForm = ({ initialData, organizations, groups, onSuccess, onCancel }: UserFormProps) => {
+  const { t: tCommon } = useTranslation('common');
   const { createUser, updateUser, isLoading } = useUserStore();
   const { user: currentUser } = useAuthStore();
 
+  const userSchema = useMemo(() => z.object({
+    firstName: z.string().min(2, tCommon('admin.users.user_error_firstname_required')),
+    lastName: z.string().min(2, tCommon('admin.users.user_error_lastname_required')),
+    email: z.string().email(tCommon('admin.organizations.org_error_email_invalid')),
+    password: z.string().optional(),
+    phone: z.string().optional().nullable(),
+    position: z.string().optional().nullable(),
+    role: z.enum(['user', 'admin', 'superadmin']).default('user'),
+    organizationId: z.string().optional().nullable(),
+    groupId: z.string().optional().nullable(),
+    isActive: z.boolean().default(true).catch(true),
+    sendCredentials: z.boolean().default(true),
+  }), [tCommon]);
+
   const isNotSuperAdmin = currentUser?.role !== roleEnum.SUPERADMIN;
 
-  // Déterminer la valeur par défaut de organizationId
   const defaultOrganizationId = useMemo(() => {
     if (initialData?.organizationId) return initialData.organizationId;
     if (isNotSuperAdmin && currentUser?.organizationId) return currentUser.organizationId;
@@ -60,6 +74,7 @@ export const UserForm = ({ initialData, organizations, groups, onSuccess, onCanc
     setError,
     formState: { errors },
   } = useForm<UserFormData>({
+     //@ts-expect-error ts(2769) @typescript-eslint
     resolver: zodResolver(userSchema),
     defaultValues: {
       firstName: initialData?.firstName || '',
@@ -72,12 +87,14 @@ export const UserForm = ({ initialData, organizations, groups, onSuccess, onCanc
       organizationId: defaultOrganizationId,
       groupId: initialData?.groupId || '',
       isActive: initialData?.isActive ?? true,
+      sendCredentials: true, 
     },
   });
 
   const watchRole = watch('role');
   const watchOrganizationId = watch('organizationId');
   const watchGroupId = watch('groupId');
+  const watchSendCredentials = watch('sendCredentials');
 
   // Si non superadmin, on s'assure que organizationId ne peut pas être modifié
   useEffect(() => {
@@ -111,13 +128,14 @@ export const UserForm = ({ initialData, organizations, groups, onSuccess, onCanc
 
   const onSubmit = async (data: UserFormData) => {
     try {
+      // Validation du mot de passe pour la création
       if (!initialData && !data.password) {
-        setError('password', { message: 'Le mot de passe est requis' });
+        setError('password', { message: tCommon('admin.users.user_error_password_required') });
         return;
       }
 
       if (data.password && data.password.length < 6) {
-        setError('password', { message: 'Le mot de passe doit contenir au moins 6 caractères' });
+        setError('password', { message: tCommon('admin.users.user_error_password_length') });
         return;
       }
 
@@ -127,6 +145,7 @@ export const UserForm = ({ initialData, organizations, groups, onSuccess, onCanc
         position: data.position || null,
         organizationId: isNotSuperAdmin ? currentUser?.organizationId || null : (data.organizationId || null),
         groupId: data.groupId || null,
+        sendCredentials: data.sendCredentials,
       };
 
       // Si non superadmin, on force le rôle à ne pas être superadmin
@@ -134,13 +153,16 @@ export const UserForm = ({ initialData, organizations, groups, onSuccess, onCanc
         payload.role = 'user';
       }
 
+      // Supprimer le mot de passe s'il est vide
       if (!payload.password) {
         delete payload.password;
       }
 
       if (initialData) {
+        // En édition, on peut aussi envoyer sendCredentials pour renvoyer un nouveau mot de passe
         await updateUser(initialData.id, payload);
       } else {
+        // Création : le mot de passe est obligatoire et on peut envoyer les identifiants
         await createUser(payload as typeof payload & { password: string });
       }
 
@@ -150,213 +172,222 @@ export const UserForm = ({ initialData, organizations, groups, onSuccess, onCanc
     }
   };
 
-  // Options du rôle en fonction des droits
   const roleOptions = useMemo(() => {
     if (isNotSuperAdmin) {
       return [
-        { value: 'user', label: 'Utilisateur' },
+        { value: 'user', label: tCommon('admin.grc.user_name')},
         { value: 'admin', label: 'Admin' },
       ];
     }
     return [
-      { value: 'user', label: 'Utilisateur' },
+      { value: 'user', label: tCommon('admin.grc.user_name') },
       { value: 'admin', label: 'Admin' },
       { value: 'superadmin', label: 'Superadmin' },
     ];
   }, [isNotSuperAdmin]);
 
   return (
- <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+    //@ts-expect-error ts(2769) @typescript-eslint
+    <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
       <div className="space-y-4">
+        {/* Prénom / Nom */}
         <div className="grid grid-cols-2 gap-4">
           <div>
-            <Label htmlFor="firstName" className="text-gray-700 dark:text-gray-300">Prénom *</Label>
+            <Label htmlFor="firstName" className="text-gray-700 dark:text-gray-300">{tCommon('admin.ambassadors.first_name')}</Label>
             <Input
               id="firstName"
               {...register('firstName')}
               className="bg-white dark:bg-gray-800/50 border-gray-300 dark:border-gray-700 text-gray-900 dark:text-white mt-1"
-              placeholder="Ex: Awa"
+              placeholder={tCommon('admin.users.user_firstname_placeholder')}
             />
             {errors.firstName && <p className="text-red-600 dark:text-red-400 text-sm mt-1">{errors.firstName.message}</p>}
           </div>
 
           <div>
-            <Label htmlFor="lastName" className="text-gray-700 dark:text-gray-300">Nom *</Label>
+            <Label htmlFor="lastName" className="text-gray-700 dark:text-gray-300">{tCommon('admin.ambassadors.last_name')}</Label>
             <Input
               id="lastName"
               {...register('lastName')}
               className="bg-white dark:bg-gray-800/50 border-gray-300 dark:border-gray-700 text-gray-900 dark:text-white mt-1"
-              placeholder="Ex: Diop"
+              placeholder={tCommon('admin.users.user_lastname_placeholder')}
             />
             {errors.lastName && <p className="text-red-600 dark:text-red-400 text-sm mt-1">{errors.lastName.message}</p>}
           </div>
         </div>
 
+        {/* Position */}
         <div>
-          <Label htmlFor="position" className="text-gray-700 dark:text-gray-300">Position</Label>
+          <Label htmlFor="position" className="text-gray-700 dark:text-gray-300">{tCommon('admin.users.user_position_label')}</Label>
           <Input
             id="position"
             {...register('position')}
             className="bg-white dark:bg-gray-800/50 border-gray-300 dark:border-gray-700 text-gray-900 dark:text-white mt-1"
-            placeholder="Ex: Comptable, RH, Étudiant, RSSI..."
+            placeholder={tCommon('admin.users.position_placeholder')}
           />
         </div>
 
+        {/* Email / Téléphone */}
         <div className="grid grid-cols-2 gap-4">
           <div>
-            <Label htmlFor="email" className="text-gray-700 dark:text-gray-300">Email *</Label>
+            <Label htmlFor="email" className="text-gray-700 dark:text-gray-300">{tCommon('admin.users.email')}</Label>
             <Input
               id="email"
               type="email"
               {...register('email')}
               className="bg-white dark:bg-gray-800/50 border-gray-300 dark:border-gray-700 text-gray-900 dark:text-white mt-1"
-              placeholder="user@entreprise.com"
+              placeholder={tCommon('admin.users.user_email_placeholder')}
             />
             {errors.email && <p className="text-red-600 dark:text-red-400 text-sm mt-1">{errors.email.message}</p>}
           </div>
 
           <div>
-            <Label htmlFor="phone" className="text-gray-700 dark:text-gray-300">Téléphone</Label>
+            <Label htmlFor="phone" className="text-gray-700 dark:text-gray-300">{tCommon('admin.ambassadors.table_phone')}</Label>
             <Input
               id="phone"
               {...register('phone')}
               className="bg-white dark:bg-gray-800/50 border-gray-300 dark:border-gray-700 text-gray-900 dark:text-white mt-1"
-              placeholder="+221 77 000 00 00"
+              placeholder={tCommon('register.phone_placeholder')}
             />
           </div>
         </div>
 
-        <div className="grid grid-cols-2 gap-4">
-          <div>
-            <Label htmlFor="password" className="text-gray-700 dark:text-gray-300">
-              {initialData ? 'Nouveau mot de passe' : 'Mot de passe *'}
-            </Label>
-            <Input
-              id="password"
-              type="password"
-              {...register('password')}
-              className="bg-white dark:bg-gray-800/50 border-gray-300 dark:border-gray-700 text-gray-900 dark:text-white mt-1"
-              placeholder={initialData ? 'Laisser vide pour conserver' : 'Mot de passe temporaire'}
-            />
-            {errors.password && <p className="text-red-600 dark:text-red-400 text-sm mt-1">{errors.password.message}</p>}
-          </div>
+      {/* Mot de passe / Rôle */}
+<div className="grid grid-cols-2 gap-4">
+  <div>
+    <Label htmlFor="password" className="text-gray-700 dark:text-gray-300">
+      {initialData ? tCommon('reset_password.new_password') : tCommon('admin.users.user_password_label')}
+    </Label>
+    <Input
+      id="password"
+      type="password"
+      {...register('password')}
+      className="bg-white dark:bg-gray-800/50 border-gray-300 dark:border-gray-700 text-gray-900 dark:text-white mt-1"
+      placeholder={initialData ? tCommon('admin.users.user_password_keep') : tCommon('admin.users.user_password_temp')}
+    />
+    {errors.password && <p className="text-red-600 dark:text-red-400 text-sm mt-1">{errors.password.message}</p>}
+  </div>
 
-          <div>
-            <Label htmlFor="role" className="text-gray-700 dark:text-gray-300">Rôle *</Label>
-            <Select value={watchRole} onValueChange={(value) => setValue('role', value as User['role'])}>
-              <SelectTrigger className="bg-white dark:bg-gray-800/50 border-gray-300 dark:border-gray-700 text-gray-900 dark:text-white mt-1">
-                <SelectValue placeholder="Sélectionner un rôle" />
-              </SelectTrigger>
-              <SelectContent className="bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700">
-                {roleOptions.map((option) => (
-                  <SelectItem key={option.value} value={option.value}>
-                    {option.label}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-        </div>
+  <div>
+    <Label htmlFor="role" className="text-gray-700 dark:text-gray-300">{tCommon('admin.users.user_role_label')}</Label>
+    <Combobox
+      options={roleOptions.map((option) => ({
+        value: option.value,
+        label: option.label,
+      }))}
+      value={watchRole}
+      onChange={(value) => setValue('role', value as User['role'])}
+      placeholder={tCommon('admin.users.role_placeholder')}
+      searchPlaceholder={tCommon('admin.users.user_search_role')}
+      className="mt-1 bg-white dark:bg-gray-800/50 border-gray-300 dark:border-gray-700 text-gray-900 dark:text-white w-full"
+    />
+  </div>
+</div>
 
-        {/* Champ Organisation : masqué si non superadmin */}
-        {!isNotSuperAdmin && (
-          <div className="grid grid-cols-2 gap-4">
+{/* Organisation et Groupe (visible uniquement si superadmin) */}
+{!isNotSuperAdmin && (
+  <div className="grid grid-cols-2 gap-4">
+    <div>
+      <Label htmlFor="organizationId" className="text-gray-700 dark:text-gray-300">{tCommon('admin.grc.org_name')}</Label>
+      <Combobox
+        options={[
+          { value: '', label: tCommon('admin.users.org_placeholder') },
+          ...organizations.map((org) => ({
+            value: org.id,
+            label: org.name,
+          })),
+        ]}
+        value={watchOrganizationId || ''}
+        onChange={(value) => setValue('organizationId', value)}
+        placeholder={tCommon('admin.users.org_placeholder')}
+        searchPlaceholder={tCommon('admin.formations.create_search_org')}
+        className="mt-1 bg-white dark:bg-gray-800/50 border-gray-300 dark:border-gray-700 text-gray-900 dark:text-white w-full"
+      />
+    </div>
+
+    <div>
+      <Label htmlFor="groupId" className="text-gray-700 dark:text-gray-300">{tCommon('admin.groups.table_group')}</Label>
+      <Combobox
+        options={[
+          { value: '', label: tCommon('admin.users.group_placeholder') },
+          ...availableGroups.map((group) => ({
+            value: group.id,
+            label: group.name,
+          })),
+        ]}
+        value={watchGroupId || ''}
+        onChange={(value) => setValue('groupId', value)}
+        placeholder={tCommon('admin.users.group_placeholder')}
+        searchPlaceholder={tCommon('admin.users.user_search_group')}
+        className="mt-1 bg-white dark:bg-gray-800/50 border-gray-300 dark:border-gray-700 text-gray-900 dark:text-white w-full"
+      />
+    </div>
+  </div>
+)}
+
+{/* Si non superadmin, uniquement le groupe */}
+{isNotSuperAdmin && (
+  <div className="grid grid-cols-1 gap-4">
+    <div>
+      <Label htmlFor="groupId" className="text-gray-700 dark:text-gray-300">{tCommon('admin.groups.table_group')}</Label>
+      <Combobox
+        options={[
+          { value: '', label: tCommon('admin.users.group_placeholder') },
+          ...availableGroups.map((group) => ({
+            value: group.id,
+            label: group.name,
+          })),
+        ]}
+        value={watchGroupId || ''}
+        onChange={(value) => setValue('groupId', value)}
+        placeholder={tCommon('admin.users.group_placeholder')}
+        searchPlaceholder={tCommon('admin.users.user_search_group')}
+        className="mt-1 bg-white dark:bg-gray-800/50 border-gray-300 dark:border-gray-700 text-gray-900 dark:text-white w-full"
+      />
+    </div>
+  </div>
+)}
+
+        {/* Statut du compte + Envoi des identifiants */}
+        <div className="space-y-4">
+          <div className="flex items-center justify-between rounded-lg border border-gray-200 dark:border-gray-800 bg-gray-50 dark:bg-gray-900/30 p-4">
             <div>
-              <Label htmlFor="organizationId" className="text-gray-700 dark:text-gray-300">Organisation</Label>
-              <Select
-                value={watchOrganizationId || ''}
-                onValueChange={(value) => setValue('organizationId', value)}
-              >
-                <SelectTrigger className="bg-white dark:bg-gray-800/50 border-gray-300 dark:border-gray-700 text-gray-900 dark:text-white mt-1">
-                  {selectedOrganization ? (
-                    <span className="truncate">{selectedOrganization.name}</span>
-                  ) : (
-                    <span className="text-gray-500 dark:text-gray-400">Aucune organisation</span>
-                  )}
-                </SelectTrigger>
-                <SelectContent className="bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700">
-                  <SelectItem value="">Aucune organisation</SelectItem>
-                  {organizations.map((organization) => (
-                    <SelectItem key={organization.id} value={organization.id}>
-                      {organization.name}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+              <Label htmlFor="isActive" className="text-gray-700 dark:text-gray-300">{tCommon('admin.users.account_status')}</Label>
+              <p className="text-xs text-gray-500 dark:text-gray-500 mt-1">{tCommon('admin.users.account_status_desc')}</p>
             </div>
+            <div className="flex items-center gap-2">
+              <span className="text-sm text-gray-500 dark:text-gray-400">{tCommon('common.inactive')}</span>
+              <Switch
+                id="isActive"
+                checked={watch('isActive')}
+                onCheckedChange={(checked) => setValue('isActive', checked)}
+              />
+              <span className="text-sm text-gray-500 dark:text-gray-400">{tCommon('common.active')}</span>
+            </div>
+          </div>
 
+          {/* 👇 Nouveau switch pour l'envoi des identifiants */}
+          <div className="flex items-center justify-between rounded-lg border border-gray-200 dark:border-gray-800 bg-gray-50 dark:bg-gray-900/30 p-4">
             <div>
-              <Label htmlFor="groupId" className="text-gray-700 dark:text-gray-300">Groupe</Label>
-              <Select
-                value={watchGroupId || ''}
-                onValueChange={(value) => setValue('groupId', value)}
-              >
-                <SelectTrigger className="bg-white dark:bg-gray-800/50 border-gray-300 dark:border-gray-700 text-gray-900 dark:text-white mt-1">
-                  {selectedGroup ? (
-                    <span className="truncate">{selectedGroup.name}</span>
-                  ) : (
-                    <span className="text-gray-500 dark:text-gray-400">Aucun groupe</span>
-                  )}
-                </SelectTrigger>
-                <SelectContent className="bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700">
-                  <SelectItem value="">Aucun groupe</SelectItem>
-                  {availableGroups.map((group) => (
-                    <SelectItem key={group.id} value={group.id}>
-                      {group.name}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+              <Label htmlFor="sendCredentials" className="text-gray-700 dark:text-gray-300">{tCommon('admin.users.send_credentials')}</Label>
+              <p className="text-xs text-gray-500 dark:text-gray-500 mt-1">
+                {tCommon('admin.users.user_credentials_desc')}
+                {initialData && ` ${tCommon('admin.users.user_credentials_edit')}`}
+              </p>
             </div>
-          </div>
-        )}
-
-        {/* Si non superadmin, on affiche uniquement le champ Groupe sur une ligne */}
-        {isNotSuperAdmin && (
-          <div className="grid grid-cols-1 gap-4">
-            <div>
-              <Label htmlFor="groupId" className="text-gray-700 dark:text-gray-300">Groupe</Label>
-              <Select
-                value={watchGroupId || ''}
-                onValueChange={(value) => setValue('groupId', value)}
-              >
-                <SelectTrigger className="bg-white dark:bg-gray-800/50 border-gray-300 dark:border-gray-700 text-gray-900 dark:text-white mt-1">
-                  {selectedGroup ? (
-                    <span className="truncate">{selectedGroup.name}</span>
-                  ) : (
-                    <span className="text-gray-500 dark:text-gray-400">Aucun groupe</span>
-                  )}
-                </SelectTrigger>
-                <SelectContent className="bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700">
-                  <SelectItem value="">Aucun groupe</SelectItem>
-                  {availableGroups.map((group) => (
-                    <SelectItem key={group.id} value={group.id}>
-                      {group.name}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+            <div className="flex items-center gap-2">
+              <span className="text-sm text-gray-500 dark:text-gray-400">{tCommon('admin.plans.no')}</span>
+              <Switch
+                id="sendCredentials"
+                checked={watchSendCredentials}
+                onCheckedChange={(checked) => setValue('sendCredentials', checked)}
+              />
+              <span className="text-sm text-gray-500 dark:text-gray-400">{tCommon('admin.plans.yes')}</span>
             </div>
-          </div>
-        )}
-
-        <div className="flex items-center justify-between rounded-lg border border-gray-200 dark:border-gray-800 bg-gray-50 dark:bg-gray-900/30 p-4">
-          <div>
-            <Label htmlFor="isActive" className="text-gray-700 dark:text-gray-300">Statut du compte</Label>
-            <p className="text-xs text-gray-500 dark:text-gray-500 mt-1">Un compte inactif ne peut pas se connecter.</p>
-          </div>
-          <div className="flex items-center gap-2">
-            <span className="text-sm text-gray-500 dark:text-gray-400">Inactif</span>
-            <Switch
-              id="isActive"
-              checked={watch('isActive')}
-              onCheckedChange={(checked) => setValue('isActive', checked)}
-            />
-            <span className="text-sm text-gray-500 dark:text-gray-400">Actif</span>
           </div>
         </div>
       </div>
 
+      {/* Boutons */}
       <div className="flex justify-end gap-3 pt-4 border-t border-gray-200 dark:border-gray-800">
         <Button
           type="button"
@@ -364,11 +395,11 @@ export const UserForm = ({ initialData, organizations, groups, onSuccess, onCanc
           onClick={onCancel}
           className="border-gray-300 dark:border-gray-700 text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 cursor-pointer"
         >
-          Annuler
+          {tCommon('user.formations.cancel')}
         </Button>
         <Button type="submit" disabled={isLoading} className="cursor-pointer">
           {isLoading && <Loader2 className="w-4 h-4 mr-2 animate-spin" />}
-          {initialData ? 'Mettre à jour' : 'Créer'}
+          {initialData ? tCommon('user.profile.save') : tCommon('admin.organizations.org_create_btn')}
         </Button>
       </div>
     </form>

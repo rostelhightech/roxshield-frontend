@@ -1,6 +1,6 @@
 // src/routes/__root.tsx
 import { I18nProvider } from '@/lib/i18n';
-import { createRootRouteWithContext, Link, Outlet } from '@tanstack/react-router';
+import { createRootRouteWithContext, Outlet } from '@tanstack/react-router';
 import { Toaster } from 'react-hot-toast';
 
 

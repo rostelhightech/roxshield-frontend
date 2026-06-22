@@ -3,6 +3,7 @@
 import { memo } from 'react';
 import { PieChart, Pie, Cell, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 import { Skeleton } from '@/components/ui/skeleton';
+import { useTranslation } from 'react-i18next';
 
 interface CampaignChartsSectionProps {
   showCharts: boolean;
@@ -67,15 +68,19 @@ const StatsSkeleton = memo(() => (
 ));
 
 export function CampaignChartsSection({ showCharts, targetStatusData, trackingEventsData }: CampaignChartsSectionProps) {
+
+  const { t: tCommon } = useTranslation('common');
+  
+
   return (
     <div className="grid grid-cols-2 gap-6 mt-6 bg-gray-100 dark:bg-slate-900 px-2">
       <div className="border-t border-gray-200 dark:border-white/10 pt-6">
-        <h4 className="text-sm font-semibold text-gray-900 dark:text-gray-900 dark:text-white mb-4">Événements de tracking</h4>
+        <h4 className="text-sm font-semibold text-gray-900 dark:text-gray-900 dark:text-white mb-4">{tCommon('admin.campaigns.tracking_events')}</h4>
         {!showCharts ? <StatsSkeleton /> : <TrackingEventsChart data={trackingEventsData} />}
       </div>
 
       <div className="border-t border-gray-200 dark:border-white/10 pt-6">
-        <h4 className="text-sm font-semibold text-gray-900 dark:text-gray-900 dark:text-white mb-4">Distribution des cibles</h4>
+        <h4 className="text-sm font-semibold text-gray-900 dark:text-gray-900 dark:text-white mb-4">{tCommon('admin.campaigns.target_distribution')}</h4>
         {!showCharts ? <StatsSkeleton /> : <TargetStatusChart data={targetStatusData} />}
       </div>
     </div>

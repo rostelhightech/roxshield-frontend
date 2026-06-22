@@ -1,5 +1,7 @@
+import { useTranslation } from 'react-i18next';
 // components/LoadingComponent.tsx
 export const LoadingComponent = () => {
+  const { t: tCommon } = useTranslation('common');
   return (
     <div className="min-h-screen flex flex-col items-center justify-center space-y-8 bg-gradient-to-br from-[#0c1023] to-[#1a0b2e]">
       {/* RoxShield Animé */}
@@ -12,7 +14,7 @@ export const LoadingComponent = () => {
 
       {/* Texte de chargement */}
       <p className="text-gray-900 dark:text-white/50 animate-pulse text-sm">
-        Chargement en cours...
+        {tCommon('common.loading.loading')}
       </p>
     </div>
   );

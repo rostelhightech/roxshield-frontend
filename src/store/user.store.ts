@@ -6,12 +6,15 @@ import type { Group } from './group.store';
 export interface User {
   id: string;
   firstName: string;
+  name?: string;
   lastName: string;
   email: string;
   phone: string | null;
+  lang: string;
   position: string | null;
   role: 'user' | 'admin' | 'superadmin';
   isActive: boolean;
+  avatarUrl: string | null;
   organizationId: string | null;
   organization?: Organization | null;
   groupId: string | null;
@@ -19,6 +22,7 @@ export interface User {
   lastLogin: string | null;
   lastLoginIp: string | null;
   createdAt: string;
+  sendCredentials?: boolean;
   updatedAt: string;
 }
 
@@ -118,6 +122,7 @@ export const useUserStore = create<UserState>((set, get) => ({
         isLoading: false,
       }));
       get().applyFilters();
+      get().fetchAll();
     } catch (error) {
       const message = error instanceof Error ? error.message : 'Erreur inconnue';
       set({ error: message, isLoading: false });
@@ -136,6 +141,7 @@ export const useUserStore = create<UserState>((set, get) => ({
         isLoading: false,
       }));
       get().applyFilters();
+      get().fetchAll();
     } catch (error) {
       const message = error instanceof Error ? error.message : 'Erreur inconnue';
       set({ error: message, isLoading: false });
@@ -153,6 +159,7 @@ export const useUserStore = create<UserState>((set, get) => ({
         isLoading: false,
       }));
       get().applyFilters();
+      get().fetchAll();
     } catch (error) {
       const message = error instanceof Error ? error.message : 'Erreur inconnue';
       set({ error: message, isLoading: false });
@@ -170,6 +177,7 @@ export const useUserStore = create<UserState>((set, get) => ({
         isLoading: false,
       }));
       get().applyFilters();
+      get().fetchAll();
     } catch (error) {
       const message = error instanceof Error ? error.message : 'Erreur inconnue';
       set({ error: message, isLoading: false });
@@ -227,8 +235,8 @@ export const useUserStore = create<UserState>((set, get) => ({
     }
 
     filtered.sort((a, b) => {
-      let aVal: any = a[filters.sortBy as keyof User];
-      let bVal: any = b[filters.sortBy as keyof User];
+      let aVal = a[filters.sortBy as keyof User];
+      let bVal = b[filters.sortBy as keyof User];
 
       if (filters.sortBy === 'organizationName') {
         aVal = a.organization?.name ?? '';
@@ -240,8 +248,8 @@ export const useUserStore = create<UserState>((set, get) => ({
         bVal = b.group?.name ?? '';
       }
 
-      if (aVal < bVal) return filters.sortOrder === 'asc' ? -1 : 1;
-      if (aVal > bVal) return filters.sortOrder === 'asc' ? 1 : -1;
+      if ((aVal && bVal) && (aVal ) < bVal) return filters.sortOrder === 'asc' ? -1 : 1;
+      if ((aVal && bVal) && (aVal) > bVal) return filters.sortOrder === 'asc' ? 1 : -1;
       return 0;
     });
 

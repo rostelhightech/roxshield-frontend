@@ -1,0 +1,3 @@
+npm run build:dev && cp -r dist/* /home/deploy/roxshield/frontend/dist-dev/
+
+npm run build:prod && cp -r dist/* /home/deploy/roxshield/frontend/dist-prod/

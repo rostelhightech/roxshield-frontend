@@ -1,12 +1,8 @@
 // services/token-storage.service.ts
+import { User } from '@/store/user.store';
 import Cookies from 'js-cookie';
 
-interface UserData {
-  id: string;
-  email: string;
-  name: string;
-  role?: string;
-}
+ 
 
 interface TokensData {
   accessToken: string;
@@ -25,7 +21,7 @@ class TokenStorageService {
   };
 
   // Set toutes les données
-  setAuthData(tokens: TokensData, user: UserData): void {
+  setAuthData(tokens: TokensData, user: User): void {
     this.setAccessToken(tokens.accessToken);
     this.setRefreshToken(tokens.refreshToken);
     this.setUser(user);
@@ -57,12 +53,12 @@ class TokenStorageService {
   }
 
   // User
-  setUser(user: UserData): void {
+  setUser(user: User): void {
     localStorage.setItem(this.USER_KEY, JSON.stringify(user));
     Cookies.set(this.USER_KEY, JSON.stringify(user), this.COOKIE_OPTIONS);
   }
 
-  getUser(): UserData | null {
+  getUser(): User | null {
     try {
       const user = localStorage.getItem(this.USER_KEY);
       if (user) return JSON.parse(user);

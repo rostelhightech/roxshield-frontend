@@ -1,13 +1,15 @@
 'use client';
 
-import { GraduationCap, User, Shield, LogOut, ChevronLeft, ChevronRight, Menu, X } from 'lucide-react';
+import { GraduationCap, User, Shield, LogOut, ChevronLeft, ChevronRight, Menu, X, Activity } from 'lucide-react';
 import { Link, useRouterState } from '@tanstack/react-router';
 import { useState, useEffect } from 'react';
-import { Avatar, AvatarFallback } from '@/components/ui/avatar';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
 import { useAuthStore } from '@/store/auth.store';
 import { useSidebarStore } from '@/store/sidebar.store';
+import { useSettingsStore } from '@/store/settings.store';
+import { useTranslation } from 'react-i18next';
 
 function getInitials(name?: string | null, email?: string | null): string {
   if (name) return name.split(' ').map((n) => n[0]).join('').toUpperCase().slice(0, 2);
@@ -25,6 +27,8 @@ export function UserSidebar() {
   const { collapsed, setCollapsed } = useSidebarStore();
   const [mobileOpen, setMobileOpen] = useState(false);
   const { user, clearAuth } = useAuthStore();
+  const { user: profile } = useSettingsStore();
+  const {t: tCommon} = useTranslation('common');
 
   const routerState = useRouterState();
   const currentPath = routerState.location.pathname;
@@ -33,8 +37,9 @@ export function UserSidebar() {
   const userEmail = user?.email || '';
 
   const navItems: NavItem[] = [
-    { label: 'Mes Formations', to: '/dashboard/user/formations', icon: GraduationCap },
-    { label: 'Mon Profil', to: '/dashboard/user/profile', icon: User },
+    { label: tCommon('nav.topbar.formations_user_title'), to: '/dashboard/user/formations', icon: GraduationCap },
+    { label: tCommon('nav.topbar.evaluations_title'),     to: '/dashboard/user/evaluations', icon: Activity },
+    { label: tCommon('nav.topbar.profile_title'),         to: '/dashboard/user/profile', icon: User },
   ];
 
   useEffect(() => {
@@ -156,6 +161,9 @@ export function UserSidebar() {
           <div className={`flex items-center gap-3 rounded-sm px-3 py-2 ${collapsed ? 'justify-center' : ''}`}>
             <div className="shrink-0">
               <Avatar className="h-9 w-9 cursor-pointer transition-opacity hover:opacity-80">
+                {profile?.avatarUrl && (
+                  <AvatarImage src={profile.avatarUrl} alt={tCommon('user.profile.profile_picture')} className="object-cover" />
+                )}
                 <AvatarFallback className="bg-[#5d2595] text-xs text-white">
                   {getInitials(user?.name, user?.email)}
                 </AvatarFallback>
@@ -168,7 +176,7 @@ export function UserSidebar() {
                   <p className="truncate text-sm font-medium text-gray-900 dark:text-white">{userName}</p>
                   <p className="truncate text-xs text-gray-500 dark:text-white/40">{userEmail}</p>
                 </div>
-                <button onClick={handleLogout} aria-label="Se déconnecter">
+                <button onClick={handleLogout} aria-label={tCommon('user.sidebar.logout')}>
                   <LogOut className="h-4 w-4 text-gray-400 dark:text-white/30 transition-all hover:text-red-500 dark:hover:text-red-400" />
                 </button>
               </>

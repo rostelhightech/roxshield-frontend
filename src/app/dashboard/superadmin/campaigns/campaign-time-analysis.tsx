@@ -5,12 +5,14 @@ import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, Responsive
 import { Clock, TrendingUp } from 'lucide-react';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card';
 import { TimeAnalysis } from '@/store/campaign.store';
+import { useTranslation } from 'react-i18next';
 
 interface CampaignTimeAnalysisProps {
   timeAnalysis: TimeAnalysis;
 }
 
 export function CampaignTimeAnalysis({ timeAnalysis }: CampaignTimeAnalysisProps) {
+  const { t: tCommon } = useTranslation('common');
   const { hourlyAnalysis, dailyAnalysis } = timeAnalysis;
 
   // Trouver les heures de pic
@@ -37,7 +39,7 @@ export function CampaignTimeAnalysis({ timeAnalysis }: CampaignTimeAnalysisProps
               <Clock className="h-6 w-6 text-blue-600 dark:text-blue-400" />
             </div>
             <div>
-              <p className="text-sm text-gray-500 dark:text-zinc-400">Heure de pic</p>
+              <p className="text-sm text-gray-500 dark:text-zinc-400">{tCommon('admin.campaigns.time_peak_hour')}</p>
               <h2 className="text-2xl font-bold text-gray-900 dark:text-white">{peakHour.hour}h - {peakHour.hour + 1}h</h2>
               <p className="text-xs text-gray-400 dark:text-zinc-500">
                 {peakHour.opens + peakHour.clicks} interactions
@@ -57,7 +59,7 @@ export function CampaignTimeAnalysis({ timeAnalysis }: CampaignTimeAnalysisProps
               <TrendingUp className="h-6 w-6 text-purple-600 dark:text-purple-400" />
             </div>
             <div>
-              <p className="text-sm text-gray-500 dark:text-zinc-400">Jour de pic</p>
+              <p className="text-sm text-gray-500 dark:text-zinc-400">{tCommon('admin.campaigns.time_peak_day')}</p>
               <h2 className="text-2xl font-bold text-gray-900 dark:text-white">{peakDay.day}</h2>
               <p className="text-xs text-gray-400 dark:text-zinc-500">
                 {peakDay.opens + peakDay.clicks} interactions
@@ -75,8 +77,8 @@ export function CampaignTimeAnalysis({ timeAnalysis }: CampaignTimeAnalysisProps
       >
         <Card className="rounded-md border border-gray-200 dark:border-white/10 bg-white dark:bg-[#0c1023]/90 shadow-sm dark:shadow-xl">
           <CardHeader>
-            <CardTitle className="text-gray-900 dark:text-white">Activité par heure</CardTitle>
-            <CardDescription className="text-gray-500 dark:text-gray-400">Distribution des ouvertures et clics sur 24h</CardDescription>
+            <CardTitle className="text-gray-900 dark:text-white">{tCommon('admin.campaigns.time_activity_hour')}</CardTitle>
+            <CardDescription className="text-gray-500 dark:text-gray-400">{tCommon('admin.campaigns.time_activity_hour_desc')}</CardDescription>
           </CardHeader>
           <CardContent>
             <ResponsiveContainer width="100%" height={300}>
@@ -134,7 +136,7 @@ export function CampaignTimeAnalysis({ timeAnalysis }: CampaignTimeAnalysisProps
       >
         <Card className="rounded-md border border-gray-200 dark:border-white/10 bg-white dark:bg-[#0c1023]/90 shadow-sm dark:shadow-xl">
           <CardHeader>
-            <CardTitle className="text-gray-900 dark:text-white">Activité par jour de la semaine</CardTitle>
+            <CardTitle className="text-gray-900 dark:text-white">{tCommon('admin.campaigns.time_activity_week')}</CardTitle>
             <CardDescription className="text-gray-500 dark:text-gray-400">Tendances hebdomadaires d'engagement</CardDescription>
           </CardHeader>
           <CardContent>

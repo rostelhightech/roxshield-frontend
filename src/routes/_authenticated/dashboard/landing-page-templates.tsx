@@ -1,5 +1,6 @@
 import LandingPageTemplates from '@/app/dashboard/superadmin/landing-page-templates/page';
-import { DashboardTopbar } from '@/components/layout/topbar';
+import { DashboardTopbar } from "@/components/layout/topbar";
+import { useTranslation } from 'react-i18next';
 import { createFileRoute } from '@tanstack/react-router';
 
 export const Route = createFileRoute('/_authenticated/dashboard/landing-page-templates')({
@@ -7,11 +8,12 @@ export const Route = createFileRoute('/_authenticated/dashboard/landing-page-tem
 });
 
 function LandingPageTemplatesPage() {
+  const { t } = useTranslation('common');
   return (
     <>
       <DashboardTopbar
-        title="Landing page templates"
-        description="Créez, importez et gérez vos pages de destination pour les campagnes de sensibilisation."
+        title={t('nav.topbar.landing_templates_title')}
+        description={t('nav.topbar.landing_templates_desc')}
       />
       <LandingPageTemplates />
     </>

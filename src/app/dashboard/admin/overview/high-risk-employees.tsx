@@ -4,8 +4,10 @@ import { useEffect } from "react";
 import { useDashboardStore } from "@/store/dashboard.store";
 import { AlertTriangle } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { useTranslation } from "react-i18next";
 
 export function HighRiskEmployees() {
+  const { t: tCommon } = useTranslation('common');
   const { adminHighRiskEmployees, fetchAdminHighRiskEmployees, isLoading } = useDashboardStore();
 
   useEffect(() => {
@@ -34,7 +36,7 @@ export function HighRiskEmployees() {
     return (
       <Card className="rounded-sm border border-gray-200 dark:border-white/5 bg-white dark:bg-[#0c1023] shadow-sm dark:shadow-xl">
         <CardHeader>
-          <CardTitle className="text-gray-900 dark:text-white">Employés à risque élevé</CardTitle>
+          <CardTitle className="text-gray-900 dark:text-white">{tCommon('admin.page_overview.high_risk_title')}</CardTitle>
         </CardHeader>
         <CardContent>
           <div className="space-y-4">
@@ -59,13 +61,13 @@ export function HighRiskEmployees() {
   return (
     <Card className="rounded-sm border border-gray-200 dark:border-white/5 bg-white dark:bg-[#0c1023] shadow-sm dark:shadow-xl">
       <CardHeader>
-        <CardTitle className="text-gray-900 dark:text-white">Employés à risque élevé</CardTitle>
+        <CardTitle className="text-gray-900 dark:text-white">{tCommon('admin.page_overview.high_risk_title')}</CardTitle>
       </CardHeader>
       <CardContent>
         {!adminHighRiskEmployees || adminHighRiskEmployees.length === 0 ? (
           <div className="py-8 text-center text-gray-500 dark:text-gray-400">
             <AlertTriangle className="w-12 h-12 mx-auto mb-2 opacity-50" />
-            <p className="text-sm">Aucun employé à risque élevé</p>
+            <p className="text-sm">{tCommon('admin.page_overview.high_risk_empty')}</p>
           </div>
         ) : (
           <div className="space-y-4">
@@ -84,12 +86,12 @@ export function HighRiskEmployees() {
                   <div>
                     <p className="text-gray-900 dark:text-white font-medium text-sm">{employee.name}</p>
                     <p className="text-gray-500 dark:text-gray-400 text-xs">{employee.department} — {employee.position}</p>
-                    <p className="text-gray-400 dark:text-gray-500 text-xs">{employee.formationsCompleted} formations</p>
+                    <p className="text-gray-400 dark:text-gray-500 text-xs">{employee.formationsCompleted} {tCommon('admin.page_overview.stats_trainings')?.toLowerCase()}</p>
                   </div>
                 </div>
                 
                 <Badge className={getRiskBadgeColor(employee.riskScore)}>
-                  {employee.riskScore}% risque
+                  {employee.riskScore}% {tCommon('admin.page_overview.risk_label', 'risque')}
                 </Badge>
               </div>
             ))}

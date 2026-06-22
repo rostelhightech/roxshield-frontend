@@ -207,7 +207,7 @@ export const useDashboardStore = create<DashboardState>((set, get) => ({
       }
     } catch (error) {
       console.error('Erreur lors du chargement des statistiques admin:', error);
-      set({ error: 'Erreur lors du chargement des statistiques' });
+      set({ error: 'Erreur lors du chargement des statistiques admin' });
     } finally {
       set({ isLoading: false });
     }

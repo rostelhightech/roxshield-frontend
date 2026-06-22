@@ -73,11 +73,11 @@ export async function sendInvitationEmail(opts: {
       <p style="margin:0 0 8px;color:#888;font-size:13px;">Vos identifiants de connexion :</p>
       <table style="width:100%;">
         <tr>
-          <td style="color:#888;padding:4px 0;width:130px;">Email</td>
+          <td style="color:#888;padding:4px 0;width:130px;">{tCommon('user.profile.email')}</td>
           <td style="color:#c084fc;font-weight:bold;">${opts.to}</td>
         </tr>
         <tr>
-          <td style="color:#888;padding:4px 0;">Mot de passe</td>
+          <td style="color:#888;padding:4px 0;">{tCommon('user.profile.password')}</td>
           <td style="color:#fa990e;font-weight:bold;font-family:monospace;">${opts.tempPassword}</td>
         </tr>
       </table>

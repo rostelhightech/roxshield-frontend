@@ -1,5 +1,6 @@
 import { create } from 'zustand';
 import { apiService } from '@/app/services/api.service';
+import { type Organization } from './organization.store';
 
 export interface Ambassador {
   id: string;
@@ -27,7 +28,7 @@ export interface AmbassadorStats {
     successRate: number;
     totalRevenue: number;
   };
-  referredOrganizations: any[];
+  referredOrganizations: Organization[];
 }
 
 export interface QRCodeData {
@@ -104,9 +105,9 @@ export const useAmbassadorStore = create<AmbassadorState>((set, get) => ({
         set({ ambassadors: response.data });
         get().applyFilters();
       }
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('Erreur lors du chargement des ambassadeurs:', error);
-      set({ error: error.message || 'Erreur lors du chargement des ambassadeurs' });
+      set({ error: (  error as Error).message || 'Erreur lors du chargement des ambassadeurs' });
     } finally {
       set({ isLoading: false });
     }
@@ -121,9 +122,9 @@ export const useAmbassadorStore = create<AmbassadorState>((set, get) => ({
       if ('success' in response && response.success) {
         set({ selectedAmbassador: response.data });
       }
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('Erreur lors du chargement de l\'ambassadeur:', error);
-      set({ error: error.message || 'Erreur lors du chargement de l\'ambassadeur' });
+      set({ error: (  error as Error).message || 'Erreur lors du chargement de l\'ambassadeur' });
     } finally {
       set({ isLoading: false });
     }
@@ -140,11 +141,12 @@ export const useAmbassadorStore = create<AmbassadorState>((set, get) => ({
         set((state) => ({
           ambassadors: [response.data, ...state.ambassadors],
         }));
+        get().fetchAmbassadors();
         get().applyFilters();
       }
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('Erreur lors de la création de l\'ambassadeur:', error);
-      set({ error: error.message || 'Erreur lors de la création de l\'ambassadeur' });
+      set({ error: (  error as Error).message || 'Erreur lors de la création de l\'ambassadeur' });
       throw error;
     } finally {
       set({ isLoading: false });
@@ -168,11 +170,12 @@ export const useAmbassadorStore = create<AmbassadorState>((set, get) => ({
               ? response.data
               : state.selectedAmbassador,
         }));
+        get().fetchAmbassadors();
         get().applyFilters();
       }
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('Erreur lors de la mise à jour de l\'ambassadeur:', error);
-      set({ error: error.message || 'Erreur lors de la mise à jour de l\'ambassadeur' });
+      set({ error: (  error as Error).message || 'Erreur lors de la mise à jour de l\'ambassadeur' });
       throw error;
     } finally {
       set({ isLoading: false });
@@ -186,17 +189,18 @@ export const useAmbassadorStore = create<AmbassadorState>((set, get) => ({
       set((state) => ({
         ambassadors: state.ambassadors.filter((a) => a.id !== id),
       }));
+      get().fetchAmbassadors();
       get().applyFilters();
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('Erreur lors de la suppression de l\'ambassadeur:', error);
-      set({ error: error.message || 'Erreur lors de la suppression de l\'ambassadeur' });
+      set({ error: (  error as Error).message || 'Erreur lors de la suppression de l\'ambassadeur' });
       throw error;
     } finally {
       set({ isLoading: false });
     }
   },
 
-  generateQRCode: async (id) => {
+generateQRCode: async (id) => {
     try {
       set({ isLoading: true, error: null });
       const response = await apiService.get<{ success: boolean; data: QRCodeData }>(
@@ -205,9 +209,9 @@ export const useAmbassadorStore = create<AmbassadorState>((set, get) => ({
       if ('success' in response && response.success) {
         set({ qrCodeData: response.data });
       }
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('Erreur lors de la génération du QR code:', error);
-      set({ error: error.message || 'Erreur lors de la génération du QR code' });
+      set({ error: (  error as Error).message || 'Erreur lors de la génération du QR code' });
       throw error;
     } finally {
       set({ isLoading: false });
@@ -223,9 +227,9 @@ export const useAmbassadorStore = create<AmbassadorState>((set, get) => ({
       if ('success' in response && response.success) {
         set({ ambassadorStats: response.data });
       }
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('Erreur lors du chargement des statistiques:', error);
-      set({ error: error.message || 'Erreur lors du chargement des statistiques' });
+      set({ error: (  error as Error).message || 'Erreur lors du chargement des statistiques' });
     } finally {
       set({ isLoading: false });
     }

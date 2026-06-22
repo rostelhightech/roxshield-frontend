@@ -9,6 +9,7 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as ResetPasswordRouteImport } from './routes/reset-password'
 import { Route as RegisterRouteImport } from './routes/register'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as AuthenticatedRouteImport } from './routes/_authenticated'
@@ -18,19 +19,14 @@ import { Route as AuthenticatedDashboardIndexRouteImport } from './routes/_authe
 import { Route as AuthenticatedDashboardUsersRouteImport } from './routes/_authenticated/dashboard/users'
 import { Route as AuthenticatedDashboardTemplatesRouteImport } from './routes/_authenticated/dashboard/templates'
 import { Route as AuthenticatedDashboardSmtpProfilesRouteImport } from './routes/_authenticated/dashboard/smtp-profiles'
-import { Route as AuthenticatedDashboardShadowItRouteImport } from './routes/_authenticated/dashboard/shadow-it'
 import { Route as AuthenticatedDashboardSettingsRouteImport } from './routes/_authenticated/dashboard/settings'
-import { Route as AuthenticatedDashboardReportsRouteImport } from './routes/_authenticated/dashboard/reports'
 import { Route as AuthenticatedDashboardPlanRouteImport } from './routes/_authenticated/dashboard/plan'
-import { Route as AuthenticatedDashboardPasswordsRouteImport } from './routes/_authenticated/dashboard/passwords'
 import { Route as AuthenticatedDashboardOverviewRouteImport } from './routes/_authenticated/dashboard/overview'
 import { Route as AuthenticatedDashboardOrganizationsRouteImport } from './routes/_authenticated/dashboard/organizations'
 import { Route as AuthenticatedDashboardLandingPageTemplatesRouteImport } from './routes/_authenticated/dashboard/landing-page-templates'
 import { Route as AuthenticatedDashboardGroupsRouteImport } from './routes/_authenticated/dashboard/groups'
 import { Route as AuthenticatedDashboardGrcRouteImport } from './routes/_authenticated/dashboard/grc'
 import { Route as AuthenticatedDashboardFormationsRouteImport } from './routes/_authenticated/dashboard/formations'
-import { Route as AuthenticatedDashboardEncryptionRouteImport } from './routes/_authenticated/dashboard/encryption'
-import { Route as AuthenticatedDashboardEmailSecurityRouteImport } from './routes/_authenticated/dashboard/email-security'
 import { Route as AuthenticatedDashboardDemosRouteImport } from './routes/_authenticated/dashboard/demos'
 import { Route as AuthenticatedDashboardCampaignsRouteImport } from './routes/_authenticated/dashboard/campaigns'
 import { Route as AuthenticatedDashboardAmbassadorsRouteImport } from './routes/_authenticated/dashboard/ambassadors'
@@ -41,12 +37,18 @@ import { Route as AuthenticatedDashboardCampaignsIndexRouteImport } from './rout
 import { Route as AuthenticatedDashboardUserProfileRouteImport } from './routes/_authenticated/dashboard/user/profile'
 import { Route as AuthenticatedDashboardUserFormationsRouteImport } from './routes/_authenticated/dashboard/user/formations'
 import { Route as AuthenticatedDashboardUserFormationViewRouteImport } from './routes/_authenticated/dashboard/user/formation-view'
+import { Route as AuthenticatedDashboardUserEvaluationsRouteImport } from './routes/_authenticated/dashboard/user/evaluations'
 import { Route as AuthenticatedDashboardOrganizationsOrganizationIdRouteImport } from './routes/_authenticated/dashboard/organizations/$organizationId'
 import { Route as AuthenticatedDashboardFormationsFormationEditRouteImport } from './routes/_authenticated/dashboard/formations/formation-edit'
 import { Route as AuthenticatedDashboardFormationsCreateRouteImport } from './routes/_authenticated/dashboard/formations/create'
 import { Route as AuthenticatedDashboardFormationsFormationIdRouteImport } from './routes/_authenticated/dashboard/formations/$formationId'
 import { Route as AuthenticatedDashboardCampaignsCampaignIdRouteImport } from './routes/_authenticated/dashboard/campaigns/$campaignId'
 
+const ResetPasswordRoute = ResetPasswordRouteImport.update({
+  id: '/reset-password',
+  path: '/reset-password',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const RegisterRoute = RegisterRouteImport.update({
   id: '/register',
   path: '/register',
@@ -95,34 +97,16 @@ const AuthenticatedDashboardSmtpProfilesRoute =
     path: '/smtp-profiles',
     getParentRoute: () => AuthenticatedDashboardRoute,
   } as any)
-const AuthenticatedDashboardShadowItRoute =
-  AuthenticatedDashboardShadowItRouteImport.update({
-    id: '/shadow-it',
-    path: '/shadow-it',
-    getParentRoute: () => AuthenticatedDashboardRoute,
-  } as any)
 const AuthenticatedDashboardSettingsRoute =
   AuthenticatedDashboardSettingsRouteImport.update({
     id: '/settings',
     path: '/settings',
     getParentRoute: () => AuthenticatedDashboardRoute,
   } as any)
-const AuthenticatedDashboardReportsRoute =
-  AuthenticatedDashboardReportsRouteImport.update({
-    id: '/reports',
-    path: '/reports',
-    getParentRoute: () => AuthenticatedDashboardRoute,
-  } as any)
 const AuthenticatedDashboardPlanRoute =
   AuthenticatedDashboardPlanRouteImport.update({
     id: '/plan',
     path: '/plan',
-    getParentRoute: () => AuthenticatedDashboardRoute,
-  } as any)
-const AuthenticatedDashboardPasswordsRoute =
-  AuthenticatedDashboardPasswordsRouteImport.update({
-    id: '/passwords',
-    path: '/passwords',
     getParentRoute: () => AuthenticatedDashboardRoute,
   } as any)
 const AuthenticatedDashboardOverviewRoute =
@@ -159,18 +143,6 @@ const AuthenticatedDashboardFormationsRoute =
   AuthenticatedDashboardFormationsRouteImport.update({
     id: '/formations',
     path: '/formations',
-    getParentRoute: () => AuthenticatedDashboardRoute,
-  } as any)
-const AuthenticatedDashboardEncryptionRoute =
-  AuthenticatedDashboardEncryptionRouteImport.update({
-    id: '/encryption',
-    path: '/encryption',
-    getParentRoute: () => AuthenticatedDashboardRoute,
-  } as any)
-const AuthenticatedDashboardEmailSecurityRoute =
-  AuthenticatedDashboardEmailSecurityRouteImport.update({
-    id: '/email-security',
-    path: '/email-security',
     getParentRoute: () => AuthenticatedDashboardRoute,
   } as any)
 const AuthenticatedDashboardDemosRoute =
@@ -233,6 +205,12 @@ const AuthenticatedDashboardUserFormationViewRoute =
     path: '/user/formation-view',
     getParentRoute: () => AuthenticatedDashboardRoute,
   } as any)
+const AuthenticatedDashboardUserEvaluationsRoute =
+  AuthenticatedDashboardUserEvaluationsRouteImport.update({
+    id: '/user/evaluations',
+    path: '/user/evaluations',
+    getParentRoute: () => AuthenticatedDashboardRoute,
+  } as any)
 const AuthenticatedDashboardOrganizationsOrganizationIdRoute =
   AuthenticatedDashboardOrganizationsOrganizationIdRouteImport.update({
     id: '/$organizationId',
@@ -268,23 +246,19 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/login': typeof LoginRoute
   '/register': typeof RegisterRoute
+  '/reset-password': typeof ResetPasswordRoute
   '/dashboard': typeof AuthenticatedDashboardRouteWithChildren
   '/dashboard/ambassadors': typeof AuthenticatedDashboardAmbassadorsRoute
   '/dashboard/campaigns': typeof AuthenticatedDashboardCampaignsRouteWithChildren
   '/dashboard/demos': typeof AuthenticatedDashboardDemosRoute
-  '/dashboard/email-security': typeof AuthenticatedDashboardEmailSecurityRoute
-  '/dashboard/encryption': typeof AuthenticatedDashboardEncryptionRoute
   '/dashboard/formations': typeof AuthenticatedDashboardFormationsRouteWithChildren
   '/dashboard/grc': typeof AuthenticatedDashboardGrcRoute
   '/dashboard/groups': typeof AuthenticatedDashboardGroupsRoute
   '/dashboard/landing-page-templates': typeof AuthenticatedDashboardLandingPageTemplatesRoute
   '/dashboard/organizations': typeof AuthenticatedDashboardOrganizationsRouteWithChildren
   '/dashboard/overview': typeof AuthenticatedDashboardOverviewRoute
-  '/dashboard/passwords': typeof AuthenticatedDashboardPasswordsRoute
   '/dashboard/plan': typeof AuthenticatedDashboardPlanRoute
-  '/dashboard/reports': typeof AuthenticatedDashboardReportsRoute
   '/dashboard/settings': typeof AuthenticatedDashboardSettingsRoute
-  '/dashboard/shadow-it': typeof AuthenticatedDashboardShadowItRoute
   '/dashboard/smtp-profiles': typeof AuthenticatedDashboardSmtpProfilesRoute
   '/dashboard/templates': typeof AuthenticatedDashboardTemplatesRoute
   '/dashboard/users': typeof AuthenticatedDashboardUsersRoute
@@ -294,6 +268,7 @@ export interface FileRoutesByFullPath {
   '/dashboard/formations/create': typeof AuthenticatedDashboardFormationsCreateRoute
   '/dashboard/formations/formation-edit': typeof AuthenticatedDashboardFormationsFormationEditRoute
   '/dashboard/organizations/$organizationId': typeof AuthenticatedDashboardOrganizationsOrganizationIdRoute
+  '/dashboard/user/evaluations': typeof AuthenticatedDashboardUserEvaluationsRoute
   '/dashboard/user/formation-view': typeof AuthenticatedDashboardUserFormationViewRoute
   '/dashboard/user/formations': typeof AuthenticatedDashboardUserFormationsRoute
   '/dashboard/user/profile': typeof AuthenticatedDashboardUserProfileRoute
@@ -306,19 +281,15 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/login': typeof LoginRoute
   '/register': typeof RegisterRoute
+  '/reset-password': typeof ResetPasswordRoute
   '/dashboard/ambassadors': typeof AuthenticatedDashboardAmbassadorsRoute
   '/dashboard/demos': typeof AuthenticatedDashboardDemosRoute
-  '/dashboard/email-security': typeof AuthenticatedDashboardEmailSecurityRoute
-  '/dashboard/encryption': typeof AuthenticatedDashboardEncryptionRoute
   '/dashboard/grc': typeof AuthenticatedDashboardGrcRoute
   '/dashboard/groups': typeof AuthenticatedDashboardGroupsRoute
   '/dashboard/landing-page-templates': typeof AuthenticatedDashboardLandingPageTemplatesRoute
   '/dashboard/overview': typeof AuthenticatedDashboardOverviewRoute
-  '/dashboard/passwords': typeof AuthenticatedDashboardPasswordsRoute
   '/dashboard/plan': typeof AuthenticatedDashboardPlanRoute
-  '/dashboard/reports': typeof AuthenticatedDashboardReportsRoute
   '/dashboard/settings': typeof AuthenticatedDashboardSettingsRoute
-  '/dashboard/shadow-it': typeof AuthenticatedDashboardShadowItRoute
   '/dashboard/smtp-profiles': typeof AuthenticatedDashboardSmtpProfilesRoute
   '/dashboard/templates': typeof AuthenticatedDashboardTemplatesRoute
   '/dashboard/users': typeof AuthenticatedDashboardUsersRoute
@@ -328,6 +299,7 @@ export interface FileRoutesByTo {
   '/dashboard/formations/create': typeof AuthenticatedDashboardFormationsCreateRoute
   '/dashboard/formations/formation-edit': typeof AuthenticatedDashboardFormationsFormationEditRoute
   '/dashboard/organizations/$organizationId': typeof AuthenticatedDashboardOrganizationsOrganizationIdRoute
+  '/dashboard/user/evaluations': typeof AuthenticatedDashboardUserEvaluationsRoute
   '/dashboard/user/formation-view': typeof AuthenticatedDashboardUserFormationViewRoute
   '/dashboard/user/formations': typeof AuthenticatedDashboardUserFormationsRoute
   '/dashboard/user/profile': typeof AuthenticatedDashboardUserProfileRoute
@@ -342,23 +314,19 @@ export interface FileRoutesById {
   '/_authenticated': typeof AuthenticatedRouteWithChildren
   '/login': typeof LoginRoute
   '/register': typeof RegisterRoute
+  '/reset-password': typeof ResetPasswordRoute
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRouteWithChildren
   '/_authenticated/dashboard/ambassadors': typeof AuthenticatedDashboardAmbassadorsRoute
   '/_authenticated/dashboard/campaigns': typeof AuthenticatedDashboardCampaignsRouteWithChildren
   '/_authenticated/dashboard/demos': typeof AuthenticatedDashboardDemosRoute
-  '/_authenticated/dashboard/email-security': typeof AuthenticatedDashboardEmailSecurityRoute
-  '/_authenticated/dashboard/encryption': typeof AuthenticatedDashboardEncryptionRoute
   '/_authenticated/dashboard/formations': typeof AuthenticatedDashboardFormationsRouteWithChildren
   '/_authenticated/dashboard/grc': typeof AuthenticatedDashboardGrcRoute
   '/_authenticated/dashboard/groups': typeof AuthenticatedDashboardGroupsRoute
   '/_authenticated/dashboard/landing-page-templates': typeof AuthenticatedDashboardLandingPageTemplatesRoute
   '/_authenticated/dashboard/organizations': typeof AuthenticatedDashboardOrganizationsRouteWithChildren
   '/_authenticated/dashboard/overview': typeof AuthenticatedDashboardOverviewRoute
-  '/_authenticated/dashboard/passwords': typeof AuthenticatedDashboardPasswordsRoute
   '/_authenticated/dashboard/plan': typeof AuthenticatedDashboardPlanRoute
-  '/_authenticated/dashboard/reports': typeof AuthenticatedDashboardReportsRoute
   '/_authenticated/dashboard/settings': typeof AuthenticatedDashboardSettingsRoute
-  '/_authenticated/dashboard/shadow-it': typeof AuthenticatedDashboardShadowItRoute
   '/_authenticated/dashboard/smtp-profiles': typeof AuthenticatedDashboardSmtpProfilesRoute
   '/_authenticated/dashboard/templates': typeof AuthenticatedDashboardTemplatesRoute
   '/_authenticated/dashboard/users': typeof AuthenticatedDashboardUsersRoute
@@ -368,6 +336,7 @@ export interface FileRoutesById {
   '/_authenticated/dashboard/formations/create': typeof AuthenticatedDashboardFormationsCreateRoute
   '/_authenticated/dashboard/formations/formation-edit': typeof AuthenticatedDashboardFormationsFormationEditRoute
   '/_authenticated/dashboard/organizations/$organizationId': typeof AuthenticatedDashboardOrganizationsOrganizationIdRoute
+  '/_authenticated/dashboard/user/evaluations': typeof AuthenticatedDashboardUserEvaluationsRoute
   '/_authenticated/dashboard/user/formation-view': typeof AuthenticatedDashboardUserFormationViewRoute
   '/_authenticated/dashboard/user/formations': typeof AuthenticatedDashboardUserFormationsRoute
   '/_authenticated/dashboard/user/profile': typeof AuthenticatedDashboardUserProfileRoute
@@ -382,23 +351,19 @@ export interface FileRouteTypes {
     | '/'
     | '/login'
     | '/register'
+    | '/reset-password'
     | '/dashboard'
     | '/dashboard/ambassadors'
     | '/dashboard/campaigns'
     | '/dashboard/demos'
-    | '/dashboard/email-security'
-    | '/dashboard/encryption'
     | '/dashboard/formations'
     | '/dashboard/grc'
     | '/dashboard/groups'
     | '/dashboard/landing-page-templates'
     | '/dashboard/organizations'
     | '/dashboard/overview'
-    | '/dashboard/passwords'
     | '/dashboard/plan'
-    | '/dashboard/reports'
     | '/dashboard/settings'
-    | '/dashboard/shadow-it'
     | '/dashboard/smtp-profiles'
     | '/dashboard/templates'
     | '/dashboard/users'
@@ -408,6 +373,7 @@ export interface FileRouteTypes {
     | '/dashboard/formations/create'
     | '/dashboard/formations/formation-edit'
     | '/dashboard/organizations/$organizationId'
+    | '/dashboard/user/evaluations'
     | '/dashboard/user/formation-view'
     | '/dashboard/user/formations'
     | '/dashboard/user/profile'
@@ -420,19 +386,15 @@ export interface FileRouteTypes {
     | '/'
     | '/login'
     | '/register'
+    | '/reset-password'
     | '/dashboard/ambassadors'
     | '/dashboard/demos'
-    | '/dashboard/email-security'
-    | '/dashboard/encryption'
     | '/dashboard/grc'
     | '/dashboard/groups'
     | '/dashboard/landing-page-templates'
     | '/dashboard/overview'
-    | '/dashboard/passwords'
     | '/dashboard/plan'
-    | '/dashboard/reports'
     | '/dashboard/settings'
-    | '/dashboard/shadow-it'
     | '/dashboard/smtp-profiles'
     | '/dashboard/templates'
     | '/dashboard/users'
@@ -442,6 +404,7 @@ export interface FileRouteTypes {
     | '/dashboard/formations/create'
     | '/dashboard/formations/formation-edit'
     | '/dashboard/organizations/$organizationId'
+    | '/dashboard/user/evaluations'
     | '/dashboard/user/formation-view'
     | '/dashboard/user/formations'
     | '/dashboard/user/profile'
@@ -455,23 +418,19 @@ export interface FileRouteTypes {
     | '/_authenticated'
     | '/login'
     | '/register'
+    | '/reset-password'
     | '/_authenticated/dashboard'
     | '/_authenticated/dashboard/ambassadors'
     | '/_authenticated/dashboard/campaigns'
     | '/_authenticated/dashboard/demos'
-    | '/_authenticated/dashboard/email-security'
-    | '/_authenticated/dashboard/encryption'
     | '/_authenticated/dashboard/formations'
     | '/_authenticated/dashboard/grc'
     | '/_authenticated/dashboard/groups'
     | '/_authenticated/dashboard/landing-page-templates'
     | '/_authenticated/dashboard/organizations'
     | '/_authenticated/dashboard/overview'
-    | '/_authenticated/dashboard/passwords'
     | '/_authenticated/dashboard/plan'
-    | '/_authenticated/dashboard/reports'
     | '/_authenticated/dashboard/settings'
-    | '/_authenticated/dashboard/shadow-it'
     | '/_authenticated/dashboard/smtp-profiles'
     | '/_authenticated/dashboard/templates'
     | '/_authenticated/dashboard/users'
@@ -481,6 +440,7 @@ export interface FileRouteTypes {
     | '/_authenticated/dashboard/formations/create'
     | '/_authenticated/dashboard/formations/formation-edit'
     | '/_authenticated/dashboard/organizations/$organizationId'
+    | '/_authenticated/dashboard/user/evaluations'
     | '/_authenticated/dashboard/user/formation-view'
     | '/_authenticated/dashboard/user/formations'
     | '/_authenticated/dashboard/user/profile'
@@ -495,10 +455,18 @@ export interface RootRouteChildren {
   AuthenticatedRoute: typeof AuthenticatedRouteWithChildren
   LoginRoute: typeof LoginRoute
   RegisterRoute: typeof RegisterRoute
+  ResetPasswordRoute: typeof ResetPasswordRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/reset-password': {
+      id: '/reset-password'
+      path: '/reset-password'
+      fullPath: '/reset-password'
+      preLoaderRoute: typeof ResetPasswordRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/register': {
       id: '/register'
       path: '/register'
@@ -562,13 +530,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedDashboardSmtpProfilesRouteImport
       parentRoute: typeof AuthenticatedDashboardRoute
     }
-    '/_authenticated/dashboard/shadow-it': {
-      id: '/_authenticated/dashboard/shadow-it'
-      path: '/shadow-it'
-      fullPath: '/dashboard/shadow-it'
-      preLoaderRoute: typeof AuthenticatedDashboardShadowItRouteImport
-      parentRoute: typeof AuthenticatedDashboardRoute
-    }
     '/_authenticated/dashboard/settings': {
       id: '/_authenticated/dashboard/settings'
       path: '/settings'
@@ -576,25 +537,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedDashboardSettingsRouteImport
       parentRoute: typeof AuthenticatedDashboardRoute
     }
-    '/_authenticated/dashboard/reports': {
-      id: '/_authenticated/dashboard/reports'
-      path: '/reports'
-      fullPath: '/dashboard/reports'
-      preLoaderRoute: typeof AuthenticatedDashboardReportsRouteImport
-      parentRoute: typeof AuthenticatedDashboardRoute
-    }
     '/_authenticated/dashboard/plan': {
       id: '/_authenticated/dashboard/plan'
       path: '/plan'
       fullPath: '/dashboard/plan'
       preLoaderRoute: typeof AuthenticatedDashboardPlanRouteImport
-      parentRoute: typeof AuthenticatedDashboardRoute
-    }
-    '/_authenticated/dashboard/passwords': {
-      id: '/_authenticated/dashboard/passwords'
-      path: '/passwords'
-      fullPath: '/dashboard/passwords'
-      preLoaderRoute: typeof AuthenticatedDashboardPasswordsRouteImport
       parentRoute: typeof AuthenticatedDashboardRoute
     }
     '/_authenticated/dashboard/overview': {
@@ -637,20 +584,6 @@ declare module '@tanstack/react-router' {
       path: '/formations'
       fullPath: '/dashboard/formations'
       preLoaderRoute: typeof AuthenticatedDashboardFormationsRouteImport
-      parentRoute: typeof AuthenticatedDashboardRoute
-    }
-    '/_authenticated/dashboard/encryption': {
-      id: '/_authenticated/dashboard/encryption'
-      path: '/encryption'
-      fullPath: '/dashboard/encryption'
-      preLoaderRoute: typeof AuthenticatedDashboardEncryptionRouteImport
-      parentRoute: typeof AuthenticatedDashboardRoute
-    }
-    '/_authenticated/dashboard/email-security': {
-      id: '/_authenticated/dashboard/email-security'
-      path: '/email-security'
-      fullPath: '/dashboard/email-security'
-      preLoaderRoute: typeof AuthenticatedDashboardEmailSecurityRouteImport
       parentRoute: typeof AuthenticatedDashboardRoute
     }
     '/_authenticated/dashboard/demos': {
@@ -721,6 +654,13 @@ declare module '@tanstack/react-router' {
       path: '/user/formation-view'
       fullPath: '/dashboard/user/formation-view'
       preLoaderRoute: typeof AuthenticatedDashboardUserFormationViewRouteImport
+      parentRoute: typeof AuthenticatedDashboardRoute
+    }
+    '/_authenticated/dashboard/user/evaluations': {
+      id: '/_authenticated/dashboard/user/evaluations'
+      path: '/user/evaluations'
+      fullPath: '/dashboard/user/evaluations'
+      preLoaderRoute: typeof AuthenticatedDashboardUserEvaluationsRouteImport
       parentRoute: typeof AuthenticatedDashboardRoute
     }
     '/_authenticated/dashboard/organizations/$organizationId': {
@@ -825,23 +765,19 @@ interface AuthenticatedDashboardRouteChildren {
   AuthenticatedDashboardAmbassadorsRoute: typeof AuthenticatedDashboardAmbassadorsRoute
   AuthenticatedDashboardCampaignsRoute: typeof AuthenticatedDashboardCampaignsRouteWithChildren
   AuthenticatedDashboardDemosRoute: typeof AuthenticatedDashboardDemosRoute
-  AuthenticatedDashboardEmailSecurityRoute: typeof AuthenticatedDashboardEmailSecurityRoute
-  AuthenticatedDashboardEncryptionRoute: typeof AuthenticatedDashboardEncryptionRoute
   AuthenticatedDashboardFormationsRoute: typeof AuthenticatedDashboardFormationsRouteWithChildren
   AuthenticatedDashboardGrcRoute: typeof AuthenticatedDashboardGrcRoute
   AuthenticatedDashboardGroupsRoute: typeof AuthenticatedDashboardGroupsRoute
   AuthenticatedDashboardLandingPageTemplatesRoute: typeof AuthenticatedDashboardLandingPageTemplatesRoute
   AuthenticatedDashboardOrganizationsRoute: typeof AuthenticatedDashboardOrganizationsRouteWithChildren
   AuthenticatedDashboardOverviewRoute: typeof AuthenticatedDashboardOverviewRoute
-  AuthenticatedDashboardPasswordsRoute: typeof AuthenticatedDashboardPasswordsRoute
   AuthenticatedDashboardPlanRoute: typeof AuthenticatedDashboardPlanRoute
-  AuthenticatedDashboardReportsRoute: typeof AuthenticatedDashboardReportsRoute
   AuthenticatedDashboardSettingsRoute: typeof AuthenticatedDashboardSettingsRoute
-  AuthenticatedDashboardShadowItRoute: typeof AuthenticatedDashboardShadowItRoute
   AuthenticatedDashboardSmtpProfilesRoute: typeof AuthenticatedDashboardSmtpProfilesRoute
   AuthenticatedDashboardTemplatesRoute: typeof AuthenticatedDashboardTemplatesRoute
   AuthenticatedDashboardUsersRoute: typeof AuthenticatedDashboardUsersRoute
   AuthenticatedDashboardIndexRoute: typeof AuthenticatedDashboardIndexRoute
+  AuthenticatedDashboardUserEvaluationsRoute: typeof AuthenticatedDashboardUserEvaluationsRoute
   AuthenticatedDashboardUserFormationViewRoute: typeof AuthenticatedDashboardUserFormationViewRoute
   AuthenticatedDashboardUserFormationsRoute: typeof AuthenticatedDashboardUserFormationsRoute
   AuthenticatedDashboardUserProfileRoute: typeof AuthenticatedDashboardUserProfileRoute
@@ -855,10 +791,6 @@ const AuthenticatedDashboardRouteChildren: AuthenticatedDashboardRouteChildren =
     AuthenticatedDashboardCampaignsRoute:
       AuthenticatedDashboardCampaignsRouteWithChildren,
     AuthenticatedDashboardDemosRoute: AuthenticatedDashboardDemosRoute,
-    AuthenticatedDashboardEmailSecurityRoute:
-      AuthenticatedDashboardEmailSecurityRoute,
-    AuthenticatedDashboardEncryptionRoute:
-      AuthenticatedDashboardEncryptionRoute,
     AuthenticatedDashboardFormationsRoute:
       AuthenticatedDashboardFormationsRouteWithChildren,
     AuthenticatedDashboardGrcRoute: AuthenticatedDashboardGrcRoute,
@@ -868,16 +800,15 @@ const AuthenticatedDashboardRouteChildren: AuthenticatedDashboardRouteChildren =
     AuthenticatedDashboardOrganizationsRoute:
       AuthenticatedDashboardOrganizationsRouteWithChildren,
     AuthenticatedDashboardOverviewRoute: AuthenticatedDashboardOverviewRoute,
-    AuthenticatedDashboardPasswordsRoute: AuthenticatedDashboardPasswordsRoute,
     AuthenticatedDashboardPlanRoute: AuthenticatedDashboardPlanRoute,
-    AuthenticatedDashboardReportsRoute: AuthenticatedDashboardReportsRoute,
     AuthenticatedDashboardSettingsRoute: AuthenticatedDashboardSettingsRoute,
-    AuthenticatedDashboardShadowItRoute: AuthenticatedDashboardShadowItRoute,
     AuthenticatedDashboardSmtpProfilesRoute:
       AuthenticatedDashboardSmtpProfilesRoute,
     AuthenticatedDashboardTemplatesRoute: AuthenticatedDashboardTemplatesRoute,
     AuthenticatedDashboardUsersRoute: AuthenticatedDashboardUsersRoute,
     AuthenticatedDashboardIndexRoute: AuthenticatedDashboardIndexRoute,
+    AuthenticatedDashboardUserEvaluationsRoute:
+      AuthenticatedDashboardUserEvaluationsRoute,
     AuthenticatedDashboardUserFormationViewRoute:
       AuthenticatedDashboardUserFormationViewRoute,
     AuthenticatedDashboardUserFormationsRoute:
@@ -909,6 +840,7 @@ const rootRouteChildren: RootRouteChildren = {
   AuthenticatedRoute: AuthenticatedRouteWithChildren,
   LoginRoute: LoginRoute,
   RegisterRoute: RegisterRoute,
+  ResetPasswordRoute: ResetPasswordRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

@@ -1,7 +1,9 @@
 'use client';
 
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card';
-import { CampaignForm, CampaignFormData } from './campaign-form';
+import { CampaignForm } from './campaign-form';
+import { useTranslation } from 'react-i18next';
+import { Campaign } from '@/store/campaign.store';
 
 interface CampaignFormModalProps {
   isOpen: boolean;
@@ -14,8 +16,8 @@ interface CampaignFormModalProps {
   smtpProfiles: any[];
   onCancel: () => void;
   onSuccess: () => void;
-  onSubmitEdit: (data: CampaignFormData) => Promise<void>;
-  onSubmitRemix: (data: CampaignFormData) => Promise<void>;
+  onSubmitEdit: (data: Campaign) => Promise<void>;
+  onSubmitRemix: (data: Campaign) => Promise<void>;
 }
 
 export function CampaignFormModal({
@@ -32,6 +34,9 @@ export function CampaignFormModal({
   onSubmitEdit,
   onSubmitRemix,
 }: CampaignFormModalProps) {
+
+    const { t: tCommon } = useTranslation('common');
+
   if (!isOpen) return null;
 
   return (
@@ -42,8 +47,8 @@ export function CampaignFormModal({
         </CardTitle>
         <CardDescription className="text-gray-500 dark:text-gray-400">
           {mode === 'edit'
-            ? 'Modifiez les paramètres de la campagne et enregistrez vos changements.'
-            : 'Copiez cette campagne pour la personnaliser puis la relancer.'}
+            ? tCommon('admin.campaigns.form_edit_title')
+            : tCommon('admin.campaigns.form_copy_title')}
         </CardDescription>
       </CardHeader>
       <CardContent>
@@ -57,7 +62,7 @@ export function CampaignFormModal({
           submitLabel={mode === 'edit' ? 'Enregistrer les modifications' : 'Créer le remix'}
           onCreated={onSuccess}
           onCancel={onCancel}
-          onSubmitAction={async (data: CampaignFormData) => {
+          onSubmitAction={async (data: Campaign) => {
             if (mode === 'edit') {
               await onSubmitEdit(data);
             } else {

@@ -13,6 +13,7 @@ import { CreateAmbassadorDialog } from './create-ambassador-dialog';
 import { EditAmbassadorDialog } from './edit-ambassador-dialog';
 import { QRCodeDialog } from './qrcode-dialog';
 import { AmbassadorStatsDialog } from './stats-dialog';
+import { useTranslation } from 'react-i18next';
 
 export const AmbassadorsPage = () => {
   const [dialogOpen, setDialogOpen] = useState(false);
@@ -21,6 +22,7 @@ export const AmbassadorsPage = () => {
   const [qrDialogOpen, setQrDialogOpen] = useState(false);
   const [statsDialogOpen, setStatsDialogOpen] = useState(false);
   const [selectedAmbassadorId, setSelectedAmbassadorId] = useState<string | null>(null);
+const { t: tCommon } = useTranslation('common');
 
   const {
     ambassadors,
@@ -71,7 +73,7 @@ export const AmbassadorsPage = () => {
               className="bg-gray-200 hover:bg-gray-300 dark:bg-slate-600 dark:hover:bg-slate-700 ml-2 text-gray-900 dark:text-white   cursor-pointer transition-all duration-300"
             >
               <Plus className="w-4 h-4 mr-2" />
-              Nouvel ambassadeur
+              {tCommon('admin.ambassadors.new_ambassador')}
             </Button>
           </div>
         </div>
@@ -81,25 +83,25 @@ export const AmbassadorsPage = () => {
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
           <Card className="rounded-sm hover:bg-gray-100 dark:hover:bg-[#1a1f36] cursor-pointer transition-colors duration-200 border border-gray-200 dark:border-white/5 bg-white dark:bg-[#0c1023] p-4">
             <div className="p-4">
-              <p className="text-gray-500 dark:text-gray-400 text-sm">Total ambassadeurs</p>
+              <p className="text-gray-500 dark:text-gray-400 text-sm">{tCommon('admin.ambassadors.total_ambassadors')}</p>
               <p className="text-2xl font-bold text-gray-900 dark:text-white">{ambassadors.length}</p>
             </div>
           </Card>
           <Card className="rounded-sm hover:bg-gray-100 dark:hover:bg-[#1a1f36] cursor-pointer transition-colors duration-200 border border-gray-200 dark:border-white/5 bg-white dark:bg-[#0c1023] p-4">
             <div className="p-4">
-              <p className="text-gray-500 dark:text-gray-400 text-sm">Ambassadeurs actifs</p>
+              <p className="text-gray-500 dark:text-gray-400 text-sm">{tCommon('admin.ambassadors.active_ambassadors')}</p>
               <p className="text-2xl font-bold text-gray-900 dark:text-white">{activeAmbassadors}</p>
             </div>
           </Card>
           <Card className="rounded-sm hover:bg-gray-100 dark:hover:bg-[#1a1f36] cursor-pointer transition-colors duration-200 border border-gray-200 dark:border-white/5 bg-white dark:bg-[#0c1023] p-4">
             <div className="p-4">
-              <p className="text-gray-500 dark:text-gray-400 text-sm">Total parrainages</p>
+              <p className="text-gray-500 dark:text-gray-400 text-sm">{tCommon('admin.ambassadors.total_referrals')}</p>
               <p className="text-2xl font-bold text-gray-900 dark:text-white">{totalReferrals}</p>
             </div>
           </Card>
           <Card className="rounded-sm hover:bg-gray-100 dark:hover:bg-[#1a1f36] cursor-pointer transition-colors duration-200 border border-gray-200 dark:border-white/5 bg-white dark:bg-[#0c1023] p-4">
             <div className="p-4">
-              <p className="text-gray-500 dark:text-gray-400 text-sm">Parrainages réussis</p>
+              <p className="text-gray-500 dark:text-gray-400 text-sm">{tCommon('admin.ambassadors.referrals_count')}</p>
               <p className="text-2xl font-bold text-gray-900 dark:text-white">{totalSuccessful}</p>
             </div>
           </Card>
@@ -119,11 +121,11 @@ export const AmbassadorsPage = () => {
                 className="text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white"
               >
                 <Filter className="w-4 h-4 mr-2" />
-                Réinitialiser les filtres
+                {tCommon('admin.ambassadors.reset_filters')}
               </Button>
             )}
             <p className="text-sm text-gray-500 dark:text-gray-400">
-              {filteredAmbassadors.length} ambassadeur(s) trouvé(s)
+              {tCommon('admin.ambassadors.ambassadors_found', { count: filteredAmbassadors.length })}
             </p>
           </div>
           <div className="flex items-center gap-2 bg-gray-100 dark:bg-gray-800/30 rounded-lg p-1">
@@ -156,9 +158,9 @@ export const AmbassadorsPage = () => {
           <Card className="bg-white dark:bg-gray-800/30 border-gray-200 dark:border-gray-700/50">
             <div className="p-12 text-center">
               <UserCheckIcon className="w-12 h-12 text-gray-400 dark:text-gray-600 mx-auto mb-4" />
-              <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-2">Aucun ambassadeur</h3>
+              <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-2">{tCommon('admin.ambassadors.no_ambassadors')}</h3>
               <p className="text-gray-500 dark:text-gray-400">
-                {hasFilters ? "Aucun ambassadeur ne correspond aux filtres" : "Commencez par créer votre premier ambassadeur"}
+                {hasFilters ? tCommon('admin.ambassadors.no_match_filters') : tCommon('admin.ambassadors.create_first_ambassador')}
               </p>
               {!hasFilters && (
                 <Button
@@ -167,7 +169,7 @@ export const AmbassadorsPage = () => {
                   className="mt-4"
                 >
                   <Plus className="w-4 h-4 mr-2" />
-                  Créer un ambassadeur
+                  {tCommon('admin.ambassadors.create_ambassador')}
                 </Button>
               )}
             </div>

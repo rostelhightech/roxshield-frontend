@@ -1,7 +1,7 @@
 // store/organization.store.ts (mis à jour)
 import { create } from 'zustand';
 import { apiService } from '@/app/services/api.service';
-import { Plan } from './plan.store';
+import {type Plan } from './plan.store';
 
 export interface Organization {
   id: string;
@@ -12,6 +12,7 @@ export interface Organization {
   type: 'enterprise' | 'campus';
   planId: string;
   plan?: Plan;
+  lang: string;
   isActive: boolean;
   currentEmployees: number;
   totalFormations: number;
@@ -42,7 +43,7 @@ interface OrganizationState {
   
   fetchAll: () => Promise<void>;
   fetchById: (id: string) => Promise<void>;
-  createOrganization: (data: any) => Promise<void>;
+  createOrganization: (data: Record<string, unknown>) => Promise<void>;
   updateOrganization: (id: string, data: Partial<Organization>) => Promise<void>;
   deleteOrganization: (id: string) => Promise<void>;
   setFilters: (filters: Partial<OrganizationFilters>) => void;
@@ -74,7 +75,7 @@ export const useOrganizationStore = create<OrganizationState>((set, get) => ({
       const organizations = response.data as Organization[];
       set({ organizations, isLoading: false });
       get().applyFilters();
-    } catch (error) {
+    } catch {
       set({ error: 'Erreur lors du chargement', isLoading: false });
     }
   },
@@ -84,7 +85,7 @@ export const useOrganizationStore = create<OrganizationState>((set, get) => ({
     try {
       const response = await apiService.get(`/organizations/${id}`);
       set({ currentOrganization: response.data as Organization, isLoading: false });
-    } catch (error) {
+    } catch {
       set({ error: 'Erreur lors du chargement', isLoading: false });
     }
   },
@@ -99,6 +100,7 @@ export const useOrganizationStore = create<OrganizationState>((set, get) => ({
         isLoading: false 
       }));
       await get().fetchAll();
+      await get().fetchById(newOrg.id);
     } catch (error) {
       set({ error: 'Erreur lors de la création', isLoading: false });
       throw error;
@@ -115,6 +117,7 @@ export const useOrganizationStore = create<OrganizationState>((set, get) => ({
         isLoading: false
       }));
       await get().fetchAll();
+      await get().fetchById(id);
     } catch (error) {
       set({ error: 'Erreur lors de la mise à jour', isLoading: false });
       throw error;
@@ -130,7 +133,7 @@ export const useOrganizationStore = create<OrganizationState>((set, get) => ({
         isLoading: false
       }));
       await get().fetchAll();
-    } catch (error) {
+    } catch {
       set({ error: 'Erreur lors de la suppression', isLoading: false });
     }
   },
@@ -180,16 +183,16 @@ export const useOrganizationStore = create<OrganizationState>((set, get) => ({
 
     // Tri
     filtered.sort((a, b) => {
-      let aVal: any = a[filters.sortBy as keyof Organization];
-      let bVal: any = b[filters.sortBy as keyof Organization];
+      let aVal: unknown = a[filters.sortBy as keyof Organization];
+      let bVal: unknown = b[filters.sortBy as keyof Organization];
       
       if (filters.sortBy === 'planName' && a.plan && b.plan) {
         aVal = a.plan.label;
         bVal = b.plan.label;
       }
       
-      if (aVal < bVal) return filters.sortOrder === 'asc' ? -1 : 1;
-      if (aVal > bVal) return filters.sortOrder === 'asc' ? 1 : -1;
+         if ((aVal && bVal) && (aVal ) < bVal) return filters.sortOrder === 'asc' ? -1 : 1;
+      if ((aVal && bVal) && (aVal) > bVal) return filters.sortOrder === 'asc' ? 1 : -1;
       return 0;
     });
 

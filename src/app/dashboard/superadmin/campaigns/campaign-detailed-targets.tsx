@@ -6,6 +6,7 @@ import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/com
 import { DetailedTargetAnalysis } from '@/store/campaign.store';
 import { format } from 'date-fns';
 import { fr } from 'date-fns/locale';
+import { useTranslation } from 'react-i18next';
 
 interface CampaignDetailedTargetsProps {
   detailedTargetAnalysis: DetailedTargetAnalysis[];
@@ -21,13 +22,14 @@ const getDeviceIcon = (device: string | null) => {
 export function CampaignDetailedTargets({ detailedTargetAnalysis }: CampaignDetailedTargetsProps) {
   // Trier par nombre total d'événements (du plus actif au moins actif)
   const sortedTargets = [...detailedTargetAnalysis].sort((a, b) => b.totalEvents - a.totalEvents);
+const { t: tCommon } = useTranslation('common');
 
   return (
 <Card className="rounded-sm border border-gray-200 dark:border-white/10 bg-white dark:bg-[#0c1023]/90">
       <CardHeader>
-        <CardTitle className="text-gray-900 dark:text-white">Analyse détaillée des cibles</CardTitle>
+        <CardTitle className="text-gray-900 dark:text-white">{tCommon('admin.campaigns.targets_title')}</CardTitle>
         <CardDescription className="text-gray-500 dark:text-gray-400">
-          Interactions complètes pour chaque destinataire
+          {tCommon('admin.campaigns.targets_desc')}
         </CardDescription>
       </CardHeader>
       <CardContent>
@@ -36,9 +38,9 @@ export function CampaignDetailedTargets({ detailedTargetAnalysis }: CampaignDeta
             <thead>
               <tr className="border-b border-gray-200 dark:border-slate-700">
                 <th className="text-left py-3 px-4 text-sm font-medium text-gray-600 dark:text-slate-300">Cible</th>
-                <th className="text-center py-3 px-4 text-sm font-medium text-gray-600 dark:text-slate-300">Envoyé</th>
+                <th className="text-center py-3 px-4 text-sm font-medium text-gray-600 dark:text-slate-300">{tCommon('admin.campaigns.targets_sent')}</th>
                 <th className="text-center py-3 px-4 text-sm font-medium text-gray-600 dark:text-slate-300">Ouvert</th>
-                <th className="text-center py-3 px-4 text-sm font-medium text-gray-600 dark:text-slate-300">Cliqué</th>
+                <th className="text-center py-3 px-4 text-sm font-medium text-gray-600 dark:text-slate-300">{tCommon('admin.campaigns.targets_clicked')}</th>
                 <th className="text-center py-3 px-4 text-sm font-medium text-gray-600 dark:text-slate-300">Temps ouverture</th>
                 <th className="text-center py-3 px-4 text-sm font-medium text-gray-600 dark:text-slate-300">Temps clic</th>
                 <th className="text-center py-3 px-4 text-sm font-medium text-gray-600 dark:text-slate-300">Appareil</th>

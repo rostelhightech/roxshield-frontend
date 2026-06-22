@@ -1,72 +1,59 @@
-// hooks/useLogin.ts
+// hooks/use-login.ts
 import { useState } from 'react';
-import { useTranslation } from "@/lib/i18n";
 import { apiService } from '@/app/services/api.service';
 import { useAuthStore } from '@/store/auth.store';
-import toast from 'react-hot-toast';
 import { useRouter } from '@tanstack/react-router';
+import { User } from '@/store/user.store';
 
+interface TwoFaRequired {
+  requires2FA: true;
+  data: { tempToken: string; methods: string[]; email: string };
+}
 
-
-interface LoginResponse {
-  success: boolean;
-  message: string;
-  data?: {
-    user: {
-      id: string;
-      email: string;
-      name: string;
-      role: string;
-    };
-    tokens: {
-      accessToken: string;
-      refreshToken: string;
-      expiresIn: string;
-    };
+interface LoginSuccess {
+  requires2FA?: false;
+  data: {
+    user: User;
+    tokens: { accessToken: string; refreshToken: string; expiresIn: string };
   };
 }
 
-export const useLogin = () => {
-  const { t } = useTranslation();
-  const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const router = useRouter();
+export type LoginResult = TwoFaRequired | LoginSuccess | null;
 
+export const useLogin = () => {
+  const [isLoading, setIsLoading] = useState(false);
+  const router = useRouter();
   const setAuth = useAuthStore((state) => state.setAuth);
 
-  const login = async (email: string, password: string): Promise<LoginResponse | null> => {
+  const login = async (email: string, password: string): Promise<LoginResult> => {
     setIsLoading(true);
-    setError(null);
-
     try {
-      const response = await apiService.post<LoginResponse>("/auth/login", { email, password });
-      
-      
-      if (response.success && response.data) {
-        setAuth(
-          response.data.user,
-          response.data.tokens.accessToken,
-          response.data.tokens.refreshToken
-        );
+      const response = await apiService.post('/auth/login', { email, password });
 
-        router.navigate({ to: "/dashboard" });
-        
-        return response;
+      // Cas 2FA requise
+      if (response.requires2FA) {
+        return { requires2FA: true, data: response.data };
+      }
+
+      // Connexion directe
+      if (response.success && response.data) {
+        setAuth(response.data.user, response.data.tokens.accessToken, response.data.tokens.refreshToken);
+        router.navigate({ to: '/dashboard' });
+        return { data: response.data };
       }
       return null;
     } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : "An unknown error occurred";
-      toast.error("Identifiants invalides")
-      setError(errorMessage);
-      return null;
+      throw err;
     } finally {
       setIsLoading(false);
     }
   };
 
-  return {
-    login,
-    isLoading,
-    error,
+  /** Appelé après vérification 2FA réussie */
+  const finalizeLogin = (userData: User, accessToken: string, refreshToken: string) => {
+    setAuth(userData , accessToken, refreshToken);
+    router.navigate({ to: '/dashboard' });
   };
+
+  return { login, finalizeLogin, isLoading };
 };

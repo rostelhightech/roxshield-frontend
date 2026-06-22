@@ -3,13 +3,14 @@ import { useEffect } from "react";
 import { useDashboardStore } from "@/store/dashboard.store";
 import { CheckCircle2, UserPlus, Activity } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { useTranslation } from "react-i18next";
 
 export function RecentActivity() {
   const { adminRecentActivity, fetchAdminRecentActivity, isLoading } = useDashboardStore();
-
+const { t: tCommon } = useTranslation('common');
   useEffect(() => {
     fetchAdminRecentActivity();
-  }, [fetchAdminRecentActivity]);
+  }, []);
 
   const getActivityIcon = (type: string) => {
     switch (type) {
@@ -41,8 +42,8 @@ export function RecentActivity() {
       <Card className="rounded-sm border border-gray-200 dark:border-white/5 bg-white dark:bg-[#0c1023] shadow-sm dark:shadow-xl">
         <CardHeader className="pb-3">
           <div className="flex items-center justify-between">
-            <CardTitle className="text-gray-900 dark:text-white">Activité récente</CardTitle>
-            <span className="text-xs text-gray-500 dark:text-gray-400">10 éléments</span>
+            <CardTitle className="text-gray-900 dark:text-white">{tCommon('admin.page_overview.recent_activity_title')}</CardTitle>
+            <span className="text-xs text-gray-500 dark:text-gray-400">{tCommon('admin.page_overview.recent_activity_count')}</span>
           </div>
         </CardHeader>
         <CardContent>
@@ -66,15 +67,15 @@ export function RecentActivity() {
     <Card className="rounded-sm border border-gray-200 dark:border-white/5 bg-white dark:bg-[#0c1023] shadow-sm dark:shadow-xl">
       <CardHeader className="pb-3">
         <div className="flex items-center justify-between">
-          <CardTitle className="text-gray-900 dark:text-white">Activité récente</CardTitle>
-          <span className="text-xs text-gray-500 dark:text-gray-400">10 éléments</span>
+          <CardTitle className="text-gray-900 dark:text-white">{tCommon('admin.page_overview.recent_activity_title')}</CardTitle>
+          <span className="text-xs text-gray-500 dark:text-gray-400">{tCommon('admin.page_overview.recent_activity_count')}</span>
         </div>
       </CardHeader>
       <CardContent>
         {!adminRecentActivity || adminRecentActivity.length === 0 ? (
           <div className="py-8 text-center text-gray-500 dark:text-gray-400">
             <Activity className="w-12 h-12 mx-auto mb-2 opacity-50" />
-            <p className="text-sm">Aucune activité récente</p>
+            <p className="text-sm">{tCommon('admin.page_overview.recent_activity_empty')}</p>
           </div>
         ) : (
           <div className="space-y-4">

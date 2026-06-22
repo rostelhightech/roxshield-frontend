@@ -5,12 +5,14 @@ import { UserX, Mail, User, Users } from 'lucide-react';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { CampaignTargetDetail } from '@/store/campaign.store';
+import { useTranslation } from 'react-i18next';
 
 interface CampaignNoInteractionTargetsProps {
   targetsWithoutInteraction: CampaignTargetDetail[];
 }
 
 export function CampaignNoInteractionTargets({ targetsWithoutInteraction }: CampaignNoInteractionTargetsProps) {
+  const { t: tCommon } = useTranslation('common');
   if (targetsWithoutInteraction.length === 0) {
     return (
       <Card className="rounded-sm border border-green-300 dark:border-green-500/30 bg-green-50 dark:bg-green-900/20">
@@ -21,10 +23,10 @@ export function CampaignNoInteractionTargets({ targetsWithoutInteraction }: Camp
             </div>
           </div>
           <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2">
-            Excellent engagement ! 🎉
+            {tCommon('admin.campaigns.no_interaction_title')}
           </h3>
           <p className="text-gray-600 dark:text-slate-300">
-            Toutes les cibles ayant reçu l'email ont interagi avec la campagne.
+            {tCommon('admin.campaigns.no_interaction_all_engaged')}
           </p>
         </CardContent>
       </Card>
@@ -38,17 +40,17 @@ export function CampaignNoInteractionTargets({ targetsWithoutInteraction }: Camp
           <div>
             <CardTitle className="text-gray-900 dark:text-white flex items-center gap-2">
               <UserX className="w-5 h-5 text-orange-600 dark:text-orange-400" />
-              Cibles sans interaction
+              {tCommon('admin.campaigns.no_interaction_targets')}
             </CardTitle>
             <CardDescription className="mt-1 text-gray-500 dark:text-gray-400">
-              {targetsWithoutInteraction.length} destinataire{targetsWithoutInteraction.length > 1 ? 's' : ''} n'a{targetsWithoutInteraction.length > 1 ? 'yant' : ''} pas encore ouvert l'email
+              {tCommon('admin.campaigns.no_interaction_desc', { count: targetsWithoutInteraction.length })}
             </CardDescription>
           </div>
           <div className="text-right">
             <div className="text-3xl font-bold text-orange-600 dark:text-orange-400">
               {targetsWithoutInteraction.length}
             </div>
-            <p className="text-xs text-gray-500 dark:text-slate-500">sans réponse</p>
+            <p className="text-xs text-gray-500 dark:text-slate-500">{tCommon('admin.campaigns.no_response')}</p>
           </div>
         </div>
       </CardHeader>
@@ -85,7 +87,7 @@ export function CampaignNoInteractionTargets({ targetsWithoutInteraction }: Camp
                     )}
                     {target.group && (
                       <p className="text-xs text-purple-600 dark:text-purple-400 mt-1">
-                        Groupe: {target.group.name}
+                        {tCommon('admin.campaigns.group_label')} {target.group.name}
                       </p>
                     )}
                   </div>
@@ -93,7 +95,7 @@ export function CampaignNoInteractionTargets({ targetsWithoutInteraction }: Camp
                 <div className="text-right">
                   <span className="inline-flex items-center gap-1 text-xs px-2 py-1 rounded-full bg-orange-100 dark:bg-orange-500/20 text-orange-700 dark:text-orange-400">
                     <UserX className="w-3 h-3" />
-                    Aucune action
+                    {tCommon('admin.campaigns.no_action')}
                   </span>
                 </div>
               </div>
@@ -106,7 +108,7 @@ export function CampaignNoInteractionTargets({ targetsWithoutInteraction }: Camp
             className="w-full bg-linear-to-r from-orange-600 to-orange-500 hover:from-orange-500 hover:to-orange-400 text-white"
           >
             <Mail className="w-4 h-4 mr-2" />
-            Relancer ces cibles
+            {tCommon('admin.campaigns.retarget')}
           </Button>
         </div>
       </CardContent>

@@ -7,9 +7,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useNavigate, useSearch } from '@tanstack/react-router';
 import { DashboardTopbar } from '@/components/layout/topbar';
 import { useAuthStore } from '@/store/auth.store';
-import { useOrganizationStore } from '@/store/organization.store';
 import { useFormationStore } from '@/store/formation.store';
-import { toast } from 'sonner';
 import { Skeleton } from '@/components/ui/skeleton';
 import type { FormationData } from '@/types/formation.types';
 
@@ -19,8 +17,11 @@ import {
   ModulesStep,
   EvaluationStep
 } from './create-formation';
+import toast from 'react-hot-toast';
+import { useTranslation } from 'react-i18next';
 
 export function EditFormationPage() {
+  const { t: tCommon } = useTranslation('common');
   const navigate = useNavigate();
   const searchParams = useSearch({ from: '/_authenticated/dashboard/formations/formation-edit' });
   const formationId = (searchParams as any)?.id as string;
@@ -58,6 +59,7 @@ export function EditFormationPage() {
           ...m,
           chapters: m.chapters || []
         })) || [],
+        //@ts-expect-error 
         finalEvaluation: selectedFormation.finalEvaluation ? {
           title: selectedFormation.finalEvaluation.title,
           description: selectedFormation.finalEvaluation.description || '',
@@ -146,7 +148,7 @@ export function EditFormationPage() {
   if (isLoading || !formData) {
     return (
       <>
-        <DashboardTopbar title="Chargement..." description="Chargement de la formation" />
+        <DashboardTopbar title={tCommon('admin.overview.risk_by_dept_loading')} description="Chargement de la formation" />
         <div className="min-h-screen bg-gray-50 dark:bg-[#050816] px-6">
           <Skeleton className="h-12 w-full mb-6 bg-gray-800/50" />
           <div className="space-y-6">
@@ -162,8 +164,8 @@ export function EditFormationPage() {
   return (
     <>
       <DashboardTopbar
-        title="Modifier la formation"
-        description="Modifiez la structure et le contenu de votre formation"
+        title={tCommon('admin.formations.edit_title')}
+        description={tCommon('admin.formations.edit_desc')}
       />
       <div className="min-h-screen bg-gray-50 dark:bg-[#050816] px-6 pb-12">
         {/* Header avec boutons de navigation */}
@@ -174,7 +176,7 @@ export function EditFormationPage() {
             className="text-slate-400 hover:text-gray-700"
           >
             <ArrowLeft className="w-4 h-4 mr-2" />
-            Retour aux détails
+            {tCommon('admin.formations.edit_back')}
           </Button>
           <div className="flex gap-3">
             <Button variant="outline" onClick={() => handleSave(false)} className="text-gray-600">
@@ -183,14 +185,14 @@ export function EditFormationPage() {
             </Button>
             <Button onClick={() => handleSave(true)}>
               <Save className="w-4 h-4 mr-2" />
-              Sauvegarder et publier
+              {tCommon('admin.formations.edit_save_publish')}
             </Button>
           </div>
         </div>
 
         {/* Onglets de navigation */}
         <Tabs value={currentStep} onValueChange={(value: any) => setCurrentStep(value)} className="space-y-6">
-          <TabsList className="grid w-full max-w-md mx-auto grid-cols-3 bg-slate-800/50">
+          <TabsList className="grid w-full max-w-md mx-auto grid-cols-3 bg-gray-300 dark:bg-slate-800/50">
             <TabsTrigger value="info" className="data-[state=active]:bg-orange-600 text-gray-900 dark:text-white hover:text-gray-500">
               Informations
             </TabsTrigger>
@@ -198,7 +200,7 @@ export function EditFormationPage() {
               Modules & Chapitres
             </TabsTrigger>
             <TabsTrigger value="evaluation" className="data-[state=active]:bg-orange-600 text-gray-900 dark:text-white hover:text-gray-500">
-              Évaluation finale
+              {tCommon('admin.formations.content_final_quiz')}
             </TabsTrigger>
           </TabsList>
 

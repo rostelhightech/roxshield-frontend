@@ -13,6 +13,7 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { Organization } from '@/store/organization.store';
 import { useNavigate } from '@tanstack/react-router';
+import { useTranslation } from 'react-i18next';
 
 interface OrganizationCardProps {
   organization: Organization;
@@ -21,6 +22,7 @@ interface OrganizationCardProps {
 }
 
 export const OrganizationCard = ({ organization, onEdit, onDelete }: OrganizationCardProps) => {
+  const { t: tCommon } = useTranslation('common');
   const navigate = useNavigate();
 
   const handleViewDetails = () => {
@@ -56,7 +58,7 @@ export const OrganizationCard = ({ organization, onEdit, onDelete }: Organizatio
             </div>
           </div>
           <DropdownMenu>
-            <DropdownMenuTrigger asChild>
+            <DropdownMenuTrigger >
               <Button 
                 variant="ghost" 
                 size="sm" 
@@ -69,7 +71,7 @@ export const OrganizationCard = ({ organization, onEdit, onDelete }: Organizatio
             <DropdownMenuContent align="end" className="bg-gray-800 border-gray-700">
               <DropdownMenuItem onClick={handleViewDetails}>
                 <Eye className="w-4 h-4 mr-2" />
-                Voir les détails
+                {tCommon('admin.organizations.view_details')}
               </DropdownMenuItem>
               <DropdownMenuItem 
                 onClick={(e) => {
@@ -78,7 +80,7 @@ export const OrganizationCard = ({ organization, onEdit, onDelete }: Organizatio
                 }}
               >
                 <Edit className="w-4 h-4 mr-2" />
-                Modifier
+                {tCommon('admin.ambassadors.edit')}
               </DropdownMenuItem>
               <DropdownMenuItem 
                 onClick={(e) => {
@@ -88,7 +90,7 @@ export const OrganizationCard = ({ organization, onEdit, onDelete }: Organizatio
                 className="text-red-400"
               >
                 <Trash2 className="w-4 h-4 mr-2" />
-                Supprimer
+                {tCommon('admin.ambassadors.delete')}
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
@@ -100,7 +102,7 @@ export const OrganizationCard = ({ organization, onEdit, onDelete }: Organizatio
             {organization.plan?.label || 'N/A'}
           </Badge>
           <Badge className={organization.isActive ? 'bg-green-500/20 text-green-400' : 'bg-red-500/20 text-red-400'}>
-            {organization.isActive ? 'Actif' : 'Inactif'}
+            {organization.isActive ? tCommon('common.active') : tCommon('common.inactive')}
           </Badge>
         </div>
 
@@ -117,14 +119,14 @@ export const OrganizationCard = ({ organization, onEdit, onDelete }: Organizatio
           <div className="flex items-center gap-2">
             <Users className="w-4 h-4 text-gray-400" />
             <div>
-              <p className="text-xs text-gray-400">Employés</p>
+              <p className="text-xs text-gray-400">{tCommon('admin.grc.org_employees')}</p>
               <p className="text-sm font-semibold text-gray-900 dark:text-white">{organization.currentEmployees}</p>
             </div>
           </div>
           <div className="flex items-center gap-2">
             <TrendingUp className={`w-4 h-4 ${getRiskScoreColor(organization.riskScore)}`} />
             <div>
-              <p className="text-xs text-gray-400">Score risque</p>
+              <p className="text-xs text-gray-400">{tCommon('admin.organizations.risk_score')}</p>
               <p className={`text-sm font-semibold ${getRiskScoreColor(organization.riskScore)}`}>
                 {organization.riskScore}%
               </p>

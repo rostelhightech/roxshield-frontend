@@ -10,10 +10,11 @@ import { Textarea } from '@/components/ui/textarea';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { cn } from '@/lib/utils';
+import { useTranslation } from 'react-i18next';
 
 const GOPHISH_VARS = [
   '{{.FirstName}}', '{{.LastName}}', '{{.Email}}',
-  '{{.Position}}', '{{.URL}}', '{{.From}}',
+  '{{.Position}}',
 ];
 
 const MODES = [
@@ -37,13 +38,14 @@ interface Props {
 
 export const EmailEditorWrapper = forwardRef<EmailEditorHandle | null, Props>(
   ({ defaultHtml, defaultText, showVariables = true }, ref) => {
-    const [code, setCode]           = useState(defaultHtml ?? templatesList.microsoft365);
-    const [text, setText]           = useState(defaultText ?? '');
-    const [mode, setMode]           = useState<Mode>('split');
+    const { t: tCommon } = useTranslation('common');
+    const [code, setCode] = useState(defaultHtml ?? templatesList.microsoft365);
+    const [text, setText] = useState(defaultText ?? '');
+    const [mode, setMode] = useState<Mode>('split');
     const [fullscreen, setFullscreen] = useState(false);
-    const [copied, setCopied]       = useState(false);
-    const [aiOpen, setAiOpen]       = useState(false);
-    const [aiPrompt, setAiPrompt]   = useState('');
+    const [copied, setCopied] = useState(false);
+    const [aiOpen, setAiOpen] = useState(false);
+    const [aiPrompt, setAiPrompt] = useState('');
     const [aiLoading, setAiLoading] = useState(false);
     const iframeRef = useRef<HTMLIFrameElement>(null);
 
@@ -83,7 +85,10 @@ export const EmailEditorWrapper = forwardRef<EmailEditorHandle | null, Props>(
       try {
         const res = await fetch('https://api.anthropic.com/v1/messages', {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
+          headers: { 
+            'Content-Type': 'application/json', // Correction : syntaxe correcte pour les headers
+            'x-api-key': process.env.ANTHROPIC_API_KEY || '' // Ajout de la clé API
+          },
           body: JSON.stringify({
             model: 'claude-sonnet-4-20250514',
             max_tokens: 4096,
@@ -154,7 +159,7 @@ Règles :
             onClick={() => setAiOpen(o => !o)}
           >
             <Sparkles size={12} />
-            Générer
+            {tCommon('admin.templates.generate')} {/* Correction : utilisation de t() */}
           </Button>
 
           {/* Copy */}
@@ -166,7 +171,7 @@ Règles :
             onClick={handleCopy}
           >
             {copied ? <Check size={12} className="text-green-600 dark:text-green-500" /> : <Copy size={12} />}
-            {copied ? 'Copié' : 'Copier'}
+            {copied ? tCommon('admin.templates.copied') : tCommon('admin.templates.copy')}
           </Button>
 
           {/* Fullscreen */}
@@ -187,7 +192,7 @@ Règles :
             <Sparkles size={14} className="text-violet-600 dark:text-violet-500 shrink-0" />
             <Input
               type="text"
-              placeholder="Ex: faux email Microsoft demandant de réinitialiser le mot de passe..."
+              placeholder={tCommon('admin.templates.ai_placeholder')} 
               value={aiPrompt}
               onChange={e => setAiPrompt(e.target.value)}
               onKeyDown={e => e.key === 'Enter' && handleAiGenerate()}
@@ -200,7 +205,7 @@ Règles :
               onClick={handleAiGenerate}
               disabled={aiLoading || !aiPrompt.trim()}
             >
-              {aiLoading ? 'Génération...' : 'Générer'}
+              {aiLoading ? tCommon('admin.templates.generating') : tCommon('admin.templates.generate')}
             </Button>
             <button
               type="button"
@@ -236,12 +241,12 @@ Règles :
           {mode === 'text' && (
             <div className="flex-1 flex flex-col p-4 gap-3">
               <p className="text-xs text-gray-500 dark:text-muted-foreground">
-                Version texte brut de l'email — envoyée aux clients qui ne supportent pas le HTML.
+                {tCommon('admin.templates.text_mode_desc')}
               </p>
               <Textarea
                 value={text}
                 onChange={e => setText(e.target.value)}
-                placeholder={`Bonjour {{.FirstName}},\n\nVeuillez cliquer sur le lien suivant : {{.URL}}\n\nCordialement,\n{{.From}}`}
+                placeholder={tCommon('admin.templates.text_mode_placeholder')}
                 className="flex-1 font-mono text-sm resize-none bg-white dark:bg-gray-900 border-gray-300 dark:border-gray-700"
               />
             </div>
@@ -263,13 +268,12 @@ Règles :
 
           {mode === 'split' && <div className="w-px bg-gray-200 dark:bg-border shrink-0" />}
 
-
           {/* Preview panel */}
           {(mode === 'preview' || mode === 'split') && (
             <iframe
               ref={iframeRef}
               className={cn('border-none bg-white', mode === 'split' ? 'w-1/2' : 'flex-1')}
-              title="Prévisualisation"
+              title={tCommon('admin.templates.preview')} 
               sandbox="allow-same-origin"
             />
           )}

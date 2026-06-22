@@ -37,7 +37,7 @@ const customBadgeVariants = cva(
         warning: "bg-amber-100 dark:bg-amber-500/15 text-amber-700 dark:text-amber-200 border-amber-300 dark:border-amber-500/20",
         danger: "bg-red-100 dark:bg-destructive/15 text-red-700 dark:text-destructive border-red-300 dark:border-destructive/20",
         info: "bg-sky-100 dark:bg-sky-500/15 text-sky-700 dark:text-sky-200 border-sky-300 dark:border-sky-500/20",
-        muted: "bg-gray-100 /10 text-gray-700 dark:text-gray-900 dark:text-white border-gray-300 dark:border-white/15",
+        muted: "bg-gray-100 /10 text-gray-700 dark:text-gray-900 dark:text-gray-600 border-gray-300 dark:border-white/15",
       },
     },
     defaultVariants: {

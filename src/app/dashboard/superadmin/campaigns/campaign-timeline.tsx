@@ -13,6 +13,7 @@ import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/com
 import { TimelineEvent } from '@/store/campaign.store';
 import { format } from 'date-fns';
 import { fr } from 'date-fns/locale';
+import { useTranslation } from 'react-i18next';
 
 interface CampaignTimelineProps {
   timeline: TimelineEvent[];
@@ -37,15 +38,16 @@ const colorMap: Record<string, string> = {
 };
 
 export function CampaignTimeline({ timeline }: CampaignTimelineProps) {
+  const { t: tCommon } = useTranslation('common');
   return (
     <Card className="rounded-md border border-white/10 bg-white  dark:bg-[#0c1023]/90  ">
       <CardHeader>
         <CardTitle className="text-gray-900 dark:text-white flex items-center gap-2">
           <Clock className="w-5 h-5 text-blue-400" />
-          Timeline de la campagne
+          {tCommon('admin.campaigns.timeline_title')}
         </CardTitle>
         <CardDescription>
-          Historique complet des événements
+          {tCommon('admin.campaigns.timeline_desc')}
         </CardDescription>
       </CardHeader>
       <CardContent>

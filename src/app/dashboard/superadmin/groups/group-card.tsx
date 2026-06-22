@@ -11,6 +11,7 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { Group } from '@/store/group.store';
+import { useTranslation } from 'react-i18next';
 
 interface GroupCardProps {
   group: Group;
@@ -19,6 +20,7 @@ interface GroupCardProps {
 }
 
 export const GroupCard = ({ group, onEdit, onDelete }: GroupCardProps) => {
+  const { t: tCommon } = useTranslation('common');
   return (
     <Card
       className="bg-gradient-to-br from-white to-gray-100 dark:from-gray-900/50 dark:to-gray-800/30 border-gray-200 dark:border-gray-700/50 hover:border-blue-500/30 transition-all duration-300 overflow-hidden cursor-pointer"
@@ -31,7 +33,7 @@ export const GroupCard = ({ group, onEdit, onDelete }: GroupCardProps) => {
             </div>
             <div className="min-w-0">
               <h3 className="font-semibold text-gray-900 dark:text-white truncate">{group.name}</h3>
-              <p className="text-xs text-gray-500 dark:text-gray-400 truncate">{group.organization?.name || 'Organisation inconnue'}</p>
+              <p className="text-xs text-gray-500 dark:text-gray-400 truncate">{group.organization?.name || tCommon('admin.groups.unknown_org')}</p>
             </div>
           </div>
 
@@ -50,7 +52,7 @@ export const GroupCard = ({ group, onEdit, onDelete }: GroupCardProps) => {
                 className="text-gray-700 dark:text-gray-300"
               >
                 <Edit className="w-4 h-4 mr-2" />
-                Modifier
+                {tCommon('admin.ambassadors.edit')}
               </DropdownMenuItem>
               <DropdownMenuItem
                 onClick={(event) => {
@@ -60,7 +62,7 @@ export const GroupCard = ({ group, onEdit, onDelete }: GroupCardProps) => {
                 className="text-red-600 dark:text-red-400"
               >
                 <Trash2 className="w-4 h-4 mr-2" />
-                Supprimer
+                {tCommon('admin.ambassadors.delete')}
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
@@ -69,15 +71,15 @@ export const GroupCard = ({ group, onEdit, onDelete }: GroupCardProps) => {
         <div className="flex items-center gap-2 mb-4">
           <Badge className="bg-purple-100 dark:bg-purple-500/20 text-purple-700 dark:text-purple-400 border-purple-300 dark:border-purple-500/30">
             <Building2 className="w-3 h-3 mr-1" />
-            {group.organization?.type === 'campus' ? 'Campus' : 'Entreprise'}
+            {group.organization?.type === 'campus' ? tCommon('admin.organizations.org_type_campus') : tCommon('admin.organizations.org_type_enterprise')}
           </Badge>
           <Badge className="bg-blue-100 dark:bg-blue-500/20 text-blue-700 dark:text-blue-400 border-blue-300 dark:border-blue-500/30">
-            {group.users?.length ?? 0} membre(s)
+            {tCommon('admin.groups.group_members_count', { count: group.users?.length ?? 0 })}
           </Badge>
         </div>
 
         <p className="text-sm text-gray-500 dark:text-gray-400 min-h-10">
-          {group.description || 'Aucune description renseignée'}
+          {group.description || tCommon('admin.groups.no_description')}
         </p>
       </div>
     </Card>

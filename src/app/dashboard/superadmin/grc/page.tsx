@@ -17,6 +17,7 @@ import {
 import { apiService } from '@/app/services/api.service';
 import { motion } from 'framer-motion';
 import { LineChart, Line, PieChart, Pie, Cell, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
+import { useTranslation } from 'react-i18next';
 
 interface Organization {
   id: string;
@@ -84,6 +85,7 @@ const COLORS = {
 };
 
 export default function GrcPage() {
+  const { t: tCommon } = useTranslation('common');
   const [metrics, setMetrics] = useState<RiskMetrics | null>(null);
   const [organizations, setOrganizations] = useState<Organization[]>([]);
   const [usersAtRisk, setUsersAtRisk] = useState<UserAtRisk[]>([]);
@@ -136,23 +138,23 @@ export default function GrcPage() {
   };
 
   const getRiskLabel = (score: number) => {
-    if (score >= 70) return 'Élevé';
-    if (score >= 30) return 'Moyen';
-    return 'Faible';
+    if (score >= 70) return tCommon('admin.grc.risk_high');
+    if (score >= 30) return tCommon('admin.grc.risk_medium');
+    return tCommon('admin.grc.risk_low');
   };
 
   const riskDistributionData = metrics ? [
-    { name: 'Risque élevé', value: metrics.highRiskOrgs, color: COLORS.high },
-    { name: 'Risque moyen', value: metrics.mediumRiskOrgs, color: COLORS.medium },
-    { name: 'Risque faible', value: metrics.lowRiskOrgs, color: COLORS.low },
+    { name: tCommon('admin.grc.risk_high'), value: metrics.highRiskOrgs, color: COLORS.high },
+    { name: tCommon('admin.grc.risk_medium'), value: metrics.mediumRiskOrgs, color: COLORS.medium },
+    { name: tCommon('admin.grc.risk_low'), value: metrics.lowRiskOrgs, color: COLORS.low },
   ] : [];
 
   if (isLoading) {
     return (
       <>
-        <DashboardTopbar title="GRC" description="Gouvernance, Risques et Conformité" />
+        <DashboardTopbar title="GRC" description={tCommon('admin.grc.grc_title')} />
         <div className="flex items-center justify-center h-96">
-          <p className="text-gray-500 dark:text-slate-400">Chargement des données...</p>
+          <p className="text-gray-500 dark:text-slate-400">{tCommon('admin.grc.loading')}</p>
         </div>
       </>
     );
@@ -160,9 +162,9 @@ export default function GrcPage() {
 
   return (
     <>
-      <DashboardTopbar title="GRC" description="Gouvernance, Risques et Conformité" />
+      <DashboardTopbar title="GRC" description={tCommon('admin.grc.grc_title')} />
       
-      <div className="mx-auto px-4 py-6">
+      <div className="mx-auto px-2 md:px-4 py-6">
         {/* KPIs globaux */}
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4 mb-6">
           <motion.div
@@ -175,9 +177,9 @@ export default function GrcPage() {
                 <Building2 className="h-6 w-6 text-blue-600 dark:text-blue-400" />
               </div>
               <div>
-                <p className="text-sm text-gray-500 dark:text-zinc-400">Organisations</p>
+                <p className="text-sm text-gray-500 dark:text-zinc-400">{tCommon('nav.topbar.organizations_title')}</p>
                 <h2 className="text-2xl font-bold text-gray-900 dark:text-white">{metrics?.totalOrganizations || 0}</h2>
-                <p className="text-xs text-gray-400 dark:text-zinc-500">Sous surveillance</p>
+                <p className="text-xs text-gray-400 dark:text-zinc-500">{tCommon('admin.grc.under_monitoring')}</p>
               </div>
             </div>
           </motion.div>
@@ -196,7 +198,7 @@ export default function GrcPage() {
                 <Shield className="h-6 w-6" style={{ color: getRiskColor(metrics?.averageRiskScore || 0) }} />
               </div>
               <div>
-                <p className="text-sm text-gray-500 dark:text-zinc-400">Score de risque moyen</p>
+                <p className="text-sm text-gray-500 dark:text-zinc-400">{tCommon('admin.page_overview.stats_avg_risk')}</p>
                 <h2 className="text-2xl font-bold text-gray-900 dark:text-white">{metrics?.averageRiskScore || 0}%</h2>
                 <p className="text-xs text-gray-400 dark:text-zinc-500">{getRiskLabel(metrics?.averageRiskScore || 0)}</p>
               </div>
@@ -214,9 +216,9 @@ export default function GrcPage() {
                 <AlertTriangle className="h-6 w-6 text-red-600 dark:text-red-400" />
               </div>
               <div>
-                <p className="text-sm text-gray-500 dark:text-zinc-400">Organisations à risque élevé</p>
+                <p className="text-sm text-gray-500 dark:text-zinc-400">{tCommon('admin.grc.high_risk_orgs')}</p>
                 <h2 className="text-2xl font-bold text-gray-900 dark:text-white">{metrics?.highRiskOrgs || 0}</h2>
-                <p className="text-xs text-gray-400 dark:text-zinc-500">Action requise</p>
+                <p className="text-xs text-gray-400 dark:text-zinc-500">{tCommon('admin.grc.action_required')}</p>
               </div>
             </div>
           </motion.div>
@@ -232,425 +234,427 @@ export default function GrcPage() {
                 <Target className="h-6 w-6 text-purple-600 dark:text-purple-400" />
               </div>
               <div>
-                <p className="text-sm text-gray-500 dark:text-zinc-400">Campagnes réalisées</p>
+                <p className="text-sm text-gray-500 dark:text-zinc-400">{tCommon('admin.grc.campaigns_done')}</p>
                 <h2 className="text-2xl font-bold text-gray-900 dark:text-white">{metrics?.totalCampaigns || 0}</h2>
-                <p className="text-xs text-gray-400 dark:text-zinc-500">Tests de sensibilisation</p>
+                <p className="text-xs text-gray-400 dark:text-zinc-500">{tCommon('admin.grc.awareness_tests')}</p>
               </div>
             </div>
           </motion.div>
         </div>
 
         <Tabs defaultValue="overview" className="space-y-6">
-          <TabsList className="bg-gray-100 dark:bg-slate-900/50 gap-4 border border-gray-200 dark:border-slate-700/50 p-1">
-            <TabsTrigger value="overview" className="data-[state=active]:bg-blue-600 data-[state=active]:text-white text-gray-700 dark:text-gray-100 hover:text-gray-900 dark:hover:text-gray-400">
-              <Activity className="w-4 h-4" />
-              Vue d'ensemble
-            </TabsTrigger>
-            <TabsTrigger value="organizations" className="data-[state=active]:bg-purple-600 data-[state=active]:text-white text-gray-700 dark:text-gray-100 hover:text-gray-900 dark:hover:text-gray-400">
-              <Building2 className="w-4 h-4" />
-              Organisations
-            </TabsTrigger>
-            <TabsTrigger value="users" className="data-[state=active]:bg-orange-600 data-[state=active]:text-white text-gray-700 dark:text-gray-100 hover:text-gray-900 dark:hover:text-gray-400">
-              <Users className="w-4 h-4" />
-              Utilisateurs à risque
-            </TabsTrigger>
-            <TabsTrigger value="compliance" className="data-[state=active]:bg-green-600 data-[state=active]:text-white text-gray-700 dark:text-gray-100 hover:text-gray-900 dark:hover:text-gray-400">
-              <CheckCircle className="w-4 h-4" />
-              Conformité
-            </TabsTrigger>
-          </TabsList>
+  <div className="w-full overflow-x-auto scrollbar-hide -mx-4 px-4 sm:mx-0 sm:px-0">
+    <TabsList className="flex w-max sm:w-full gap-2 sm:gap-4 bg-gray-100 dark:bg-slate-900/50 border border-gray-200 dark:border-slate-700/50 p-1">
+      <TabsTrigger value="overview" className="data-[state=active]:bg-blue-600 data-[state=active]:text-white text-gray-700 dark:text-gray-100 hover:text-gray-900 dark:hover:text-gray-400 whitespace-nowrap text-sm sm:text-base">
+        <Activity className="w-4 h-4 mr-1.5 sm:mr-2" />
+        {tCommon('admin.campaigns.tab_overview')}
+      </TabsTrigger>
+      <TabsTrigger value="organizations" className="data-[state=active]:bg-purple-600 data-[state=active]:text-white text-gray-700 dark:text-gray-100 hover:text-gray-900 dark:hover:text-gray-400 whitespace-nowrap text-sm sm:text-base">
+        <Building2 className="w-4 h-4 mr-1.5 sm:mr-2" />
+        {tCommon('nav.topbar.organizations_title')}
+      </TabsTrigger>
+      <TabsTrigger value="users" className="data-[state=active]:bg-orange-600 data-[state=active]:text-white text-gray-700 dark:text-gray-100 hover:text-gray-900 dark:hover:text-gray-400 whitespace-nowrap text-sm sm:text-base">
+        <Users className="w-4 h-4 mr-1.5 sm:mr-2" />
+        {tCommon('admin.grc.at_risk_users')}
+      </TabsTrigger>
+      <TabsTrigger value="compliance" className="data-[state=active]:bg-green-600 data-[state=active]:text-white text-gray-700 dark:text-gray-100 hover:text-gray-900 dark:hover:text-gray-400 whitespace-nowrap text-sm sm:text-base">
+        <CheckCircle className="w-4 h-4 mr-1.5 sm:mr-2" />
+        {tCommon('admin.grc.compliance')}
+      </TabsTrigger>
+    </TabsList>
+  </div>
 
-          {/* Vue d'ensemble */}
-          <TabsContent value="overview" className="space-y-6">
-            {/* Alertes à risque élevé */}
-            {alerts.length > 0 && (
-              <Card className="rounded-sm border border-red-300 dark:border-red-500/30 bg-white dark:bg-[#0c1023]/90">
-                <CardHeader>
-                  <CardTitle className="text-gray-900 dark:text-white flex items-center gap-2">
-                    <Bell className="w-5 h-5 text-red-600 dark:text-red-400" />
-                    Alertes critiques ({alerts.filter(a => a.severity === 'HIGH').length})
-                  </CardTitle>
-                  <CardDescription className="text-gray-500 dark:text-gray-400">Actions urgentes requises</CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <div className="space-y-2 max-h-[300px] overflow-y-auto">
-                    {alerts.slice(0, 10).map((alert, idx) => (
-                      <motion.div
-                        key={alert.id}
-                        initial={{ opacity: 0, x: -20 }}
-                        animate={{ opacity: 1, x: 0 }}
-                        transition={{ delay: idx * 0.05 }}
-                        className={`p-3 rounded-lg border ${
-                          alert.severity === 'HIGH' 
-                            ? 'bg-red-50 dark:bg-red-500/10 border-red-300 dark:border-red-500/30' 
-                            : 'bg-orange-50 dark:bg-orange-500/10 border-orange-300 dark:border-orange-500/30'
-                        }`}
-                      >
-                        <div className="flex items-start gap-3">
-                          <AlertTriangle 
-                            className={`w-5 h-5 mt-0.5 ${
-                              alert.severity === 'HIGH' ? 'text-red-600 dark:text-red-400' : 'text-orange-600 dark:text-orange-400'
-                            }`} 
-                          />
-                          <div className="flex-1">
-                            <p className="text-sm font-medium text-gray-900 dark:text-white">{alert.title}</p>
-                            <p className="text-xs text-gray-500 dark:text-slate-400 mt-1">{alert.message}</p>
-                          </div>
-                          <span 
-                            className={`text-xs px-2 py-1 rounded-full ${
-                              alert.severity === 'HIGH' 
-                                ? 'bg-red-100 dark:bg-red-500/20 text-red-700 dark:text-red-400' 
-                                : 'bg-orange-100 dark:bg-orange-500/20 text-orange-700 dark:text-orange-400'
-                            }`}
-                          >
-                            {alert.severity}
-                          </span>
-                        </div>
-                      </motion.div>
-                    ))}
+  {/* Vue d'ensemble */}
+  <TabsContent value="overview" className="space-y-6">
+    {/* Alertes à risque élevé */}
+    {alerts.length > 0 && (
+      <Card className="rounded-sm border border-red-300 dark:border-red-500/30 bg-white dark:bg-[#0c1023]/90">
+        <CardHeader>
+          <CardTitle className="text-gray-900 dark:text-white flex items-center gap-2">
+            <Bell className="w-5 h-5 text-red-600 dark:text-red-400" />
+            {tCommon('admin.grc.critical_alerts', { count: alerts.filter(a => a.severity === 'HIGH').length })}
+          </CardTitle>
+          <CardDescription className="text-gray-500 dark:text-gray-400">{tCommon('admin.grc.urgent_actions')}</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div className="space-y-2 max-h-[300px] overflow-y-auto">
+            {alerts.slice(0, 10).map((alert, idx) => (
+              <motion.div
+                key={alert.id}
+                initial={{ opacity: 0, x: -20 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ delay: idx * 0.05 }}
+                className={`p-3 rounded-lg border ${
+                  alert.severity === 'HIGH'
+                    ? 'bg-red-50 dark:bg-red-500/10 border-red-300 dark:border-red-500/30'
+                    : 'bg-orange-50 dark:bg-orange-500/10 border-orange-300 dark:border-orange-500/30'
+                }`}
+              >
+                <div className="flex items-start gap-3">
+                  <AlertTriangle
+                    className={`w-5 h-5 mt-0.5 shrink-0 ${
+                      alert.severity === 'HIGH' ? 'text-red-600 dark:text-red-400' : 'text-orange-600 dark:text-orange-400'
+                    }`}
+                  />
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm font-medium text-gray-900 dark:text-white break-words">{alert.title}</p>
+                    <p className="text-xs text-gray-500 dark:text-slate-400 mt-1 break-words">{alert.message}</p>
                   </div>
-                </CardContent>
-              </Card>
+                  <span
+                    className={`text-xs px-2 py-1 rounded-full shrink-0 ${
+                      alert.severity === 'HIGH'
+                        ? 'bg-red-100 dark:bg-red-500/20 text-red-700 dark:text-red-400'
+                        : 'bg-orange-100 dark:bg-orange-500/20 text-orange-700 dark:text-orange-400'
+                    }`}
+                  >
+                    {alert.severity}
+                  </span>
+                </div>
+              </motion.div>
+            ))}
+          </div>
+        </CardContent>
+      </Card>
+    )}
+
+    <div className="grid gap-6 lg:grid-cols-2">
+      {/* Tendances temporelles */}
+      {riskTrends.length > 0 && (
+        <Card className="rounded-sm border border-gray-200 dark:border-white/10 bg-white dark:bg-[#0c1023]/90 lg:col-span-2">
+          <CardHeader>
+            <CardTitle className="text-gray-900 dark:text-white">{tCommon('admin.grc.risk_evolution')}</CardTitle>
+            <CardDescription className="text-gray-500 dark:text-gray-400">{tCommon('admin.grc.trend_open_click')}</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <ResponsiveContainer width="100%" height={300}>
+              <LineChart data={riskTrends}>
+                <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb dark:stroke-#334155" />
+                <XAxis
+                  dataKey="month"
+                  stroke="#6b7280 dark:stroke-#94a3b8"
+                  tick={{ fill: '#6b7280' }}
+                />
+                <YAxis
+                  stroke="#6b7280"
+                  tick={{ fill: '#6b7280' }}
+                  label={{ value: tCommon('admin.grc.rate_label'), angle: -90, position: 'insideLeft', fill: '#6b7280' }}
+                />
+                <Tooltip
+                  contentStyle={{
+                    backgroundColor: '#ffffff',
+                    border: '1px solid #e5e7eb',
+                    borderRadius: '8px',
+                    color: '#111827',
+                  }}
+                  formatter={(value) => `${value}%`}
+                />
+                <Legend
+                  wrapperStyle={{ color: '#6b7280' }}
+                />
+                <Line
+                  type="monotone"
+                  dataKey="clickRate"
+                  stroke="#ef4444"
+                  strokeWidth={2}
+                  name={tCommon('admin.page_overview.phishing_click_rate')}
+                  dot={{ fill: '#ef4444', r: 4 }}
+                />
+                <Line
+                  type="monotone"
+                  dataKey="openRate"
+                  stroke="#3b82f6"
+                  strokeWidth={2}
+                  name={tCommon('admin.organizations.open_rate')}
+                  dot={{ fill: '#3b82f6', r: 4 }}
+                />
+              </LineChart>
+            </ResponsiveContainer>
+          </CardContent>
+        </Card>
+      )}
+
+      {/* Distribution des risques */}
+      <Card className="rounded-sm border border-gray-200 dark:border-white/10 bg-white dark:bg-[#0c1023]/90">
+        <CardHeader>
+          <CardTitle className="text-gray-900 dark:text-white">{tCommon('admin.grc.risk_distribution')}</CardTitle>
+          <CardDescription className="text-gray-500 dark:text-gray-400">{tCommon('admin.grc.risk_distribution_desc')}</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <ResponsiveContainer width="100%" height={300}>
+            <PieChart>
+              <Pie
+                data={riskDistributionData}
+                cx="50%"
+                cy="50%"
+                labelLine={false}
+                label={(entry) => `${entry.name}: ${entry.value}`}
+                outerRadius={100}
+                fill="#8884d8"
+                dataKey="value"
+              >
+                {riskDistributionData.map((entry, index) => (
+                  <Cell key={`cell-${index}`} fill={entry.color} />
+                ))}
+              </Pie>
+              <Tooltip
+                contentStyle={{
+                  backgroundColor: '#ffffff',
+                  border: '1px solid #e5e7eb',
+                  borderRadius: '8px',
+                  color: '#111827',
+                }}
+              />
+            </PieChart>
+          </ResponsiveContainer>
+        </CardContent>
+      </Card>
+
+      {/* Top organisations à risque */}
+      <Card className="rounded-sm border border-gray-200 dark:border-white/10 bg-white dark:bg-[#0c1023]/90">
+        <CardHeader>
+          <CardTitle className="text-gray-900 dark:text-white">{tCommon('admin.grc.top_risk_orgs')}</CardTitle>
+          <CardDescription className="text-gray-500 dark:text-gray-400">{tCommon('admin.grc.top_risk_orgs_desc')}</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div className="space-y-3">
+            {organizations
+              .sort((a, b) => b.riskScore - a.riskScore)
+              .slice(0, 5)
+              .map((org, index) => (
+                <motion.div
+                  key={org.id}
+                  initial={{ opacity: 0, x: -20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: index * 0.1 }}
+                  className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 p-3 rounded-lg bg-gray-50 dark:bg-slate-800/50 border border-gray-200 dark:border-slate-700/50"
+                >
+                  <div className="flex items-center gap-3 min-w-0">
+                    <div className="text-2xl font-bold text-gray-400 dark:text-slate-500 shrink-0">#{index + 1}</div>
+                    <div className="min-w-0">
+                      <p className="text-sm font-medium text-gray-900 dark:text-white truncate">{org.name}</p>
+                      <p className="text-xs text-gray-500 dark:text-slate-400 truncate">
+                        {org.currentEmployees} {tCommon('common.employes')} • {metrics?.campaignsByOrg?.[org.id] || 0} {tCommon('nav.topbar.campaigns_title')}
+                      </p>
+                    </div>
+                  </div>
+                  <div className="text-left sm:text-right pl-9 sm:pl-0 shrink-0">
+                    <div
+                      className="text-2xl font-bold"
+                      style={{ color: getRiskColor(org.riskScore) }}
+                    >
+                      {org.riskScore}%
+                    </div>
+                    <p className="text-xs text-gray-500 dark:text-slate-500">{getRiskLabel(org.riskScore)}</p>
+                  </div>
+                </motion.div>
+              ))}
+          </div>
+        </CardContent>
+      </Card>
+    </div>
+  </TabsContent>
+
+  {/* Organisations */}
+  <TabsContent value="organizations" className="space-y-6">
+    <Card className="rounded-sm border border-gray-200 dark:border-white/10 bg-white dark:bg-[#0c1023]/90">
+      <CardHeader>
+        <CardTitle className="text-gray-900 dark:text-white">{tCommon('admin.groups.all_orgs')}</CardTitle>
+        <CardDescription className="text-gray-500 dark:text-gray-400">{tCommon('admin.grc.all_orgs_desc')}</CardDescription>
+      </CardHeader>
+      <CardContent>
+        <div className="overflow-x-auto">
+          <table className="w-full">
+            <thead>
+              <tr className="border-b border-gray-200 dark:border-slate-700">
+                <th className="text-left py-3 px-4 text-sm font-medium text-gray-600 dark:text-slate-300 whitespace-nowrap">{tCommon('admin.grc.org_name')}</th>
+                <th className="text-center py-3 px-4 text-sm font-medium text-gray-600 dark:text-slate-300 whitespace-nowrap">{tCommon('admin.organizations.risk_score')}</th>
+                <th className="text-center py-3 px-4 text-sm font-medium text-gray-600 dark:text-slate-300 whitespace-nowrap">{tCommon('admin.grc.org_employees')}</th>
+                <th className="text-center py-3 px-4 text-sm font-medium text-gray-600 dark:text-slate-300 whitespace-nowrap">{tCommon('nav.topbar.campaigns_title')}</th>
+                <th className="text-center py-3 px-4 text-sm font-medium text-gray-600 dark:text-slate-300 whitespace-nowrap">{tCommon('nav.topbar.formations_title')}</th>
+              </tr>
+            </thead>
+            <tbody>
+              {organizations.map((org, index) => (
+                <motion.tr
+                  key={org.id}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: index * 0.05 }}
+                  className="border-b border-gray-100 dark:border-slate-800/50 hover:bg-gray-50 dark:hover:bg-slate-800/30 transition-colors"
+                >
+                  <td className="py-3 px-4 whitespace-nowrap">
+                    <p className="text-sm font-medium text-gray-900 dark:text-white">{org.name}</p>
+                  </td>
+                  <td className="py-3 px-4 text-center whitespace-nowrap">
+                    <div className="flex items-center justify-center gap-2">
+                      <div
+                        className="text-lg font-bold"
+                        style={{ color: getRiskColor(org.riskScore) }}
+                      >
+                        {org.riskScore}%
+                      </div>
+                      <span
+                        className="text-xs px-2 py-1 rounded-full"
+                        style={{
+                          backgroundColor: `${getRiskColor(org.riskScore)}20`,
+                          color: getRiskColor(org.riskScore)
+                        }}
+                      >
+                        {getRiskLabel(org.riskScore)}
+                      </span>
+                    </div>
+                  </td>
+                  <td className="py-3 px-4 text-center text-gray-700 dark:text-white whitespace-nowrap">{org.currentEmployees}</td>
+                  <td className="py-3 px-4 text-center text-gray-700 dark:text-white whitespace-nowrap">{metrics?.campaignsByOrg?.[org.id] || 0}</td>
+                  <td className="py-3 px-4 text-center text-gray-700 dark:text-white whitespace-nowrap">{org.totalFormations}</td>
+                </motion.tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </CardContent>
+    </Card>
+  </TabsContent>
+
+  {/* Utilisateurs à risque */}
+  <TabsContent value="users" className="space-y-6">
+    <Card className="rounded-sm border border-gray-200 dark:border-white/10 bg-white dark:bg-[#0c1023]/90">
+      <CardHeader>
+        <CardTitle className="text-gray-900 dark:text-white">{tCommon('admin.grc.at_risk_users')}</CardTitle>
+        <CardDescription className="text-gray-500 dark:text-gray-400">{tCommon('admin.grc.phishing_interactions')}</CardDescription>
+      </CardHeader>
+      <CardContent>
+        {usersAtRisk.length === 0 ? (
+          <div className="text-center py-12">
+            <CheckCircle className="w-12 h-12 text-green-600 dark:text-green-400 mx-auto mb-4" />
+            <p className="text-gray-500 dark:text-slate-400">{tCommon('admin.grc.no_at_risk_users')}</p>
+            <p className="text-xs text-gray-400 dark:text-slate-500 mt-2">
+              {tCommon('admin.grc.data_available_after_campaigns')}
+            </p>
+          </div>
+        ) : (
+          <div className="overflow-x-auto">
+            <table className="w-full">
+              <thead>
+                <tr className="border-b border-gray-200 dark:border-slate-700">
+                  <th className="text-left py-3 px-4 text-sm font-medium text-gray-600 dark:text-slate-300 whitespace-nowrap">{tCommon('admin.grc.user_name')}</th>
+                  <th className="text-center py-3 px-4 text-sm font-medium text-gray-600 dark:text-slate-300 whitespace-nowrap">{tCommon('admin.grc.position_label')}</th>
+                  <th className="text-center py-3 px-4 text-sm font-medium text-gray-600 dark:text-slate-300 whitespace-nowrap">{tCommon('admin.grc.org_name')}</th>
+                  <th className="text-center py-3 px-4 text-sm font-medium text-gray-600 dark:text-slate-300 whitespace-nowrap">{tCommon('admin.grc.clicks_label')}</th>
+                  <th className="text-center py-3 px-4 text-sm font-medium text-gray-600 dark:text-slate-300 whitespace-nowrap">{tCommon('admin.grc.opens_label')}</th>
+                  <th className="text-center py-3 px-4 text-sm font-medium text-gray-600 dark:text-slate-300 whitespace-nowrap">{tCommon('admin.grc.user_risk_level')}</th>
+                </tr>
+              </thead>
+              <tbody>
+                {usersAtRisk.map((user) => (
+                  <motion.tr
+                    key={user.id}
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    className="border-b border-gray-100 dark:border-slate-800/50 hover:bg-gray-50 dark:hover:bg-slate-800/30 transition-colors"
+                  >
+                    <td className="py-3 px-4 whitespace-nowrap">
+                      <p className="text-sm font-medium text-gray-900 dark:text-white">
+                        {user.firstName} {user.lastName}
+                      </p>
+                      <p className="text-xs text-gray-500 dark:text-slate-400">{user.email}</p>
+                    </td>
+                    <td className="py-3 px-4 text-center text-gray-600 dark:text-slate-300 text-sm whitespace-nowrap">
+                      {user.position || 'N/A'}
+                    </td>
+                    <td className="py-3 px-4 text-center text-gray-700 dark:text-white text-sm whitespace-nowrap">{user.organizationName}</td>
+                    <td className="py-3 px-4 text-center whitespace-nowrap">
+                      <span className="text-lg font-bold text-red-600 dark:text-red-400">{user.clickCount}</span>
+                    </td>
+                    <td className="py-3 px-4 text-center whitespace-nowrap">
+                      <span className="text-lg font-bold text-blue-600 dark:text-blue-400">{user.openCount}</span>
+                    </td>
+                    <td className="py-3 px-4 text-center whitespace-nowrap">
+                      <span className={`text-xs px-3 py-1.5 rounded-full font-medium ${
+                        user.riskLevel === 'HIGH' ? 'bg-red-100 dark:bg-red-500/20 text-red-700 dark:text-red-400 border border-red-300 dark:border-red-500/30' :
+                        user.riskLevel === 'MEDIUM' ? 'bg-orange-100 dark:bg-orange-500/20 text-orange-700 dark:text-orange-400 border border-orange-300 dark:border-orange-500/30' :
+                        'bg-green-100 dark:bg-green-500/20 text-green-700 dark:text-green-400 border border-green-300 dark:border-green-500/30'
+                      }`}>
+                        {user.riskLevel === 'HIGH' ? tCommon('admin.grc.risk_high') : user.riskLevel === 'MEDIUM' ? tCommon('common.moyen') : tCommon('common.faible')}
+                      </span>
+                    </td>
+                  </motion.tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
+      </CardContent>
+    </Card>
+  </TabsContent>
+
+  {/* Conformité */}
+  <TabsContent value="compliance" className="space-y-6">
+    <div className="grid gap-6 lg:grid-cols-2">
+      <Card className="rounded-sm border border-gray-200 dark:border-white/10 bg-white dark:bg-[#0c1023]/90">
+        <CardHeader>
+          <CardTitle className="text-gray-900 dark:text-white">{tCommon('admin.page_overview.stats_trainings')}</CardTitle>
+          <CardDescription className="text-gray-500 dark:text-gray-400">{tCommon('admin.grc.trainings_completed_desc')}</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div className="text-center py-12">
+            <div className="text-5xl sm:text-6xl font-bold text-blue-600 dark:text-blue-400 mb-2">
+              {metrics?.totalOrganizations ?
+                Math.round((organizations.reduce((sum, org) => sum + org.totalFormations, 0) / (metrics.totalUsers || 1)) * 100)
+                : 0}%
+            </div>
+            <p className="text-gray-500 dark:text-slate-400">{tCommon('admin.grc.avg_completion_rate')}</p>
+            <p className="text-xs text-gray-400 dark:text-slate-500 mt-2">
+              {tCommon('admin.grc.based_on_formations', { count: organizations.reduce((sum, org) => sum + org.totalFormations, 0) })}
+            </p>
+          </div>
+        </CardContent>
+      </Card>
+
+      <Card className="rounded-sm border border-gray-200 dark:border-white/10 bg-white dark:bg-[#0c1023]/90">
+        <CardHeader>
+          <CardTitle className="text-gray-900 dark:text-white">{tCommon('admin.grc.recommendations')}</CardTitle>
+          <CardDescription className="text-gray-500 dark:text-gray-400">{tCommon('admin.grc.priority_actions')}</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div className="space-y-3">
+            {metrics && metrics.highRiskOrgs > 0 && (
+              <div className="flex items-start gap-3 p-3 rounded-lg bg-red-50 dark:bg-red-500/10 border border-red-200 dark:border-red-500/20">
+                <AlertTriangle className="w-5 h-5 text-red-600 dark:text-red-400 mt-0.5 shrink-0" />
+                <div className="min-w-0">
+                  <p className="text-sm font-medium text-gray-900 dark:text-white">{tCommon('admin.grc.high_risk_orgs')}</p>
+                  <p className="text-xs text-gray-500 dark:text-slate-400 mt-1">
+                    {tCommon('admin.grc.high_risk_attention', { count: metrics.highRiskOrgs })}
+                  </p>
+                </div>
+              </div>
             )}
 
-            <div className="grid gap-6 lg:grid-cols-2">
-              {/* Tendances temporelles */}
-              {riskTrends.length > 0 && (
-                <Card className="rounded-sm border border-gray-200 dark:border-white/10 bg-white dark:bg-[#0c1023]/90 lg:col-span-2">
-                  <CardHeader>
-                    <CardTitle className="text-gray-900 dark:text-white">Évolution des risques (6 derniers mois)</CardTitle>
-                    <CardDescription className="text-gray-500 dark:text-gray-400">Tendances des taux d'ouverture et de clic</CardDescription>
-                  </CardHeader>
-                  <CardContent>
-                    <ResponsiveContainer width="100%" height={300}>
-                      <LineChart data={riskTrends}>
-                        <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb dark:stroke-#334155" />
-                        <XAxis 
-                          dataKey="month" 
-                          stroke="#6b7280 dark:stroke-#94a3b8"
-                          tick={{ fill: '#6b7280' }}
-                        />
-                        <YAxis 
-                          stroke="#6b7280"
-                          tick={{ fill: '#6b7280' }}
-                          label={{ value: 'Taux (%)', angle: -90, position: 'insideLeft', fill: '#6b7280' }}
-                        />
-                        <Tooltip
-                          contentStyle={{
-                            backgroundColor: '#ffffff',
-                            border: '1px solid #e5e7eb',
-                            borderRadius: '8px',
-                            color: '#111827',
-                          }}
-                          formatter={(value) => `${value}%`}
-                        />
-                        <Legend 
-                          wrapperStyle={{ color: '#6b7280' }}
-                        />
-                        <Line 
-                          type="monotone" 
-                          dataKey="clickRate" 
-                          stroke="#ef4444" 
-                          strokeWidth={2}
-                          name="Taux de clic"
-                          dot={{ fill: '#ef4444', r: 4 }}
-                        />
-                        <Line 
-                          type="monotone" 
-                          dataKey="openRate" 
-                          stroke="#3b82f6" 
-                          strokeWidth={2}
-                          name="Taux d'ouverture"
-                          dot={{ fill: '#3b82f6', r: 4 }}
-                        />
-                      </LineChart>
-                    </ResponsiveContainer>
-                  </CardContent>
-                </Card>
-              )}
-
-              {/* Distribution des risques */}
-              <Card className="rounded-sm border border-gray-200 dark:border-white/10 bg-white dark:bg-[#0c1023]/90">
-                <CardHeader>
-                  <CardTitle className="text-gray-900 dark:text-white">Distribution des risques</CardTitle>
-                  <CardDescription className="text-gray-500 dark:text-gray-400">Répartition des organisations par niveau de risque</CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <ResponsiveContainer width="100%" height={300}>
-                    <PieChart>
-                      <Pie
-                        data={riskDistributionData}
-                        cx="50%"
-                        cy="50%"
-                        labelLine={false}
-                        label={(entry) => `${entry.name}: ${entry.value}`}
-                        outerRadius={100}
-                        fill="#8884d8"
-                        dataKey="value"
-                      >
-                        {riskDistributionData.map((entry, index) => (
-                          <Cell key={`cell-${index}`} fill={entry.color} />
-                        ))}
-                      </Pie>
-                      <Tooltip
-                        contentStyle={{
-                          backgroundColor: '#ffffff',
-                          border: '1px solid #e5e7eb',
-                          borderRadius: '8px',
-                          color: '#111827',
-                        }}
-                      />
-                    </PieChart>
-                  </ResponsiveContainer>
-                </CardContent>
-              </Card>
-
-              {/* Top organisations à risque */}
-              <Card className="rounded-sm border border-gray-200 dark:border-white/10 bg-white dark:bg-[#0c1023]/90">
-                <CardHeader>
-                  <CardTitle className="text-gray-900 dark:text-white">Top organisations à risque</CardTitle>
-                  <CardDescription className="text-gray-500 dark:text-gray-400">Organisations avec les scores de risque les plus élevés</CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <div className="space-y-3">
-                    {organizations
-                      .sort((a, b) => b.riskScore - a.riskScore)
-                      .slice(0, 5)
-                      .map((org, index) => (
-                        <motion.div
-                          key={org.id}
-                          initial={{ opacity: 0, x: -20 }}
-                          animate={{ opacity: 1, x: 0 }}
-                          transition={{ delay: index * 0.1 }}
-                          className="flex items-center justify-between p-3 rounded-lg bg-gray-50 dark:bg-slate-800/50 border border-gray-200 dark:border-slate-700/50"
-                        >
-                          <div className="flex items-center gap-3">
-                            <div className="text-2xl font-bold text-gray-400 dark:text-slate-500">#{index + 1}</div>
-                            <div>
-                              <p className="text-sm font-medium text-gray-900 dark:text-white">{org.name}</p>
-                              <p className="text-xs text-gray-500 dark:text-slate-400">
-                                {org.currentEmployees} employés • {metrics?.campaignsByOrg?.[org.id] || 0} campagnes
-                              </p>
-                            </div>
-                          </div>
-                          <div className="text-right">
-                            <div 
-                              className="text-2xl font-bold"
-                              style={{ color: getRiskColor(org.riskScore) }}
-                            >
-                              {org.riskScore}%
-                            </div>
-                            <p className="text-xs text-gray-500 dark:text-slate-500">{getRiskLabel(org.riskScore)}</p>
-                          </div>
-                        </motion.div>
-                      ))}
-                  </div>
-                </CardContent>
-              </Card>
+            <div className="flex items-start gap-3 p-3 rounded-lg bg-blue-50 dark:bg-blue-500/10 border border-blue-200 dark:border-blue-500/20">
+              <Target className="w-5 h-5 text-blue-600 dark:text-blue-400 mt-0.5 shrink-0" />
+              <div className="min-w-0">
+                <p className="text-sm font-medium text-gray-900 dark:text-white">{tCommon('admin.grc.launch_campaigns')}</p>
+                <p className="text-xs text-gray-500 dark:text-slate-400 mt-1">
+                  {tCommon('admin.grc.launch_campaigns_desc')}
+                </p>
+              </div>
             </div>
-          </TabsContent>
 
-          {/* Organisations */}
-          <TabsContent value="organizations" className="space-y-6">
-            <Card className="rounded-sm border border-gray-200 dark:border-white/10 bg-white dark:bg-[#0c1023]/90">
-              <CardHeader>
-                <CardTitle className="text-gray-900 dark:text-white">Toutes les organisations</CardTitle>
-                <CardDescription className="text-gray-500 dark:text-gray-400">Score de risque et métriques par organisation</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="overflow-x-auto">
-                  <table className="w-full">
-                    <thead>
-                      <tr className="border-b border-gray-200 dark:border-slate-700">
-                        <th className="text-left py-3 px-4 text-sm font-medium text-gray-600 dark:text-slate-300">Organisation</th>
-                        <th className="text-center py-3 px-4 text-sm font-medium text-gray-600 dark:text-slate-300">Score de risque</th>
-                        <th className="text-center py-3 px-4 text-sm font-medium text-gray-600 dark:text-slate-300">Employés</th>
-                        <th className="text-center py-3 px-4 text-sm font-medium text-gray-600 dark:text-slate-300">Campagnes</th>
-                        <th className="text-center py-3 px-4 text-sm font-medium text-gray-600 dark:text-slate-300">Formations</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {organizations.map((org, index) => (
-                        <motion.tr
-                          key={org.id}
-                          initial={{ opacity: 0, y: 20 }}
-                          animate={{ opacity: 1, y: 0 }}
-                          transition={{ delay: index * 0.05 }}
-                          className="border-b border-gray-100 dark:border-slate-800/50 hover:bg-gray-50 dark:hover:bg-slate-800/30 transition-colors"
-                        >
-                          <td className="py-3 px-4">
-                            <p className="text-sm font-medium text-gray-900 dark:text-white">{org.name}</p>
-                           </td>
-                          <td className="py-3 px-4 text-center">
-                            <div className="flex items-center justify-center gap-2">
-                              <div 
-                                className="text-lg font-bold"
-                                style={{ color: getRiskColor(org.riskScore) }}
-                              >
-                                {org.riskScore}%
-                              </div>
-                              <span 
-                                className="text-xs px-2 py-1 rounded-full"
-                                style={{ 
-                                  backgroundColor: `${getRiskColor(org.riskScore)}20`,
-                                  color: getRiskColor(org.riskScore)
-                                }}
-                              >
-                                {getRiskLabel(org.riskScore)}
-                              </span>
-                            </div>
-                           </td>
-                          <td className="py-3 px-4 text-center text-gray-700 dark:text-white">{org.currentEmployees}</td>
-                          <td className="py-3 px-4 text-center text-gray-700 dark:text-white">{metrics?.campaignsByOrg?.[org.id] || 0}</td>
-                          <td className="py-3 px-4 text-center text-gray-700 dark:text-white">{org.totalFormations}</td>
-                        </motion.tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
-              </CardContent>
-            </Card>
-          </TabsContent>
-
-          {/* Utilisateurs à risque */}
-          <TabsContent value="users" className="space-y-6">
-            <Card className="rounded-sm border border-gray-200 dark:border-white/10 bg-white dark:bg-[#0c1023]/90">
-              <CardHeader>
-                <CardTitle className="text-gray-900 dark:text-white">Utilisateurs à risque</CardTitle>
-                <CardDescription className="text-gray-500 dark:text-gray-400">Utilisateurs ayant interagi avec les campagnes de phishing</CardDescription>
-              </CardHeader>
-              <CardContent>
-                {usersAtRisk.length === 0 ? (
-                  <div className="text-center py-12">
-                    <CheckCircle className="w-12 h-12 text-green-600 dark:text-green-400 mx-auto mb-4" />
-                    <p className="text-gray-500 dark:text-slate-400">Aucun utilisateur à risque identifié pour le moment.</p>
-                    <p className="text-xs text-gray-400 dark:text-slate-500 mt-2">
-                      Les données seront disponibles après l'exécution de campagnes de sensibilisation.
-                    </p>
-                  </div>
-                ) : (
-                  <div className="overflow-x-auto">
-                    <table className="w-full">
-                      <thead>
-                        <tr className="border-b border-gray-200 dark:border-slate-700">
-                          <th className="text-left py-3 px-4 text-sm font-medium text-gray-600 dark:text-slate-300">Utilisateur</th>
-                          <th className="text-center py-3 px-4 text-sm font-medium text-gray-600 dark:text-slate-300">Poste</th>
-                          <th className="text-center py-3 px-4 text-sm font-medium text-gray-600 dark:text-slate-300">Organisation</th>
-                          <th className="text-center py-3 px-4 text-sm font-medium text-gray-600 dark:text-slate-300">Clics</th>
-                          <th className="text-center py-3 px-4 text-sm font-medium text-gray-600 dark:text-slate-300">Ouvertures</th>
-                          <th className="text-center py-3 px-4 text-sm font-medium text-gray-600 dark:text-slate-300">Niveau de risque</th>
-                         </tr>
-                      </thead>
-                      <tbody>
-                        {usersAtRisk.map((user) => (
-                          <motion.tr 
-                            key={user.id} 
-                            initial={{ opacity: 0, y: 20 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            className="border-b border-gray-100 dark:border-slate-800/50 hover:bg-gray-50 dark:hover:bg-slate-800/30 transition-colors"
-                          >
-                            <td className="py-3 px-4">
-                              <p className="text-sm font-medium text-gray-900 dark:text-white">
-                                {user.firstName} {user.lastName}
-                              </p>
-                              <p className="text-xs text-gray-500 dark:text-slate-400">{user.email}</p>
-                             </td>
-                            <td className="py-3 px-4 text-center text-gray-600 dark:text-slate-300 text-sm">
-                              {user.position || 'N/A'}
-                             </td>
-                            <td className="py-3 px-4 text-center text-gray-700 dark:text-white text-sm">{user.organizationName}</td>
-                            <td className="py-3 px-4 text-center">
-                              <span className="text-lg font-bold text-red-600 dark:text-red-400">{user.clickCount}</span>
-                             </td>
-                            <td className="py-3 px-4 text-center">
-                              <span className="text-lg font-bold text-blue-600 dark:text-blue-400">{user.openCount}</span>
-                             </td>
-                            <td className="py-3 px-4 text-center">
-                              <span className={`text-xs px-3 py-1.5 rounded-full font-medium ${
-                                user.riskLevel === 'HIGH' ? 'bg-red-100 dark:bg-red-500/20 text-red-700 dark:text-red-400 border border-red-300 dark:border-red-500/30' :
-                                user.riskLevel === 'MEDIUM' ? 'bg-orange-100 dark:bg-orange-500/20 text-orange-700 dark:text-orange-400 border border-orange-300 dark:border-orange-500/30' :
-                                'bg-green-100 dark:bg-green-500/20 text-green-700 dark:text-green-400 border border-green-300 dark:border-green-500/30'
-                              }`}>
-                                {user.riskLevel === 'HIGH' ? 'Élevé' : user.riskLevel === 'MEDIUM' ? 'Moyen' : 'Faible'}
-                              </span>
-                             </td>
-                          </motion.tr>
-                        ))}
-                      </tbody>
-                    </table>
-                  </div>
-                )}
-              </CardContent>
-            </Card>
-          </TabsContent>
-
-          {/* Conformité */}
-          <TabsContent value="compliance" className="space-y-6">
-            <div className="grid gap-6 lg:grid-cols-2">
-              <Card className="rounded-sm border border-gray-200 dark:border-white/10 bg-white dark:bg-[#0c1023]/90">
-                <CardHeader>
-                  <CardTitle className="text-gray-900 dark:text-white">Formations complétées</CardTitle>
-                  <CardDescription className="text-gray-500 dark:text-gray-400">Taux de complétion des formations de sensibilisation</CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <div className="text-center py-12">
-                    <div className="text-6xl font-bold text-blue-600 dark:text-blue-400 mb-2">
-                      {metrics?.totalOrganizations ? 
-                        Math.round((organizations.reduce((sum, org) => sum + org.totalFormations, 0) / (metrics.totalUsers || 1)) * 100) 
-                        : 0}%
-                    </div>
-                    <p className="text-gray-500 dark:text-slate-400">Taux de complétion moyen</p>
-                    <p className="text-xs text-gray-400 dark:text-slate-500 mt-2">
-                      Basé sur {organizations.reduce((sum, org) => sum + org.totalFormations, 0)} formations complétées
-                    </p>
-                  </div>
-                </CardContent>
-              </Card>
-
-              <Card className="rounded-sm border border-gray-200 dark:border-white/10 bg-white dark:bg-[#0c1023]/90">
-                <CardHeader>
-                  <CardTitle className="text-gray-900 dark:text-white">Recommandations</CardTitle>
-                  <CardDescription className="text-gray-500 dark:text-gray-400">Actions prioritaires à entreprendre</CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <div className="space-y-3">
-                    {metrics && metrics.highRiskOrgs > 0 && (
-                      <div className="flex items-start gap-3 p-3 rounded-lg bg-red-50 dark:bg-red-500/10 border border-red-200 dark:border-red-500/20">
-                        <AlertTriangle className="w-5 h-5 text-red-600 dark:text-red-400 mt-0.5" />
-                        <div>
-                          <p className="text-sm font-medium text-gray-900 dark:text-white">Organisations à risque élevé</p>
-                          <p className="text-xs text-gray-500 dark:text-slate-400 mt-1">
-                            {metrics.highRiskOrgs} organisation(s) nécessite(nt) une attention immédiate
-                          </p>
-                        </div>
-                      </div>
-                    )}
-
-                    <div className="flex items-start gap-3 p-3 rounded-lg bg-blue-50 dark:bg-blue-500/10 border border-blue-200 dark:border-blue-500/20">
-                      <Target className="w-5 h-5 text-blue-600 dark:text-blue-400 mt-0.5" />
-                      <div>
-                        <p className="text-sm font-medium text-gray-900 dark:text-white">Lancer de nouvelles campagnes</p>
-                        <p className="text-xs text-gray-500 dark:text-slate-400 mt-1">
-                          Testez régulièrement la vigilance de vos employés
-                        </p>
-                      </div>
-                    </div>
-
-                    <div className="flex items-start gap-3 p-3 rounded-lg bg-green-50 dark:bg-green-500/10 border border-green-200 dark:border-green-500/20">
-                      <CheckCircle className="w-5 h-5 text-green-600 dark:text-green-400 mt-0.5" />
-                      <div>
-                        <p className="text-sm font-medium text-gray-900 dark:text-white">Former les utilisateurs</p>
-                        <p className="text-xs text-gray-500 dark:text-slate-400 mt-1">
-                          Planifiez des sessions de sensibilisation à la cybersécurité
-                        </p>
-                      </div>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
+            <div className="flex items-start gap-3 p-3 rounded-lg bg-green-50 dark:bg-green-500/10 border border-green-200 dark:border-green-500/20">
+              <CheckCircle className="w-5 h-5 text-green-600 dark:text-green-400 mt-0.5 shrink-0" />
+              <div className="min-w-0">
+                <p className="text-sm font-medium text-gray-900 dark:text-white">{tCommon('admin.grc.train_users')}</p>
+                <p className="text-xs text-gray-500 dark:text-slate-400 mt-1">
+                  {tCommon('admin.grc.train_users_desc')}
+                </p>
+              </div>
             </div>
-          </TabsContent>
-        </Tabs>
+          </div>
+        </CardContent>
+      </Card>
+    </div>
+  </TabsContent>
+</Tabs>
       </div>
     </>
   );

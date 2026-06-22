@@ -9,11 +9,12 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
-import { Select, SelectContent, SelectItem, SelectTrigger } from '@/components/ui/select';
 import { Group, useGroupStore } from '@/store/group.store';
 import { Organization } from '@/store/organization.store';
 import { useAuthStore } from '@/store/auth.store';
 import { roleEnum } from '@/constants/roleEnum';
+import { Combobox } from '@/components/ui/combobox';
+import { useTranslation } from 'react-i18next';
 
 type GroupFormData = {
   name: string;
@@ -29,6 +30,7 @@ interface GroupFormProps {
 }
 
 export const GroupForm = ({ initialData, organizations, onSuccess, onCancel }: GroupFormProps) => {
+  const { t: tCommon } = useTranslation('common');
   const { createGroup, updateGroup, isLoading } = useGroupStore();
   const { user: currentUser } = useAuthStore();
 
@@ -107,50 +109,48 @@ export const GroupForm = ({ initialData, organizations, onSuccess, onCancel }: G
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
       <div className="space-y-4">
         <div>
-          <Label htmlFor="name" className="text-gray-700 dark:text-gray-300">Nom du groupe *</Label>
+          <Label htmlFor="name" className="text-gray-700 dark:text-gray-300">{tCommon('admin.groups.group_name')}</Label>
           <Input
             id="name"
             {...register('name')}
             className="bg-white dark:bg-gray-800/50 border-gray-300 dark:border-gray-700 text-gray-900 dark:text-white mt-1"
-            placeholder="Ex: Finance, RH, Étudiants L3..."
+            placeholder={tCommon('admin.groups.name_placeholder')}
           />
           {errors.name && <p className="text-red-600 dark:text-red-400 text-sm mt-1">{errors.name.message}</p>}
         </div>
 
         {/* Champ Organisation : masqué si non superadmin */}
         {!isNotSuperAdmin && (
-          <div>
-            <Label htmlFor="organizationId" className="text-gray-700 dark:text-gray-300">Organisation *</Label>
-            <Select
-              value={watchOrganizationId || ''}
-              onValueChange={(value) => setValue('organizationId', value)}
-            >
-              <SelectTrigger className="bg-white dark:bg-gray-800/50 border-gray-300 dark:border-gray-700 text-gray-900 dark:text-white mt-1">
-                {selectedOrganization ? (
-                  <span className="truncate">{selectedOrganization.name}</span>
-                ) : (
-                  <span className="text-gray-500 dark:text-gray-400">Sélectionner une organisation</span>
-                )}
-              </SelectTrigger>
-              <SelectContent className="bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700">
-                {organizations.map((organization) => (
-                  <SelectItem key={organization.id} value={organization.id}>
-                    {organization.name}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-            {errors.organizationId && <p className="text-red-600 dark:text-red-400 text-sm mt-1">{errors.organizationId.message}</p>}
-          </div>
+       <div>
+  <Label htmlFor="organizationId" className="text-gray-700 dark:text-gray-300">
+    {tCommon('admin.grc.org_name')} <span className="text-red-600 dark:text-red-400">*</span>
+  </Label>
+  <Combobox
+    options={organizations.map((org) => ({
+      value: org.id,
+      label: org.name,
+    }))}
+    value={watchOrganizationId || ''}
+    onChange={(value) => setValue('organizationId', value)}
+    placeholder={tCommon('admin.campaigns.form_org_placeholder')}
+    searchPlaceholder="Rechercher une organisation..."
+    className="mt-1 bg-white dark:bg-gray-800/50 border-gray-300 dark:border-gray-700 text-gray-900 dark:text-white w-full"
+  />
+  {errors.organizationId && (
+    <p className="text-red-600 dark:text-red-400 text-sm mt-1">
+      {errors.organizationId.message}
+    </p>
+  )}
+</div>
         )}
 
         <div>
-          <Label htmlFor="description" className="text-gray-700 dark:text-gray-300">Description</Label>
+          <Label htmlFor="description" className="text-gray-700 dark:text-gray-300">{tCommon('admin.campaigns.form_description')}</Label>
           <Textarea
             id="description"
             {...register('description')}
             className="bg-white dark:bg-gray-800/50 border-gray-300 dark:border-gray-700 text-gray-900 dark:text-white mt-1 min-h-24"
-            placeholder="Décrivez brièvement le périmètre ou l'usage de ce groupe"
+            placeholder={tCommon('admin.groups.desc_placeholder')}
           />
         </div>
       </div>
@@ -162,7 +162,7 @@ export const GroupForm = ({ initialData, organizations, onSuccess, onCancel }: G
           onClick={onCancel}
           className="border-gray-300 dark:border-gray-700 text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 cursor-pointer"
         >
-          Annuler
+          {tCommon('user.formations.cancel')}
         </Button>
         <Button type="submit" disabled={isLoading} className="cursor-pointer">
           {isLoading && <Loader2 className="w-4 h-4 mr-2 animate-spin" />}

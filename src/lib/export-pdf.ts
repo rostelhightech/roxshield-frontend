@@ -81,7 +81,7 @@ export function generatePdfReport(data: ReportData) {
   <div class="kpi-grid">
     <div class="kpi">
       <div class="value" style="color:${riskColor(data.avgRiskScore)}">${data.avgRiskScore}%</div>
-      <div class="label">Score de risque moyen</div>
+      <div class="label">{tCommon('admin.page_overview.stats_avg_risk')}</div>
     </div>
     <div class="kpi">
       <div class="value" style="color:#25d366">${data.trainingRate}%</div>
@@ -93,7 +93,7 @@ export function generatePdfReport(data: ReportData) {
     </div>
     <div class="kpi">
       <div class="value" style="color:#9c1e99">${data.totalEmployees}</div>
-      <div class="label">Total employés</div>
+      <div class="label">{tCommon('admin.page_overview.stats_total_employees')}</div>
     </div>
   </div>
 
@@ -117,9 +117,9 @@ export function generatePdfReport(data: ReportData) {
 
   ${data.departments.length > 0 ? `
   <div class="section">
-    <h2>Risque par département</h2>
+    <h2>{tCommon('admin.page_overview.risk_by_dept_title')}</h2>
     <table>
-      <thead><tr><th>Département</th><th>Employés</th><th>Risque moyen</th><th>Niveau</th></tr></thead>
+      <thead><tr><th>Département</th><th>{tCommon('admin.grc.org_employees')}</th><th>Risque moyen</th><th>Niveau</th></tr></thead>
       <tbody>
         ${data.departments.map((d) => `
           <tr>
@@ -140,7 +140,7 @@ export function generatePdfReport(data: ReportData) {
   <div class="section">
     <h2>Employés à risque élevé (Top 10)</h2>
     <table>
-      <thead><tr><th>Nom</th><th>Email</th><th>Département</th><th>Score</th></tr></thead>
+      <thead><tr><th>{tCommon('user.profile.last_name')}</th><th>{tCommon('user.profile.email')}</th><th>Département</th><th>Score</th></tr></thead>
       <tbody>
         ${data.topRiskEmployees.map((e) => `
           <tr>

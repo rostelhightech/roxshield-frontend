@@ -1,25 +1,29 @@
 'use client';
 
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
 import { TrendingUp, TrendingDown, Users, Clock, Target } from 'lucide-react';
 import { useFormationStore, type Formation } from '@/store/formation.store';
 import { Skeleton } from '@/components/ui/skeleton';
+import { useTranslation } from 'react-i18next';
 
 interface FormationAnalyticsProps {
   formation: Formation;
 }
 
 export function FormationAnalytics({ formation }: FormationAnalyticsProps) {
-  const { analytics, isLoading, fetchFormationAnalytics } = useFormationStore();
+  const { t: tCommon } = useTranslation('common');
+  const { analytics, fetchFormationAnalytics } = useFormationStore();
+  const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
     if (formation?.id) {
-      fetchFormationAnalytics(formation.id);
+      setIsLoading(true);
+      fetchFormationAnalytics(formation.id).finally(() => setIsLoading(false));
     }
-  }, [formation?.id, fetchFormationAnalytics]);
+  }, [formation?.id]);
 
   const completionRate = formation.stats?.totalUsers && formation.stats.totalUsers > 0
     ? Math.round((formation.stats.completedUsers / formation.stats.totalUsers) * 100)
@@ -48,19 +52,19 @@ export function FormationAnalytics({ formation }: FormationAnalyticsProps) {
     <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
       <Card className="rounded-sm border border-gray-200 dark:border-white/10 bg-white dark:bg-[#0c1023]/90">
         <CardHeader>
-          <CardTitle className="text-gray-900 dark:text-white">Statistiques de performance</CardTitle>
+          <CardTitle className="text-gray-900 dark:text-white">{tCommon('admin.formations.analytics_title')}</CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="flex justify-between">
-            <span className="text-gray-500 dark:text-gray-400">Taux de réussite</span>
+            <span className="text-gray-500 dark:text-gray-400">{tCommon('admin.formations.analytics_success_rate')}</span>
             <span className="text-gray-900 dark:text-white">{completionRate}%</span>
           </div>
           <div className="flex justify-between">
-            <span className="text-gray-500 dark:text-gray-400">Score moyen</span>
+            <span className="text-gray-500 dark:text-gray-400">{tCommon('admin.formations.analytics_avg_score')}</span>
             <span className="text-gray-900 dark:text-white">{Math.round(formation.stats?.averageScore || 0)}%</span>
           </div>
           <div className="flex justify-between">
-            <span className="text-gray-500 dark:text-gray-400">Temps moyen</span>
+            <span className="text-gray-500 dark:text-gray-400">{tCommon('admin.formations.analytics_avg_time')}</span>
             <span className="text-gray-900 dark:text-white">
               {(() => {
                 const seconds = Math.round(formation.stats?.averageTimeSpent || 0);
@@ -77,15 +81,15 @@ export function FormationAnalytics({ formation }: FormationAnalyticsProps) {
             </span>
           </div>
           <div className="flex justify-between">
-            <span className="text-gray-500 dark:text-gray-400">En cours</span>
+            <span className="text-gray-500 dark:text-gray-400">{tCommon('user.formations.in_progress_status')}</span>
             <span className="text-gray-900 dark:text-white">{formation.stats?.inProgressUsers || 0}</span>
           </div>
           <div className="flex justify-between">
-            <span className="text-gray-500 dark:text-gray-400">Total inscrits</span>
+            <span className="text-gray-500 dark:text-gray-400">{tCommon('admin.formations.analytics_total_enrolled')}</span>
             <span className="text-gray-900 dark:text-white">{formation.stats?.totalUsers || 0}</span>
           </div>
           <div className="flex justify-between">
-            <span className="text-gray-500 dark:text-gray-400">Complétés</span>
+            <span className="text-gray-500 dark:text-gray-400">{tCommon('admin.formations.analytics_completed')}</span>
             <span className="text-gray-900 dark:text-white">{formation.stats?.completedUsers || 0}</span>
           </div>
         </CardContent>
@@ -95,7 +99,7 @@ export function FormationAnalytics({ formation }: FormationAnalyticsProps) {
         <CardHeader>
           <CardTitle className="text-gray-900 dark:text-white flex items-center gap-2">
             <TrendingUp className="w-5 h-5" />
-            Tendances hebdomadaires
+            {tCommon('admin.formations.analytics_weekly_trends')}
           </CardTitle>
         </CardHeader>
         <CardContent>
@@ -108,23 +112,23 @@ export function FormationAnalytics({ formation }: FormationAnalyticsProps) {
                 ) : (
                   <TrendingDown className="w-4 h-4 text-red-600 dark:text-red-400" />
                 )}
-                <span className="text-gray-900 dark:text-white text-sm">Cette semaine</span>
+                <span className="text-gray-900 dark:text-white text-sm">{tCommon('admin.formations.analytics_this_week')}</span>
               </div>
               <div className="text-right">
                 <span className={`font-medium ${trend.isPositive ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'}`}>
-                  {trend.isPositive ? '+' : ''}{trend.value} complétions
+                  {trend.isPositive ? '+' : ''}{tCommon('admin.formations.analytics_completions_count', { count: trend.value })}
                 </span>
                 <p className="text-xs text-gray-500 dark:text-gray-400">
-                  {trend.isPositive ? '+' : ''}{trend.percentage}% vs semaine dernière
+                  {trend.isPositive ? '+' : ''}{tCommon('admin.formations.analytics_vs_last_week', { pct: trend.percentage })}
                 </p>
               </div>
             </div>
 
             {/* Weekly progress chart */}
             <div className="space-y-3">
-              <h4 className="text-gray-900 dark:text-white text-sm font-medium">Progression sur 4 semaines</h4>
+              <h4 className="text-gray-900 dark:text-white text-sm font-medium">{tCommon('admin.formations.analytics_4week')}</h4>
               {weeklyProgress.length === 0 ? (
-                <p className="text-gray-500 dark:text-gray-400 text-sm text-center py-4">Pas encore de données</p>
+                <p className="text-gray-500 dark:text-gray-400 text-sm text-center py-4">{tCommon('admin.formations.analytics_no_data')}</p>
               ) : (
                 weeklyProgress.map((week, index) => (
                   <div key={week.week} className="space-y-2">
@@ -154,13 +158,13 @@ export function FormationAnalytics({ formation }: FormationAnalyticsProps) {
         <CardHeader>
           <CardTitle className="text-gray-900 dark:text-white flex items-center gap-2">
             <Users className="w-5 h-5" />
-            Performance par département
+            {tCommon('admin.formations.analytics_by_group')}
           </CardTitle>
         </CardHeader>
         <CardContent>
           <div className="space-y-4">
             {departmentStats.length === 0 ? (
-              <p className="text-gray-500 dark:text-gray-400 text-sm text-center py-4">Aucune donnée par département</p>
+              <p className="text-gray-500 dark:text-gray-400 text-sm text-center py-4">{tCommon('admin.formations.analytics_no_dept')}</p>
             ) : (
               departmentStats.map((dept) => (
                 <div key={dept.name} className="space-y-2">
@@ -193,13 +197,13 @@ export function FormationAnalytics({ formation }: FormationAnalyticsProps) {
         <CardHeader>
           <CardTitle className="text-gray-900 dark:text-white flex items-center gap-2">
             <Clock className="w-5 h-5" />
-            Répartition du temps de complétion
+            {tCommon('admin.formations.analytics_completion_time')}
           </CardTitle>
         </CardHeader>
         <CardContent>
           <div className="space-y-4">
             {timeDistribution.length === 0 ? (
-              <p className="text-gray-500 dark:text-gray-400 text-sm text-center py-4">Pas encore de données de temps</p>
+              <p className="text-gray-500 dark:text-gray-400 text-sm text-center py-4">{tCommon('admin.formations.analytics_no_time')}</p>
             ) : (
               <>
                 {timeDistribution.map((time) => (
@@ -207,7 +211,7 @@ export function FormationAnalytics({ formation }: FormationAnalyticsProps) {
                     <div className="flex justify-between items-center">
                       <span className="text-gray-900 dark:text-white text-sm">{time.range}</span>
                       <div className="flex items-center gap-2">
-                        <span className="text-gray-500 dark:text-gray-400 text-xs">{time.count} utilisateurs</span>
+                        <span className="text-gray-500 dark:text-gray-400 text-xs">{tCommon('admin.formations.analytics_users_count', { count: time.count })}</span>
                         <span className="text-gray-900 dark:text-white text-sm font-medium">{time.percentage}%</span>
                       </div>
                     </div>
@@ -218,12 +222,12 @@ export function FormationAnalytics({ formation }: FormationAnalyticsProps) {
                 <div className="mt-4 p-3 bg-gray-50 dark:bg-slate-800/30 rounded-lg">
                   <div className="flex items-center gap-2 mb-2">
                     <Target className="w-4 h-4 text-blue-600 dark:text-blue-400" />
-                    <span className="text-gray-900 dark:text-white text-sm font-medium">Temps optimal</span>
+                    <span className="text-gray-900 dark:text-white text-sm font-medium">{tCommon('admin.formations.analytics_optimal_time')}</span>
                   </div>
                   <p className="text-gray-500 dark:text-gray-400 text-xs">
-                    {timeDistribution.length > 0 
-                      ? `La majorité des utilisateurs complètent cette formation en ${timeDistribution[0].range}, ce qui correspond à la durée estimée de ${formation.estimatedDuration} minutes.`
-                      : `Durée estimée : ${formation.estimatedDuration} minutes`
+                    {timeDistribution.length > 0
+                      ? tCommon('admin.formations.analytics_optimal_time_desc', { range: timeDistribution[0].range, duration: formation.estimatedDuration })
+                      : tCommon('admin.formations.analytics_estimated_duration', { duration: formation.estimatedDuration })
                     }
                   </p>
                 </div>

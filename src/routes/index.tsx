@@ -1,5 +1,4 @@
 import LoginPage from '@/app/login/page';
-import LandingPage from '@/app/page';
 import { useAuthStore } from '@/store/auth.store';
 import { createFileRoute, redirect } from '@tanstack/react-router';
 

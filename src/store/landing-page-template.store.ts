@@ -14,6 +14,7 @@ export interface LandingPageTemplate {
   category: string | null;
   title: string | null;
   html: string;
+  isDefault: boolean;
   organizationId: string;
   organization?: LandingPageTemplateOrganization | null;
   createdAt: string;
@@ -36,9 +37,9 @@ interface LandingPageTemplateState {
   filters: LandingPageTemplateFilters;
   fetchAll: () => Promise<void>;
   fetchById: (id: string) => Promise<void>;
-  createLandingPageTemplate: (data: Omit<LandingPageTemplate, 'id' | 'createdAt' | 'updatedAt'>) => Promise<void>;
-  updateLandingPageTemplate: (id: string, data: Partial<LandingPageTemplate>) => Promise<void>;
-  deleteLandingPageTemplate: (id: string) => Promise<void>;
+  createLandingPageTemplate: (data: Omit<LandingPageTemplate, 'id' | 'createdAt' | 'updatedAt'>, isDefault?: boolean) => Promise<void>;
+  updateLandingPageTemplate: (id: string, data: Partial<LandingPageTemplate>, isDefault?: boolean) => Promise<void>;
+  deleteLandingPageTemplate: (id: string, isDefault?: boolean) => Promise<void>;
   setFilters: (filters: Partial<LandingPageTemplateFilters>) => void;
   resetFilters: () => void;
   applyFilters: () => void;
@@ -89,10 +90,10 @@ export const useLandingPageTemplateStore = create<LandingPageTemplateState>((set
     }
   },
 
-  createLandingPageTemplate: async (data) => {
+  createLandingPageTemplate: async (data, isDefault) => {
     set({ isSaving: true, error: null });
     try {
-      const response = await apiService.post('/landing-page-templates', data);
+      const response = await apiService.post(isDefault ? '/landing-page-templates/superadmin' : '/landing-page-templates', data);
       const newTemplate = response?.data as LandingPageTemplate;
       set((state) => ({
         landingPageTemplates: [...state.landingPageTemplates, newTemplate],
@@ -105,10 +106,10 @@ export const useLandingPageTemplateStore = create<LandingPageTemplateState>((set
     }
   },
 
-  updateLandingPageTemplate: async (id, data) => {
+  updateLandingPageTemplate: async (id, data, isDefault) => {
     set({ isSaving: true, error: null });
     try {
-      const response = await apiService.put(`/landing-page-templates/${id}`, data);
+      const response = await apiService.put(isDefault ? `/landing-page-templates/superadmin/${id}` : `/landing-page-templates/${id}`, data);
       const updatedTemplate = response?.data as LandingPageTemplate;
       set((state) => ({
         landingPageTemplates: state.landingPageTemplates.map((template) =>
@@ -124,10 +125,10 @@ export const useLandingPageTemplateStore = create<LandingPageTemplateState>((set
     }
   },
 
-  deleteLandingPageTemplate: async (id) => {
+  deleteLandingPageTemplate: async (id, isDefault) => {
     set({ isLoading: true, error: null });
     try {
-      await apiService.delete(`/landing-page-templates/${id}`);
+      await apiService.delete(isDefault ? `/landing-page-templates/superadmin/${id}` : `/landing-page-templates/${id}`);
       set((state) => ({
         landingPageTemplates: state.landingPageTemplates.filter((template) => template.id !== id),
         currentLandingPageTemplate: state.currentLandingPageTemplate?.id === id ? null : state.currentLandingPageTemplate,
@@ -167,7 +168,7 @@ export const useLandingPageTemplateStore = create<LandingPageTemplateState>((set
         if (filters.sortBy === 'organization') {
           return item.organization?.name ?? '';
         }
-        return (item as any)[filters.sortBy] ?? '';
+        return (item as Record<string, unknown>)[filters.sortBy] ?? '';
       };
 
       const valueA = String(getValue(a)).toLowerCase();

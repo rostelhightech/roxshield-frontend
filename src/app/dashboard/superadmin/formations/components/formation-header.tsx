@@ -7,7 +7,6 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { useNavigate } from '@tanstack/react-router';
 import { useFormationStore, type Formation } from '@/store/formation.store';
-import { toast } from 'sonner';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -18,12 +17,15 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
+import { useTranslation } from 'react-i18next';
+
 
 interface FormationHeaderProps {
   formation: Formation;
 }
 
 export function FormationHeader({ formation }: FormationHeaderProps) {
+  const { t: tCommon } = useTranslation('common');
   const navigate = useNavigate();
   const { updateFormation, deleteFormation, isLoading } = useFormationStore();
   const [archiveDialogOpen, setArchiveDialogOpen] = useState(false);
@@ -63,18 +65,16 @@ export function FormationHeader({ formation }: FormationHeaderProps) {
   const handlePublish = async () => {
     try {
       await updateFormation(formation.id, { status: 'PUBLISHED' });
-      toast.success('Formation publiée avec succès');
     } catch (error) {
-      toast.error('Erreur lors de la publication');
+      //
     }
   };
 
   const handleUnpublish = async () => {
     try {
       await updateFormation(formation.id, { status: 'DRAFT' });
-      toast.success('Formation dépubliée avec succès');
     } catch (error) {
-      toast.error('Erreur lors de la dépublication');
+      //
     }
   };
 
@@ -85,19 +85,18 @@ export function FormationHeader({ formation }: FormationHeaderProps) {
   const confirmArchive = async () => {
     try {
       await updateFormation(formation.id, { status: 'ARCHIVED' });
-      toast.success('✅ Formation archivée avec succès');
       setArchiveDialogOpen(false);
     } catch (error) {
-      toast.error('❌ Erreur lors de l\'archivage');
+      //
     }
   };
 
   const handleRestore = async () => {
     try {
       await updateFormation(formation.id, { status: 'DRAFT' });
-      toast.success('Formation restaurée avec succès');
+
     } catch (error) {
-      toast.error('Erreur lors de la restauration');
+      //
     }
   };
 
@@ -108,148 +107,165 @@ export function FormationHeader({ formation }: FormationHeaderProps) {
   const confirmDelete = async () => {
     try {
       await deleteFormation(formation.id);
-      toast.success('✅ Formation supprimée avec succès');
-      setDeleteDialogOpen(false);
+       setDeleteDialogOpen(false);
       navigate({ to: '/dashboard/formations' });
     } catch (error) {
-      toast.error('❌ Erreur lors de la suppression');
+      //
     }
   };
 
   return (
     <>
       {/* Navigation */}
-      <div className="flex items-center justify-between mb-6">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
         <Button
           variant="ghost"
           onClick={() => navigate({ to: '/dashboard/formations' })}
-          className="text-gray-500 dark:text-slate-400 hover:text-gray-900 dark:hover:text-gray-700"
+          className="text-gray-500 dark:text-slate-400 hover:text-gray-900 dark:hover:text-gray-700 self-start"
         >
           <ArrowLeft className="w-4 h-4 mr-2" />
-          Retour aux formations
+          {tCommon('user.formations.back_to_trainings')}
         </Button>
-        
-        <div className="flex gap-3">
+
+        <div className="flex flex-wrap gap-2 sm:justify-end">
           {/* Boutons d'action selon le statut */}
           {formation.status === 'DRAFT' && (
             <>
-              <Button 
-                onClick={handlePublish} 
+              <Button
+                onClick={handlePublish}
                 disabled={isLoading}
+                size="sm"
+                className="flex-1 sm:flex-none"
               >
                 <Eye className="w-4 h-4 mr-2" />
-                {isLoading ? 'Publication...' : 'Publier'}
+                {isLoading ? tCommon('admin.formations.header_publishing') : tCommon('admin.formations.header_publish')}
               </Button>
-              <Button 
+              <Button
                 variant="outline"
                 onClick={handleArchive}
                 disabled={isLoading}
+                size="sm"
+                className="flex-1 sm:flex-none"
               >
                 <Archive className="w-4 h-4 mr-2" />
-                Archiver
+                {tCommon('admin.campaigns.archive')}
               </Button>
             </>
           )}
 
           {formation.status === 'PUBLISHED' && (
             <>
-              <Button 
+              <Button
                 variant="outline"
                 onClick={handleUnpublish}
                 disabled={isLoading}
+                size="sm"
+                className="flex-1 sm:flex-none"
               >
                 <EyeOff className="w-4 h-4 mr-2" />
-                Dépublier
+                {tCommon('admin.formations.header_unpublish')}
               </Button>
-              <Button 
+              <Button
                 variant="outline"
                 onClick={handleArchive}
                 disabled={isLoading}
+                size="sm"
+                className="flex-1 sm:flex-none"
               >
                 <Archive className="w-4 h-4 mr-2" />
-                Archiver
+                {tCommon('admin.campaigns.archive')}
               </Button>
             </>
           )}
 
           {formation.status === 'ARCHIVED' && (
             <>
-              <Button 
-                onClick={handleRestore} 
+              <Button
+                onClick={handleRestore}
                 disabled={isLoading}
+                size="sm"
+                className="flex-1 sm:flex-none"
               >
                 <RotateCcw className="w-4 h-4 mr-2" />
-                {isLoading ? 'Restauration...' : 'Restaurer'}
+                {isLoading ? tCommon('admin.formations.header_restoring') : tCommon('admin.campaigns.restore')}
               </Button>
-              <Button 
+              <Button
                 variant="destructive"
                 onClick={handleDelete}
                 disabled={isLoading}
+                size="sm"
+                className="flex-1 sm:flex-none"
               >
                 <XCircle className="w-4 h-4 mr-2" />
-                Supprimer
+                {tCommon('admin.ambassadors.delete')}
               </Button>
             </>
           )}
 
           {/* Boutons communs */}
-          <Button 
-            variant="outline" 
+          <Button
+            variant="outline"
+            size="sm"
+            className="flex-1 sm:flex-none"
             onClick={() => navigate({ to: '/dashboard/formations/formation-edit', search: { id: formation.id } })}
           >
             <Edit className="w-4 h-4 mr-2" />
-            Modifier
+            {tCommon('admin.ambassadors.edit')}
           </Button>
-          <Button variant="outline">
+          <Button variant="outline" size="sm" className="flex-1 sm:flex-none">
             <Download className="w-4 h-4 mr-2" />
-            Exporter
+            {tCommon('admin.formations.header_export')}
           </Button>
         </div>
       </div>
 
       {/* Formation Header Card */}
       <Card className="rounded-sm border border-gray-200 dark:border-white/10 bg-white dark:bg-[#0c1023]/90 mb-6">
-        <CardContent className="p-6">
-          <div className="flex items-start justify-between mb-4">
-            <div className="flex items-center gap-4">
-              <div className={`p-3 rounded-sm text-2xl ${getTypeColor(formation.type)}`}>
-                {getTypeIcon(formation.type)}
+        <CardContent className="p-4 sm:p-6">
+          <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4 mb-4">
+            <div className="flex items-start gap-3 sm:gap-4 min-w-0">
+              <div className={`p-2 sm:p-3 rounded-sm text-xl sm:text-2xl shrink-0 ${getTypeColor(formation.type)}`}>
+                {getTypeIcon(formation?.type)}
               </div>
-              <div>
-                <h1 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">{formation.title}</h1>
-                <p className="text-gray-600 dark:text-gray-400 text-lg">{formation.description}</p>
+              <div className="min-w-0">
+                <h1 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white mb-2 break-words">
+                  {formation.title}
+                </h1>
+                <p className="text-gray-600 dark:text-gray-400 text-sm sm:text-lg break-words">
+                  {formation.description}
+                </p>
               </div>
             </div>
-            <div className="flex gap-2">
+            <div className="flex flex-wrap gap-2 sm:flex-col sm:items-end shrink-0">
               <Badge className={getStatusColor(formation.status)}>
-                {formation.status === 'PUBLISHED' ? 'Publié' : formation.status === 'DRAFT' ? 'Brouillon' : 'Archivé'}
+                {formation.status === 'PUBLISHED' ? tCommon('admin.formations.status_published') : formation.status === 'DRAFT' ? tCommon('admin.formations.status_draft') : tCommon('admin.formations.status_archived')}
               </Badge>
               {formation.isRequired && (
                 <Badge variant="outline" className="text-red-600 dark:text-red-400 border-red-400/50">
-                  Obligatoire
+                  {tCommon('admin.formations.required')}
                 </Badge>
               )}
             </div>
           </div>
 
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4 text-xs sm:text-sm">
             <div className="flex items-center gap-2 text-gray-500 dark:text-gray-400">
-              <Clock className="w-4 h-4" />
-              <span>{formation.estimatedDuration} minutes</span>
+              <Clock className="w-4 h-4 shrink-0" />
+              <span>{tCommon('admin.formations.header_duration_minutes', { count: formation.estimatedDuration })}</span>
             </div>
             <div className="flex items-center gap-2 text-gray-500 dark:text-gray-400">
-              <Target className="w-4 h-4" />
-              <span>Score min: {formation.passingScore}%</span>
+              <Target className="w-4 h-4 shrink-0" />
+              <span>{tCommon('admin.formations.min_score', { score: formation.passingScore })}</span>
             </div>
             <div className="flex items-center gap-2 text-gray-500 dark:text-gray-400">
-              <Users className="w-4 h-4" />
-              <span>{formation.stats?.totalUsers || 0} inscrits</span>
+              <Users className="w-4 h-4 shrink-0" />
+              <span>{tCommon('admin.formations.enrolled_count', { count: formation.stats?.totalUsers || 0 })}</span>
             </div>
             <div className="flex items-center gap-2 text-gray-500 dark:text-gray-400">
-              <TrendingUp className="w-4 h-4" />
-              <span>{formation.stats?.totalUsers && formation.stats.totalUsers > 0
+              <TrendingUp className="w-4 h-4 shrink-0" />
+              <span>{tCommon('admin.formations.header_completed_pct', { count: formation.stats?.totalUsers && formation.stats.totalUsers > 0
                 ? Math.round((formation.stats.completedUsers / formation.stats.totalUsers) * 100)
-                : 0}% completé</span>
+                : 0 })}</span>
             </div>
           </div>
         </CardContent>
@@ -258,20 +274,20 @@ export function FormationHeader({ formation }: FormationHeaderProps) {
       <AlertDialog open={archiveDialogOpen} onOpenChange={setArchiveDialogOpen}>
         <AlertDialogContent className="bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-800">
           <AlertDialogHeader>
-            <AlertDialogTitle className="text-gray-900 dark:text-white">Archiver la formation?</AlertDialogTitle>
+            <AlertDialogTitle className="text-gray-900 dark:text-white">{tCommon('admin.formations.header_archive_confirm_title')}</AlertDialogTitle>
             <AlertDialogDescription className="text-gray-600 dark:text-gray-400">
-              Êtes-vous sûr de vouloir archiver la formation <span className="font-semibold text-gray-900 dark:text-white">"{formation.title}"</span> ? Elle ne sera plus visible pour les utilisateurs.
+              {tCommon('admin.formations.header_archive_confirm_desc')} <span className="font-semibold text-gray-900 dark:text-white">"{formation.title}"</span> {tCommon('admin.formations.header_archive_confirm_desc2')}
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter className='bg-white dark:bg-gray-900'>
             <AlertDialogCancel className="bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 border-gray-300 dark:border-gray-700 text-gray-700 dark:text-white hover:text-gray-900 dark:hover:text-white">
-              Annuler
+              {tCommon('user.formations.cancel')}
             </AlertDialogCancel>
             <AlertDialogAction
               onClick={confirmArchive}
               className="bg-orange-600 hover:bg-orange-700 text-white"
             >
-              Archiver
+              {tCommon('admin.campaigns.archive')}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
@@ -280,20 +296,20 @@ export function FormationHeader({ formation }: FormationHeaderProps) {
       <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
         <AlertDialogContent className="bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-800">
           <AlertDialogHeader>
-            <AlertDialogTitle className="text-gray-900 dark:text-white">Supprimer définitivement la formation?</AlertDialogTitle>
+            <AlertDialogTitle className="text-gray-900 dark:text-white">{tCommon('admin.formations.header_delete_confirm_title')}</AlertDialogTitle>
             <AlertDialogDescription className="text-gray-600 dark:text-gray-400">
-              Êtes-vous sûr de vouloir supprimer définitivement la formation <span className="font-semibold text-gray-900 dark:text-white">"{formation.title}"</span> ? Cette action est irréversible et toutes les données seront perdues.
+              {tCommon('admin.formations.header_delete_confirm_desc')} <span className="font-semibold text-gray-900 dark:text-white">"{formation.title}"</span> {tCommon('admin.formations.header_delete_confirm_desc3')}
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter className='bg-white dark:bg-gray-900'>
             <AlertDialogCancel className="bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 border-gray-300 dark:border-gray-700 text-gray-700 dark:text-white hover:text-gray-900 dark:hover:text-white">
-              Annuler
+              {tCommon('user.formations.cancel')}
             </AlertDialogCancel>
             <AlertDialogAction
               onClick={confirmDelete}
               className="bg-red-600 hover:bg-red-700 text-white"
             >
-              Supprimer définitivement
+              {tCommon('admin.formations.header_delete_permanent')}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>

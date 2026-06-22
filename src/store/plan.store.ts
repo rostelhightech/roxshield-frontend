@@ -158,8 +158,8 @@ export const usePlanStore = create<PlanState>((set, get) => ({
     }
 
     filtered.sort((a, b) => {
-      let aVal = a[filters.sortBy];
-      let bVal = b[filters.sortBy];
+      const aVal = a[filters.sortBy];
+      const bVal = b[filters.sortBy];
       
       if ((aVal && bVal) && aVal < bVal) return filters.sortOrder === 'asc' ? -1 : 1;
       if ((aVal && bVal) && aVal > bVal) return filters.sortOrder === 'asc' ? 1 : -1;

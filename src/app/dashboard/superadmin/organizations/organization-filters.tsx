@@ -3,16 +3,18 @@
 
 import { Search, X } from 'lucide-react';
 import { Input } from '@/components/ui/input';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Card } from '@/components/ui/card';
 import { useOrganizationStore } from '@/store/organization.store';
 import { Plan } from '@/store/plan.store';
+import { Combobox } from '@/components/ui/combobox';
+import { useTranslation } from 'react-i18next';
 
 interface OrganizationFiltersProps {
   plans: Plan[];
 }
 
 export const OrganizationFilters = ({ plans }: OrganizationFiltersProps) => {
+  const { t: tCommon } = useTranslation('common');
   const { filters, setFilters } = useOrganizationStore();
 
   return (
@@ -22,7 +24,7 @@ export const OrganizationFilters = ({ plans }: OrganizationFiltersProps) => {
         <div className="relative">
           <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400 dark:text-gray-400" />
           <Input
-            placeholder="Rechercher par nom, ville, email..."
+            placeholder={tCommon('admin.organizations.search_placeholder')}
             value={filters.search}
             onChange={(e) => setFilters({ search: e.target.value })}
             className="pl-9 bg-white dark:bg-gray-800/50 border-gray-300 dark:border-gray-700 text-gray-900 dark:text-white outline-none focus:border-none focus:ring-none"
@@ -37,53 +39,49 @@ export const OrganizationFilters = ({ plans }: OrganizationFiltersProps) => {
           )}
         </div>
 
-        {/* Type */}
-        <Select
-          value={filters.type}
-          onValueChange={(value) => setFilters({ type: value })}
-        >
-          <SelectTrigger className="bg-white dark:bg-gray-800/50 border-gray-300 dark:border-gray-700 text-gray-900 dark:text-white">
-            <SelectValue className="text-gray-500 dark:text-gray-400" placeholder="Tous les types" />
-          </SelectTrigger>
-          <SelectContent className="bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700">
-            <SelectItem value="">Tous les types</SelectItem>
-            <SelectItem value="enterprise">Entreprise</SelectItem>
-            <SelectItem value="campus">Campus</SelectItem>
-          </SelectContent>
-        </Select>
+       {/* Type */}
+<Combobox
+  options={[
+    { value: '', label: tCommon('admin.organizations.all_types') },
+    { value: 'enterprise', label: 'Entreprise' },
+    { value: 'campus', label: 'Campus' },
+  ]}
+  value={filters.type}
+  onChange={(value) => setFilters({ type: value })}
+  placeholder={tCommon('admin.organizations.all_types')}
+  searchPlaceholder="Rechercher un type..."
+  className="bg-white dark:bg-gray-800/50 border-gray-300 dark:border-gray-700 text-gray-900 dark:text-white"
+/>
 
-        {/* Plan */}
-        <Select
-          value={filters.planId}
-          onValueChange={(value) => setFilters({ planId: value })}
-        >
-          <SelectTrigger className="bg-white dark:bg-gray-800/50 border-gray-300 dark:border-gray-700 text-gray-900 dark:text-white">
-            <SelectValue className="text-gray-500 dark:text-gray-400" placeholder="Tous les plans" />
-          </SelectTrigger>
-          <SelectContent className="bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700">
-            <SelectItem value="">Tous les plans</SelectItem>
-            {plans.map((plan) => (
-              <SelectItem key={plan.id} value={plan.id}>
-                {plan.label}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
+{/* Plan */}
+<Combobox
+  options={[
+    { value: '', label: tCommon('admin.organizations.all_plans') },
+    ...plans.map((plan) => ({
+      value: plan.id,
+      label: plan.label,
+    })),
+  ]}
+  value={filters.planId}
+  onChange={(value) => setFilters({ planId: value })}
+  placeholder={tCommon('admin.organizations.all_plans')}
+  searchPlaceholder="Rechercher un plan..."
+  className="bg-white dark:bg-gray-800/50 border-gray-300 dark:border-gray-700 text-gray-900 dark:text-white"
+/>
 
-        {/* Statut */}
-        <Select
-          value={filters.status}
-          onValueChange={(value) => setFilters({ status: value })}
-        >
-          <SelectTrigger className="bg-white dark:bg-gray-800/50 border-gray-300 dark:border-gray-700 text-gray-900 dark:text-white">
-            <SelectValue className="text-gray-500 dark:text-gray-400" placeholder="Tous les statuts" />
-          </SelectTrigger>
-          <SelectContent className="bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700">
-            <SelectItem value="">Tous les statuts</SelectItem>
-            <SelectItem value="active">Actif</SelectItem>
-            <SelectItem value="inactive">Inactif</SelectItem>
-          </SelectContent>
-        </Select>
+{/* Statut */}
+<Combobox
+  options={[
+    { value: '', label: tCommon('admin.users.all_status')},
+    { value: 'active', label: tCommon('common.active') },
+    { value: 'inactive', label: tCommon('common.inactive') },
+  ]}
+  value={filters.status}
+  onChange={(value) => setFilters({ status: value })}
+  placeholder={tCommon('admin.users.all_status')}
+  searchPlaceholder="Rechercher un statut..."
+  className="bg-white dark:bg-gray-800/50 border-gray-300 dark:border-gray-700 text-gray-900 dark:text-white"
+/>
       </div>
     </Card>
   );

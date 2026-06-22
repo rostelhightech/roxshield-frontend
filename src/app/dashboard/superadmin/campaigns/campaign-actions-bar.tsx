@@ -4,6 +4,7 @@ import { Link } from '@tanstack/react-router';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { ArrowLeft } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 
 interface CampaignActionsBarProps {
   campaign: any;
@@ -24,21 +25,36 @@ export function CampaignActionsBar({
   onRestore,
   onRelaunch,
 }: CampaignActionsBarProps) {
+
+
+const { t: tCommon } = useTranslation('common');
+
+
   return (
-    <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-      <div className="grid gap-2">
-        <p className="text-sm text-gray-500 dark:text-gray-400">ID : {campaign.id}</p>
-        <div className="flex flex-wrap items-center gap-2">
+    <div className="flex flex-col gap-4 sm:gap-3">
+      {/* Première ligne : Bouton retour à gauche + ID et badges à droite */}
+      <div className="flex items-center justify-between">
+        <Link
+          className="inline-flex items-center gap-2 rounded-md border border-gray-300 dark:border-white/10 bg-white dark:bg-white/5 px-3 py-2 text-sm text-gray-700 dark:text-white transition hover:bg-gray-50 dark:hover:bg-white/10 hover:border-gray-400 dark:hover:border-white/20"
+          to="/dashboard/campaigns"
+        >
+          <ArrowLeft className="h-4 w-4" />
+          {tCommon('admin.campaigns.back')}
+        </Link>
+
+        <div className="flex items-center gap-3">
+          <p className="text-sm text-gray-500 dark:text-gray-400">ID : {campaign.id}</p>
           <Badge variant="secondary">{campaign.status}</Badge>
           <Badge variant="outline" className="border-gray-300 dark:border-white/10 bg-gray-100 dark:bg-white/5 text-gray-700 dark:text-white">
             {campaign.organization?.name ?? 'Organisation inconnue'}
           </Badge>
         </div>
       </div>
-      
-      <div className="flex flex-wrap items-center gap-2">
+
+      {/* Deuxième ligne : Actions à droite */}
+      <div className="flex flex-wrap items-center justify-end gap-2">
         <Button size="sm" className="text-gray-700 dark:text-gray-500" variant="outline" onClick={onEdit}>
-          Modifier
+          {tCommon('admin.ambassadors.edit')}
         </Button>
         <Button size="sm" className="text-gray-700 dark:text-gray-500" variant="outline" onClick={onRemix}>
           Remixer
@@ -49,7 +65,7 @@ export function CampaignActionsBar({
         
         {campaign.status === 'ARCHIVED' ? (
           <Button size="sm" variant="secondary" onClick={onRestore}>
-            Désarchiver
+            {tCommon('admin.campaigns.unarchive')}
           </Button>
         ) : (
           <Button size="sm" className="text-gray-700 dark:text-gray-500" variant="outline" onClick={onArchive}>
@@ -60,14 +76,6 @@ export function CampaignActionsBar({
         <Button size="sm" variant="ghost" className="border border-gray-300 dark:border-white/10 bg-gray-100 dark:bg-white/5 text-gray-700 dark:text-white" onClick={onRelaunch}>
           Relancer
         </Button>
-        
-        <Link
-          className="inline-flex items-center gap-2 rounded-md border border-gray-300 dark:border-white/10 bg-gray-100 dark:bg-white/5 px-3 py-2 text-sm text-gray-700 dark:text-white transition hover:bg-gray-200 dark:hover:bg-white/10"
-          to="/dashboard/campaigns"
-        >
-          <ArrowLeft className="h-4 w-4" />
-          Retour
-        </Link>
       </div>
     </div>
   );

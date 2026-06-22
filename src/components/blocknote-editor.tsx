@@ -56,11 +56,12 @@ export function BlockNoteEditor({ initialContent, onChange, editable = true }: B
 
     // Subscribe to editor changes
     editor.onChange(handleUpdate);
-  }, [editor, onChange]);
+  }, [editor]);
 
   return (
     <div className="blocknote-editor-wrapper">
-      <BlockNoteView 
+      <BlockNoteView
+        className="text-red" 
         editor={editor} 
         editable={editable}
         theme={theme === 'dark' ? 'dark' : 'light'}
